@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "paths": {
+      "~/*": ["./*"]
+    },
+    "resolveJsonModule": true
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "build",
+    "coverage",
+    "node_modules",
+    "public",
+    "resources"
+  ]
+}

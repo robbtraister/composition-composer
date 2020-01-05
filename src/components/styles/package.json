@@ -1,0 +1,4 @@
+{
+  "browser": "./client.ts",
+  "main": "./server.tsx"
+}
