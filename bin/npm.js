@@ -32,9 +32,7 @@ const spawn = (cmd, args, options) =>
   })
 
 const npm = cmd =>
-  async function npm(...args) {
-    // command object is provided as last arg
-    const options = args.slice(0, -1)
+  async function npm(_, options = []) {
     if (options.length > 0 && options[0] !== '--') {
       options.unshift('--')
     }

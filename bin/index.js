@@ -26,12 +26,7 @@ program.command('init').action(async () => {
   try {
     debug('creating directories')
     await Promise.all(
-      [
-        'components/features',
-        'components/layouts',
-        'components/outputs',
-        'content/sources'
-      ].map(dir =>
+      ['components', 'content-sources', 'outputs'].map(dir =>
         fs.promises.mkdir(path.join(projectRoot, dir), { recursive: true })
       )
     )
@@ -62,7 +57,7 @@ program.command('init').action(async () => {
 })
 
 program.command('manifest').action(async () => {
-  console.log(manifest())
+  console.log(JSON.stringify(manifest(), null, 2))
 })
 ;['build', 'clean', 'dev', 'generate', 'prod', 'watch'].map(cmd => {
   program.command(cmd).action(npm(cmd))

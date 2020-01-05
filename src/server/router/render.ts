@@ -8,16 +8,15 @@ export default function router(options: Options) {
   const router = Router()
 
   router.get('*', async (req, res, next) => {
-    res.send(
-      await render(
-        {
-          template: 'article',
-          output: req.query.output || 'default',
-          location: req.originalUrl
-        },
-        options
-      )
+    const { body, contentType } = await render(
+      {
+        template: 'article',
+        output: req.query.output || 'default',
+        location: req.originalUrl
+      },
+      options
     )
+    res.set('Content-Type', contentType).send(body)
   })
 
   return router

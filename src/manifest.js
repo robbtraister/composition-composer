@@ -8,15 +8,12 @@ const glob = require('glob')
 
 const { projectRoot } = require('../env')
 
-function getEntries({ base, outputs = [], levels = 1 }) {
-  const fileNames = ['index'].concat(outputs || [])
-  const fileGlob =
-    fileNames.length > 1 ? `{${fileNames.join(',')}}` : fileNames[0]
+function getProjectRelativeFile(sourceFile) {
+  return sourceFile && `~/${path.relative(projectRoot, sourceFile)}`
+}
 
-  const files = [].concat(
-    glob.sync(`${base}${'/*'.repeat(levels)}.{js,jsx}`),
-    glob.sync(`${base}${'/*'.repeat(levels)}/${fileGlob}.{js,jsx}`)
-  )
+function getEntries(base) {
+  const files = [].concat(glob.sync(`${base}/**/*.{js,jsx,ts,tsx}`))
 
   return Object.assign(
     {},
@@ -25,53 +22,81 @@ function getEntries({ base, outputs = [], levels = 1 }) {
         path
           .relative(base, sourceFile)
           .split(path.sep)
-          .slice(0, levels)
           .join(path.sep)
       )
 
       return {
-        [path.join(dir, name)]: `~/${path.relative(projectRoot, sourceFile)}`
+        [path
+          .join(dir, name)
+          .replace(/[\\/]index$/, '')]: getProjectRelativeFile(sourceFile)
+      }
+    })
+  )
+}
+
+function getComponentFile(componentName, outputName) {
+  return []
+    .concat(
+      glob.sync(
+        `${path.join(
+          projectRoot,
+          'components'
+        )}/${componentName}/${outputName}.{js,jsx,ts,tsx}`
+      ),
+      glob.sync(
+        `${path.join(
+          projectRoot,
+          'components'
+        )}/${componentName}/index.{js,jsx,ts,tsx}`
+      ),
+      glob.sync(
+        `${path.join(
+          projectRoot,
+          'components'
+        )}/${componentName}.{js,jsx,ts,tsx}`
+      )
+    )
+    .find(c => c)
+}
+
+function getComponentNames(outputNames) {
+  const componentNames = Object.keys(
+    getEntries(path.join(projectRoot, 'components'))
+  )
+
+  return componentNames.filter(componentName => {
+    const { dir, name } = path.parse(componentName)
+    return !(outputNames.includes(name) && componentNames.includes(dir))
+  })
+}
+
+function getComponents(outputNames) {
+  const componentNames = getComponentNames(outputNames)
+  return Object.assign(
+    {},
+    ...componentNames.map(componentName => {
+      return {
+        [componentName]: Object.assign(
+          {},
+          ...outputNames.map(outputName => {
+            return {
+              [outputName]: getProjectRelativeFile(
+                getComponentFile(componentName, outputName)
+              )
+            }
+          })
+        )
       }
     })
   )
 }
 
 module.exports = () => {
-  const componentBase = path.join(projectRoot, 'components')
-  const contentBase = path.join(projectRoot, 'content')
-  const outputs = getEntries({
-    base: path.join(componentBase, 'outputs')
-  })
-  // const outputNames = Object.keys(outputs)
-
+  const outputs = getEntries(path.join(projectRoot, 'outputs'))
   return {
-    components: {
-      // outputs: Object.assign(
-      //   {},
-      //   ...outputNames.map((outputName) => {
-      //     return {
-      //       [outputName]: {
-      //         chains: getEntries({ base: path.join(componentBase, 'chains'), outputs: outputName }),
-      //         features: getEntries({ base: path.join(componentBase, 'features'), outputs: outputName, levels: 2 }),
-      //         layouts: getEntries({ base: path.join(componentBase, 'layouts'), outputs: outputName }),
-      //         outputs: {
-      //           [outputName]: outputs[outputName]
-      //         }
-      //       }
-      //     }
-      //   })
-      // )
-      features: getEntries({
-        base: path.join(componentBase, 'features'),
-        levels: 2
-      }),
-      layouts: getEntries({ base: path.join(componentBase, 'layouts') }),
-      outputs
-    },
-    content: {
-      schemas: getEntries({ base: path.join(contentBase, 'schemas') }),
-      sources: getEntries({ base: path.join(contentBase, 'sources') })
-    }
+    components: getComponents(Object.keys(outputs)),
+    'content-sources': getEntries(path.join(projectRoot, 'content-sources')),
+    outputs
   }
 }
 

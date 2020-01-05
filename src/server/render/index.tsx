@@ -8,7 +8,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
 
-import { Composition } from '../../components'
+import { Composition, Tree } from '../../components'
 
 import compile from '../compile'
 
@@ -16,11 +16,24 @@ import { Redirect } from '../errors'
 import { fileExists } from '../utils/promises'
 
 import components from '~/build/generated/components'
+import outputs from '~/build/generated/outputs'
 
 import { fetch } from '../content'
 
-function getComponent(node) {
-  return components[node.collection][node.type]
+function getComponent(output, node) {
+  return components[node.type][output]
+}
+
+function getContentType(Output, body) {
+  if (Output.contentType) {
+    return `${Output.contentType}`.toLowerCase()
+  }
+
+  return /\w*</i.test(body)
+    ? // is an HTML/XML document
+      'text/html'
+    : // is not an HTML/XML document
+      'text/plain'
 }
 
 const StyledComponents = 'composition:styled-components'
@@ -33,9 +46,12 @@ async function getJson(filePath) {
   return JSON.parse((await fsPromises.readFile(filePath)).toString())
 }
 
-async function getHash(template, options) {
+async function getHash({ template, output }, options) {
   const { styleHash } = await getJson(
-    path.join(options.projectRoot, `build/dist/templates/${template}.css.json`)
+    path.join(
+      options.projectRoot,
+      `build/dist/templates/${template}/${output}.css.json`
+    )
   )
 
   return styleHash
@@ -57,19 +73,16 @@ export default async function render(props, options) {
 
   if (
     !(await fileExists(
-      path.join(projectRoot, `build/dist/templates/${template}.js`)
+      path.join(projectRoot, `build/dist/templates/${template}/${output}.js`)
     ))
   ) {
-    await compile(template, options)
+    await compile({ template, output }, options)
   }
 
-  const styleHash = await getHash(template, options)
+  const styleHash = await getHash({ template, output }, options)
   const tree = await getTree(template, options)
 
-  const Output = getComponent({
-    collection: 'outputs',
-    type: output
-  })
+  const Output = outputs[output]
 
   const cache = {}
   async function renderAsync(renderOptions: RenderOptions = {}) {
@@ -99,17 +112,21 @@ export default async function render(props, options) {
           sheet.collectStyles(
             <Composition
               {...renderOptions}
-              appName={`templates/${template}`}
+              appName={`templates/${template}/${output}`}
               appStyles={`styles/templates/${styleHash}`}
               cache={cache}
-              getComponent={getComponent}
+              getComponent={getComponent.bind(null, output)}
               getContent={getContent}
               location={props.location}
+              output={output}
               routerContext={context}
               siteStyles={`styles/outputs/${output}`}
               projectRoot={projectRoot}
+              template={template}
               tree={tree}>
-              <Output />
+              <Output>
+                <Tree />
+              </Output>
             </Composition>
           )
         )
@@ -117,19 +134,23 @@ export default async function render(props, options) {
           throw new Redirect(context.url)
         }
 
-        const result = html.replace(
+        const body = html.replace(
           STYLED_COMPONENTS_PATTERN,
           sheet.getStyleTags()
         )
 
-        return /\w*<\w*html[\w>]/i.test(result)
-          ? // is a full html document
-            `<!DOCTYPE html>${result}`
-          : /\w*</i.test(result)
-          ? // is an HTML/XML document
-            result
-          : // is not an HTML/XML document
-            decodeHTML(result)
+        const contentType = getContentType(Output, body)
+
+        return {
+          body:
+            contentType.toLowerCase() !== 'text/html'
+              ? decodeHTML(body)
+              : /\w*<\w*html[\w>]/i.test(body)
+              ? // is a full html document
+                `<!DOCTYPE html>${body}`
+              : body,
+          contentType
+        }
       } finally {
         sheet.seal()
       }

@@ -1,7 +1,7 @@
 'use strict'
 
-import content from '~/build/generated/content'
+import contentSources from '~/build/generated/content-sources'
 
 export async function fetch({ source, query }) {
-  return content.sources[source].fetch(query)
+  return contentSources[source].fetch(query)
 }

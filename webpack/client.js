@@ -13,7 +13,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const env = require('../env')
 const { projectRoot } = env
 
-const { components } = require('../src/manifest')()
+const { components } = require('./manifest')
 
 const enginePath = path.resolve(__dirname, '../src/client')
 const entry = Object.assign(
@@ -21,13 +21,11 @@ const entry = Object.assign(
     engine: enginePath
   },
   ...[].concat(
-    ...Object.keys(components)
-      .filter(collection => collection !== 'outputs')
-      .map(collection =>
-        Object.keys(components[collection]).map(type => ({
-          [`components/${collection}/${type}`]: components[collection][type]
-        }))
-      )
+    ...Object.keys(components).map(type =>
+      Object.keys(components[type]).map(output => ({
+        [`components/${type}/${output}`]: components[type][output]
+      }))
+    )
   )
 )
 
@@ -133,8 +131,8 @@ module.exports = (_, argv) => {
     output: {
       filename: '[name].js',
       chunkFilename: '[name].js',
-      library: ['Composition', 'components', '[name]'],
-      libraryTarget: 'window',
+      // library: ['Composition', 'components', '[name]'],
+      // libraryTarget: 'window',
       path: path.join(projectRoot, 'build', 'dist'),
       publicPath: '/dist/'
     },

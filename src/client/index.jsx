@@ -10,11 +10,7 @@ import { Composition as CompositionComponent } from '../components'
 import unpack from '../utils/unpack'
 
 function getComponent(node) {
-  const Component = node.collection
-    ? unpack(
-        Composition.components[`components/${node.collection}/${node.type}`]
-      )
-    : node.type
+  const Component = unpack(Composition.components[node.type]) || node.type
 
   return Component
 }
@@ -57,6 +53,8 @@ function render() {
       <CompositionComponent
         getComponent={getComponent}
         getContent={getContent}
+        output={Composition.output}
+        template={Composition.template}
         tree={Composition.tree}
       />,
       renderElement

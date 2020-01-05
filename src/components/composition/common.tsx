@@ -14,7 +14,9 @@ function descendants({ children }) {
 export interface CompositionProps extends TreeProps {
   appName?: string
   appStyles?: string
+  output?: string
   siteStyles?: string
+  template?: string
 }
 
 export function Common({

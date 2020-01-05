@@ -7,10 +7,14 @@ const path = require('path')
 const env = require('../env')
 const { projectRoot } = env
 
-const { components, content } = require('../src/manifest')()
+const {
+  components,
+  'content-sources': contentSources,
+  outputs
+} = require('./manifest')
 const unpack = require('../src/utils/unpack')
 
-function writePurpose(name, purpose) {
+function writeCollection(name, collection) {
   const outputFile = path.join(projectRoot, 'build', 'generated', `${name}.js`)
 
   childProcess.execSync(`mkdir -p '${path.dirname(outputFile)}'`)
@@ -21,19 +25,23 @@ function writePurpose(name, purpose) {
 ${unpack}
 
 export default {
-  ${Object.keys(purpose)
-    .map(collection => {
-      return `'${collection}': {
-    ${Object.keys(purpose[collection])
-      .map(type => `'${type}': unpack(require('${purpose[collection][type]}'))`)
+  ${Object.keys(collection)
+    .map(type => {
+      return typeof collection[type] === 'string'
+        ? `'${type}': unpack(require('${collection[type]}'))`
+        : `'${type}': {
+    ${Object.keys(collection[type])
+      .map(subtype => {
+        return `'${subtype}': unpack(require('${collection[type][subtype]}'))`
+      })
       .join(',\n    ')}
   }`
     })
     .join(',\n  ')}
-}
-`
+}`
   )
 }
 
-writePurpose('components', components)
-writePurpose('content', content)
+writeCollection('components', components)
+writeCollection('content-sources', contentSources)
+writeCollection('outputs', outputs)

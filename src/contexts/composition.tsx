@@ -9,10 +9,12 @@ export const compositionContext = createContext<{
   appStyles?: string
   cache?: object
   elements?: TreeNode[]
+  output?: string
   pageContent?: object
   projectRoot?: string
   quarantine?: boolean
   siteStyles?: string
+  template?: string
   tree?: TreeNode
 
   getComponent?: (node) => React.ComponentType

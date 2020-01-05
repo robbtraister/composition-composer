@@ -10,9 +10,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const env = require('../env')
 const { port, projectRoot } = env
 
-const {
-  components: { outputs }
-} = require('../src/manifest')()
+const { outputs } = require('./manifest')
 
 class OnBuildPlugin {
   constructor(fn) {

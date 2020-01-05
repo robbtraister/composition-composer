@@ -26,11 +26,12 @@ export default function router(options: Options) {
   )
 
   assetRouter.use(
-    '/dist/templates/:template.(css|js)',
+    '/dist/templates/:template/:output.(css|js)',
     async (req, res, next) => {
       const template = req.params.template
+      const output = req.params.output
       const ext = req.params[0]
-      await compile(template, options)
+      await compile({ template, output }, options)
       try {
         fs.createReadStream(
           path.join(
@@ -38,7 +39,8 @@ export default function router(options: Options) {
             'build',
             'dist',
             'templates',
-            `${template}.${ext}`
+            template,
+            `${output}.${ext}`
           )
         ).pipe(res)
       } catch (e) {
