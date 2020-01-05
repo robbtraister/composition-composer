@@ -30,8 +30,6 @@ program.command('init').action(async () => {
         'components/features',
         'components/layouts',
         'components/outputs',
-        'content/filters',
-        'content/schemas',
         'content/sources'
       ].map(dir =>
         fs.promises.mkdir(path.join(projectRoot, dir), { recursive: true })

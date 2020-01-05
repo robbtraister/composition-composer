@@ -3,7 +3,7 @@
 import { promises as fsPromises } from 'fs'
 import path from 'path'
 
-import { decodeXML } from 'entities'
+import { decodeHTML } from 'entities'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
@@ -129,7 +129,7 @@ export default async function render(props, options) {
           ? // is an HTML/XML document
             result
           : // is not an HTML/XML document
-            decodeXML(result)
+            decodeHTML(result)
       } finally {
         sheet.seal()
       }

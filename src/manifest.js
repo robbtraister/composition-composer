@@ -61,13 +61,12 @@ module.exports = () => {
       //     }
       //   })
       // )
-      chains: getEntries({ base: path.join(componentBase, 'chains') }),
       features: getEntries({
         base: path.join(componentBase, 'features'),
         levels: 2
       }),
       layouts: getEntries({ base: path.join(componentBase, 'layouts') }),
-      outputs: outputs
+      outputs
     },
     content: {
       schemas: getEntries({ base: path.join(contentBase, 'schemas') }),
