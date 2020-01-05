@@ -2,16 +2,14 @@
 
 import express from 'express'
 
-import { sendMessage } from '../messages'
+import content from './content'
 
-import { fetch } from '../content'
+import { sendMessage } from '../../messages'
 
 export default function router(options) {
   const apiRouter = express()
 
-  apiRouter.use('/content/fetch', async (req, res, next) => {
-    res.send(await fetch(req.query))
-  })
+  apiRouter.use('/content', content(options))
 
   apiRouter.use('/csrf', (req, res, next) => {
     res.send({ csrf: req.csrfToken() })
