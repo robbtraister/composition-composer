@@ -41,6 +41,7 @@
     "csurf": "^1.10.0",
     "debug": "^4.1.1",
     "dotenv": "^8.2.0",
+    "entities": "^2.0.0",
     "express": "^4.17.1",
     "file-loader": "^5.0.2",
     "glob": "^7.1.6",

@@ -27,7 +27,6 @@ program.command('init').action(async () => {
     debug('creating directories')
     await Promise.all(
       [
-        'components/chains',
         'components/features',
         'components/layouts',
         'components/outputs',
