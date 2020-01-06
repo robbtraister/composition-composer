@@ -28,7 +28,7 @@ export default async function compile({ template, output }, { projectRoot }) {
     const assetMap = {}
     renderables.forEach(({ type }) => {
       ;[].concat(assets[`components/${type}/${output}`]).forEach(asset => {
-        assetMap[asset] = null
+        assetMap[asset] = false
       })
       assetMap[`components/${type}/${output}.js`] = type
     })

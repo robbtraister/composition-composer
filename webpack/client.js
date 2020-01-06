@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process')
 const crypto = require('crypto')
-const { readFile, writeFile } = require('fs').promises
+const { mkdir, readFile, writeFile } = require('fs').promises
 const path = require('path')
 
 const { DefinePlugin } = require('webpack')
@@ -13,7 +13,12 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const env = require('../env')
 const { projectRoot } = env
 
-const { components } = require('./manifest')
+const { components, outputs } = require('./manifest')
+
+const writeFileWithDir = async (filePath, content) => {
+  await mkdir(path.dirname(filePath), { recursive: true })
+  return writeFile(filePath, content)
+}
 
 const enginePath = path.resolve(__dirname, '../src/client')
 const entry = Object.assign(
@@ -21,15 +26,15 @@ const entry = Object.assign(
     engine: enginePath
   },
   ...[].concat(
-    ...Object.keys(components).map(type =>
-      Object.keys(components[type]).map(output => ({
-        [`components/${type}/${output}`]: components[type][output]
+    ...Object.keys(components).map(component =>
+      Object.keys(components[component]).map(output => ({
+        [`components/${component}/${output}`]: components[component][output]
       }))
     )
   )
 )
 
-async function exportStats(stats) {
+async function writeAssets(stats) {
   const { compilation } = stats
   const entrypoints = [...compilation.entrypoints.keys()]
   const assets = Object.assign(
@@ -48,26 +53,52 @@ async function exportStats(stats) {
       })
   )
 
-  writeFile(
+  writeFileWithDir(
     path.join(projectRoot, 'build/assets.json'),
     JSON.stringify({ assets }, null, 2)
   )
   exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
 
-  const assetMap = {}
-  ;[].concat(...Object.values(assets)).map(asset => {
-    assetMap[asset] = true
+  Object.keys(outputs).forEach(async output => {
+    const assetMap = {}
+    Object.keys(components).forEach(type => {
+      assets[`components/${type}/${output}`].forEach(asset => {
+        assetMap[asset] = false
+      })
+      assetMap[`components/${type}/${output}.js`] = type
+    })
+
+    writeFileWithDir(
+      path.join(projectRoot, `build/dist/combinations/${output}.css`),
+      (
+        await Promise.all(
+          Object.keys(assetMap)
+            .filter(asset => /\.css$/.test(asset))
+            .map(async asset =>
+              readFile(path.join(projectRoot, 'build/dist', asset))
+            )
+        )
+      ).join('\n')
+    )
+    writeFileWithDir(
+      path.join(projectRoot, `build/dist/combinations/${output}.js`),
+      (
+        await Promise.all(
+          Object.keys(assetMap)
+            .filter(asset => /\.js$/.test(asset))
+            .map(async asset => {
+              const key = assetMap[asset]
+              return (
+                (key
+                  ? `;Composition.components[${JSON.stringify(key)}]=\n`
+                  : '') +
+                (await readFile(path.join(projectRoot, 'build/dist', asset)))
+              )
+            })
+        )
+      ).join('\n')
+    )
   })
-  writeFile(
-    path.join(projectRoot, 'build/dist/components/combination.js'),
-    (
-      await Promise.all(
-        Object.keys(assetMap)
-          .filter(asset => /\.js$/.test(asset))
-          .map(asset => readFile(path.join(projectRoot, 'build/dist', asset)))
-      )
-    ).join('\n')
-  )
 }
 
 class OnBuildPlugin {
@@ -145,7 +176,7 @@ module.exports = (_, argv) => {
         filename: '[name].css',
         chunkFilename: '[name].css'
       }),
-      new OnBuildPlugin(exportStats)
+      new OnBuildPlugin(writeAssets)
     ],
     // resolve: {
     //   ...require('./shared').resolve,
