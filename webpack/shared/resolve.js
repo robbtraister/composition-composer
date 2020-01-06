@@ -1,11 +1,13 @@
 'use strict'
 
+const path = require('path')
+
 const { projectRoot } = require('../../env')
 
 module.exports = {
   resolve: {
     alias: {
-      '~': projectRoot,
+      '~': path.join(projectRoot, 'src'),
       'prop-types/checkPropTypes': require.resolve('prop-types/checkPropTypes'),
       'prop-types': require.resolve('prop-types'),
       react: require.resolve('react'),

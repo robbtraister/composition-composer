@@ -27,7 +27,9 @@ program.command('init').action(async () => {
     debug('creating directories')
     await Promise.all(
       ['components', 'content-sources', 'outputs'].map(dir =>
-        fs.promises.mkdir(path.join(projectRoot, dir), { recursive: true })
+        fs.promises.mkdir(path.join(projectRoot, 'src', dir), {
+          recursive: true
+        })
       )
     )
 

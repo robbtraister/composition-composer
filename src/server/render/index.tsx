@@ -15,8 +15,8 @@ import compile from '../compile'
 import { Redirect } from '../errors'
 import { fileExists } from '../utils/promises'
 
-import components from '~/build/generated/components'
-import outputs from '~/build/generated/outputs'
+import components from '~/../build/generated/components'
+import outputs from '~/../build/generated/outputs'
 
 import { fetch } from '../content'
 

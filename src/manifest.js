@@ -7,9 +7,10 @@ const path = require('path')
 const glob = require('glob')
 
 const { projectRoot } = require('../env')
+const srcRoot = path.join(projectRoot, 'src')
 
 function getProjectRelativeFile(sourceFile) {
-  return sourceFile && `~/${path.relative(projectRoot, sourceFile)}`
+  return sourceFile && `~/${path.relative(srcRoot, sourceFile)}`
 }
 
 function getEntries(base) {
@@ -39,21 +40,18 @@ function getComponentFile(componentName, outputName) {
     .concat(
       glob.sync(
         `${path.join(
-          projectRoot,
+          srcRoot,
           'components'
         )}/${componentName}/${outputName}.{js,jsx,ts,tsx}`
       ),
       glob.sync(
         `${path.join(
-          projectRoot,
+          srcRoot,
           'components'
         )}/${componentName}/index.{js,jsx,ts,tsx}`
       ),
       glob.sync(
-        `${path.join(
-          projectRoot,
-          'components'
-        )}/${componentName}.{js,jsx,ts,tsx}`
+        `${path.join(srcRoot, 'components')}/${componentName}.{js,jsx,ts,tsx}`
       )
     )
     .find(c => c)
@@ -61,7 +59,7 @@ function getComponentFile(componentName, outputName) {
 
 function getComponentNames(outputNames) {
   const componentNames = Object.keys(
-    getEntries(path.join(projectRoot, 'components'))
+    getEntries(path.join(srcRoot, 'components'))
   )
 
   return componentNames.filter(componentName => {
@@ -92,10 +90,10 @@ function getComponents(outputNames) {
 }
 
 module.exports = () => {
-  const outputs = getEntries(path.join(projectRoot, 'outputs'))
+  const outputs = getEntries(path.join(srcRoot, 'outputs'))
   return {
     components: getComponents(Object.keys(outputs)),
-    'content-sources': getEntries(path.join(projectRoot, 'content-sources')),
+    'content-sources': getEntries(path.join(srcRoot, 'content-sources')),
     outputs
   }
 }

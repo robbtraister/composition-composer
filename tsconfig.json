@@ -5,7 +5,7 @@
     "jsx": "preserve",
     "noUnusedLocals": true,
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./src/*"]
     },
     "resolveJsonModule": true
   },

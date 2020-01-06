@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./src/*"]
     },
     "resolveJsonModule": true
   },
