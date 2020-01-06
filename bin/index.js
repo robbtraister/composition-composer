@@ -26,7 +26,7 @@ program.command('init').action(async () => {
   try {
     debug('creating directories')
     await Promise.all(
-      ['components', 'content-sources', 'outputs'].map(dir =>
+      ['components', 'content-sources', 'definitions', 'outputs'].map(dir =>
         fs.promises.mkdir(path.join(projectRoot, 'src', dir), {
           recursive: true
         })
@@ -37,6 +37,7 @@ program.command('init').action(async () => {
     await Promise.all(
       [
         '.vscode/launch.json',
+        'src/definitions/styles.d.ts',
         '.dockerignore',
         '.eslintignore',
         '.eslintrc.json',

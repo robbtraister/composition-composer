@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "esModuleInterop": true,
+    "jsx": "preserve",
     "noUnusedLocals": true,
     "paths": {
       "~/*": ["./src/*"]
@@ -15,7 +16,6 @@
     "build",
     "coverage",
     "node_modules",
-    "public",
-    "resources"
+    "public"
   ]
 }
