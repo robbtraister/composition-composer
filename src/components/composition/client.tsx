@@ -14,12 +14,18 @@ interface Resolution {
 }
 
 interface ClientCompositionProps extends CompositionProps {
+  forceRefresh?: boolean
   resolve?: (String) => Promise<Resolution>
   'single-page'?: boolean
 }
 
 function LocationWatcher(props: ClientCompositionProps) {
-  const { 'single-page': singlePage, resolve, ...contextValue } = props
+  const {
+    forceRefresh = true,
+    resolve,
+    'single-page': singlePage,
+    ...contextValue
+  } = props
 
   const [isInitialized, setInitialized] = useState(false)
   const [{ tree, pageContent }, setPage] = useState<Resolution>({
@@ -36,7 +42,12 @@ function LocationWatcher(props: ClientCompositionProps) {
       const page = await resolve(location)
       doUpdate && setPage(page)
     }
-    isInitialized && awaitResolve()
+    if (isInitialized) {
+      forceRefresh
+        ? // fix back button
+          window.location.reload()
+        : awaitResolve()
+    }
     setInitialized(true)
 
     return () => {
@@ -62,7 +73,7 @@ export function Composition(props: ClientCompositionProps) {
 
   return (
     <BrowserRouter forceRefresh={forceRefresh}>
-      <LocationWatcher {...props} />
+      <LocationWatcher {...props} forceRefresh={forceRefresh} />
     </BrowserRouter>
   )
 }
