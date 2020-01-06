@@ -8,34 +8,36 @@ import { Common, CompositionProps } from './common'
 import { TreeNode } from '../tree'
 
 interface Resolution {
+  template: string
   tree: TreeNode
   pageContent: object
 }
 
 interface ClientCompositionProps extends CompositionProps {
-  resolve?: (String) => Promise<{ tree: TreeNode; pageContent: object }>
+  resolve?: (String) => Promise<Resolution>
   'single-page'?: boolean
 }
 
 function LocationWatcher(props: ClientCompositionProps) {
   const { 'single-page': singlePage, resolve, ...contextValue } = props
 
+  const [isInitialized, setInitialized] = useState(false)
   const [{ tree, pageContent }, setPage] = useState<Resolution>({
+    template: props.template,
     tree: props.tree,
     pageContent: props.pageContent
   })
   const location = useLocation()
 
-  let isInitialized = false
   useEffect(() => {
     let doUpdate = true
 
     const awaitResolve = async () => {
-      const page = await resolve(location.pathname)
+      const page = await resolve(location)
       doUpdate && setPage(page)
     }
     isInitialized && awaitResolve()
-    isInitialized = true
+    setInitialized(true)
 
     return () => {
       doUpdate = false

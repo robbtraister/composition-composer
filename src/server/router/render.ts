@@ -3,17 +3,16 @@
 import { Router } from 'express'
 
 import render from '../render'
+import resolve from '../resolve'
 
 export default function router(options: Options) {
   const router = Router()
 
   router.get('*', async (req, res, next) => {
+    const uri = req.originalUrl
+    const output = req.query.output
     const { body, contentType } = await render(
-      {
-        template: 'article',
-        output: req.query.output || 'default',
-        location: req.originalUrl
-      },
+      await resolve({ uri, output }, options),
       options
     )
     res.set('Content-Type', contentType).send(body)

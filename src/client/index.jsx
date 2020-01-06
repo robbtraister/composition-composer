@@ -34,7 +34,15 @@ function getContent({ source, query }) {
   return result
 }
 
-function resolve(uri) {}
+async function resolve(location) {
+  return window
+    .fetch(
+      `/api/resolve?uri=${encodeURIComponent(
+        location.pathname + location.search
+      )}`
+    )
+    .then(res => res.json())
+}
 
 function render() {
   if (!Composition.tree) return
@@ -57,6 +65,7 @@ function render() {
         getContent={getContent}
         output={Composition.output}
         resolve={resolve}
+        single-page={Composition.singlePage}
         template={Composition.template}
         tree={Composition.tree}
       />,

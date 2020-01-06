@@ -29,7 +29,9 @@ interface ServerAppProps {
 }
 
 export function App(props: ServerAppProps) {
-  const { appName = 'app', cache } = useContext(compositionContext)
+  const { appName = 'app', cache, output, tree } = useContext(
+    compositionContext
+  )
   const {
     id = 'composition-app',
     static: isStatic = false,
@@ -62,7 +64,7 @@ export function App(props: ServerAppProps) {
           />
           <Script name="runtime" />
           <Script name="engine" />
-          <Script name={appName} />
+          <Script name={singlePage ? `combinations/${output}` : appName} />
         </>
       )}
       <div id={id}>
@@ -76,8 +78,11 @@ export function App(props: ServerAppProps) {
               `window.Composition=window.Composition||{}`,
               `Composition.id=${JSON.stringify(id)}`,
               `Composition.singlePage=${JSON.stringify(singlePage)}`,
-              `Composition.cache=${JSON.stringify(contentCache)}`
-            ].join(';')
+              `Composition.cache=${JSON.stringify(contentCache)}`,
+              singlePage ? `Composition.tree=${JSON.stringify(tree)}` : null
+            ]
+              .filter(c => c)
+              .join(';')
           }}
         />
       )}

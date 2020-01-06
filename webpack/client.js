@@ -63,7 +63,7 @@ async function writeAssets(stats) {
   Object.keys(outputs).map(output =>
     compile({
       components: componentNames,
-      name: `combinations/${output}`,
+      name: 'combinations',
       output
     })
   )

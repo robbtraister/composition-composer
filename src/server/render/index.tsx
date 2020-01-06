@@ -12,7 +12,7 @@ import { Composition, Tree } from '../../components'
 import compile from '../../utils/compile'
 
 import { Redirect } from '../errors'
-import { fileExists, readFile } from '../../utils/promises'
+import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
@@ -41,33 +41,12 @@ const STYLED_COMPONENTS_PATTERN = new RegExp(
   'g'
 )
 
-async function getJson(filePath) {
-  return JSON.parse((await readFile(filePath)).toString())
-}
-
-async function getHash({ template, output }, options) {
-  const { styleHash } = await getJson(
-    path.join(
-      options.projectRoot,
-      `build/dist/templates/${template}/${output}.css.json`
-    )
-  )
-
-  return styleHash
-}
-
-async function getTree(template, options) {
-  return getJson(
-    path.join(options.projectRoot, 'templates', `${template}.json`)
-  )
-}
-
 interface RenderOptions {
   quarantine?: boolean
 }
 
 export default async function render(props, options) {
-  const { output = 'default', template } = props
+  const { output, styleHash, template, tree, uri } = props
   const { projectRoot } = options
 
   if (
@@ -77,9 +56,6 @@ export default async function render(props, options) {
   ) {
     await compile({ template, output }, options)
   }
-
-  const styleHash = await getHash({ template, output }, options)
-  const tree = await getTree(template, options)
 
   const Output = outputs[output]
 
@@ -116,7 +92,7 @@ export default async function render(props, options) {
               cache={cache}
               getComponent={getComponent.bind(null, output)}
               getContent={getContent}
-              location={props.location}
+              location={uri}
               output={output}
               routerContext={context}
               siteStyles={`styles/outputs/${output}`}

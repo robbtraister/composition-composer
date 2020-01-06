@@ -64,12 +64,19 @@ async function compile(
   ;[
     {
       asset: `${name}.js`,
-      source: `;window.Composition=window.Composition||{};
-;Composition.output=${JSON.stringify(output)};
-;Composition.styleHash=${JSON.stringify(styleHash)};
-;Composition.template=${JSON.stringify(name.replace(/^templates[\\/]/, ''))};
-;Composition.tree=${JSON.stringify(tree)};
-;Composition.components=Composition.components||{};`
+      source: [
+        `window.Composition=window.Composition||{}`,
+        `Composition.output=${JSON.stringify(output)}`,
+        `Composition.styleHash=${JSON.stringify(styleHash)}`,
+        `Composition.template=${JSON.stringify(
+          name.replace(/^templates[\\/]/, '')
+        )}`,
+        tree ? `Composition.tree=${JSON.stringify(tree)}` : null,
+        `Composition.components=Composition.components||{}`
+      ]
+        .filter(c => c)
+        .join(';\n;')
+        .concat(';')
     },
     ...[].concat(
       ...(await Promise.all(
