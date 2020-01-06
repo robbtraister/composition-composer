@@ -3,6 +3,7 @@
 import express from 'express'
 
 import content from './content'
+import resolve from './resolve'
 
 import { sendMessage } from '../../messages'
 
@@ -14,6 +15,8 @@ export default function router(options) {
   apiRouter.use('/csrf', (req, res, next) => {
     res.send({ csrf: req.csrfToken() })
   })
+
+  apiRouter.use('/resolve', resolve(options))
 
   apiRouter.post('/restart', async (req, res, next) => {
     try {

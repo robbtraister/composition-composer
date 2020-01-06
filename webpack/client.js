@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process')
 const crypto = require('crypto')
-const { mkdir, readFile, writeFile } = require('fs').promises
+const { writeFile } = require('../src/utils/promises')
 const path = require('path')
 
 const { DefinePlugin } = require('webpack')
@@ -15,10 +15,9 @@ const { projectRoot } = env
 
 const { components, outputs } = require('./manifest')
 
-const writeFileWithDir = async (filePath, content) => {
-  await mkdir(path.dirname(filePath), { recursive: true })
-  return writeFile(filePath, content)
-}
+const { compile } = require('../src/utils/compile')
+
+const componentNames = Object.keys(components)
 
 const enginePath = path.resolve(__dirname, '../src/client')
 const entry = Object.assign(
@@ -26,7 +25,7 @@ const entry = Object.assign(
     engine: enginePath
   },
   ...[].concat(
-    ...Object.keys(components).map(component =>
+    ...componentNames.map(component =>
       Object.keys(components[component]).map(output => ({
         [`components/${component}/${output}`]: components[component][output]
       }))
@@ -53,52 +52,21 @@ async function writeAssets(stats) {
       })
   )
 
-  writeFileWithDir(
+  exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
+
+  // await here to ensure assets are available before compiling
+  await writeFile(
     path.join(projectRoot, 'build/assets.json'),
     JSON.stringify({ assets }, null, 2)
   )
-  exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
 
-  Object.keys(outputs).forEach(async output => {
-    const assetMap = {}
-    Object.keys(components).forEach(type => {
-      assets[`components/${type}/${output}`].forEach(asset => {
-        assetMap[asset] = false
-      })
-      assetMap[`components/${type}/${output}.js`] = type
+  Object.keys(outputs).map(output =>
+    compile({
+      components: componentNames,
+      name: `combinations/${output}`,
+      output
     })
-
-    writeFileWithDir(
-      path.join(projectRoot, `build/dist/combinations/${output}.css`),
-      (
-        await Promise.all(
-          Object.keys(assetMap)
-            .filter(asset => /\.css$/.test(asset))
-            .map(async asset =>
-              readFile(path.join(projectRoot, 'build/dist', asset))
-            )
-        )
-      ).join('\n')
-    )
-    writeFileWithDir(
-      path.join(projectRoot, `build/dist/combinations/${output}.js`),
-      (
-        await Promise.all(
-          Object.keys(assetMap)
-            .filter(asset => /\.js$/.test(asset))
-            .map(async asset => {
-              const key = assetMap[asset]
-              return (
-                (key
-                  ? `;Composition.components[${JSON.stringify(key)}]=\n`
-                  : '') +
-                (await readFile(path.join(projectRoot, 'build/dist', asset)))
-              )
-            })
-        )
-      ).join('\n')
-    )
-  })
+  )
 }
 
 class OnBuildPlugin {

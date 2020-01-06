@@ -5,7 +5,7 @@ import path from 'path'
 
 import express from 'express'
 
-import compile from '../compile'
+import compile from '../../utils/compile'
 
 export default function router(options: Options) {
   const publicRoot = path.resolve(options.projectRoot || '.', 'public')

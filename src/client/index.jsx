@@ -34,6 +34,8 @@ function getContent({ source, query }) {
   return result
 }
 
+function resolve(uri) {}
+
 function render() {
   if (!Composition.tree) return
 
@@ -54,6 +56,7 @@ function render() {
         getComponent={getComponent}
         getContent={getContent}
         output={Composition.output}
+        resolve={resolve}
         template={Composition.template}
         tree={Composition.tree}
       />,

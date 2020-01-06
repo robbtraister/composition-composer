@@ -1,3 +1,3 @@
 'use strict'
 
-module.exports = require('../src/manifest')()
+module.exports = require('../src/utils/manifest')()

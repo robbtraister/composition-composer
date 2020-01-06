@@ -6,7 +6,7 @@ const path = require('path')
 
 const glob = require('glob')
 
-const { projectRoot } = require('../env')
+const { projectRoot } = require('../../env')
 const srcRoot = path.join(projectRoot, 'src')
 
 function getProjectRelativeFile(sourceFile) {

@@ -1,6 +1,5 @@
 'use strict'
 
-import { promises as fsPromises } from 'fs'
 import path from 'path'
 
 import { decodeHTML } from 'entities'
@@ -10,10 +9,10 @@ import { ServerStyleSheet } from 'styled-components'
 
 import { Composition, Tree } from '../../components'
 
-import compile from '../compile'
+import compile from '../../utils/compile'
 
 import { Redirect } from '../errors'
-import { fileExists } from '../utils/promises'
+import { fileExists, readFile } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
@@ -43,7 +42,7 @@ const STYLED_COMPONENTS_PATTERN = new RegExp(
 )
 
 async function getJson(filePath) {
-  return JSON.parse((await fsPromises.readFile(filePath)).toString())
+  return JSON.parse((await readFile(filePath)).toString())
 }
 
 async function getHash({ template, output }, options) {
