@@ -1,6 +1,7 @@
 'use strict'
 
 import path from 'path'
+import { URL } from 'url'
 
 import compile from '../../utils/compile'
 import { fileExists, readFile } from '../../utils/promises'
@@ -27,8 +28,9 @@ async function getTree(template, options) {
 }
 
 export async function resolve({ uri, output = 'default' }, options) {
+  const url = new URL(uri, 'http://a.com')
   const { projectRoot } = options
-  const template = uri === '/' ? 'homepage' : 'article'
+  const template = url.pathname === '/' ? 'homepage' : 'article'
 
   if (
     !(await fileExists(
