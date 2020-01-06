@@ -3,6 +3,9 @@
 const fs = require('fs')
 const path = require('path')
 
+const DISABLED_PATTERN = /^(disabled?|false|no|off)$/i
+// const ENABLED_PATTERN = /^(enabled?|true|on|yes)$/i
+
 function prefix(dir = '.') {
   function _prefix(dir) {
     if (
@@ -36,6 +39,17 @@ const isProd = /^prod/i.test(process.env.NODE_ENV)
 
 module.exports = {
   isProd,
+
+  logging: !DISABLED_PATTERN.test(process.env.LOGGING),
+
   port: Number(process.env.PORT) || Number(config.port) || 8080,
-  projectRoot
+
+  projectRoot,
+
+  workerCount: isProd
+    ? Number(process.env.WORKER_COUNT) ||
+      Number(config.workerCount) ||
+      require('os').cpus().length ||
+      1
+    : 1
 }

@@ -16,7 +16,7 @@
     "lint": "npm run lint:ts -- --fix && npm run lint:css -- --write",
     "prod": "NODE_ENV=production npm run build && NODE_ENV=production node \"${PROJECT_ROOT:-$INIT_CWD}\"/build/server",
     "start": "node .",
-    "test": "npm audit && tsc --noEmit && npm run lint:ts",
+    "test": "npm audit && tsc --noEmit && npm run lint:ts && jest --coverage",
     "watch": "npm run build -- --watch"
   },
   "keywords": [],
@@ -72,6 +72,7 @@
     "yaml-loader": "^0.5.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^9.4.0",
     "@types/express": "^4.17.2",
     "@types/jest": "^24.0.25",
     "@types/react": "^16.9.17",
@@ -107,6 +108,12 @@
     }
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/server/*.ts",
+      "!src/server/router/auth/**/*",
+      "!**/*.d.ts"
+    ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
       "^~/(.*)": "<rootDir>/src/$1"

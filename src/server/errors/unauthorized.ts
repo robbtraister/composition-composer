@@ -1,6 +1,6 @@
 'use strict'
 
-export default class Unauthorized extends Error {
+export class Unauthorized extends Error {
   statusCode: number
 
   constructor() {
@@ -8,3 +8,5 @@ export default class Unauthorized extends Error {
     this.statusCode = 403
   }
 }
+
+export default Unauthorized

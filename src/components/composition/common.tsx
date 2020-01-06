@@ -29,6 +29,7 @@ export function Common({
   return (
     <compositionContext.Provider
       value={{
+        cache: {},
         ...value,
         elements: descendants({ children: value.tree })
       }}>

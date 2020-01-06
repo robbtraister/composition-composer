@@ -1,6 +1,6 @@
 'use strict'
 
-export default class Redirect extends Error {
+export class Redirect extends Error {
   location: string
   statusCode: number
 
@@ -10,3 +10,5 @@ export default class Redirect extends Error {
     this.statusCode = statusCode
   }
 }
+
+export default Redirect

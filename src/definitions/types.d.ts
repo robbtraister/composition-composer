@@ -21,6 +21,7 @@ interface Options {
   }
   host?: string
   isProd?: boolean
+  logging?: boolean
   port?: number
   projectRoot?: string
   workerCount?: number

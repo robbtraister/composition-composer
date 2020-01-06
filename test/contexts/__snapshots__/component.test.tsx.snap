@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Context Context Children 1`] = `
+<DocumentFragment>
+  <div>
+    abc
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Context Context Component 1`] = `
+<DocumentFragment>
+  <div>
+    abc
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Context Context Hook 1`] = `
+<DocumentFragment>
+  <div>
+    abc
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Context Context Render 1`] = `
+<DocumentFragment>
+  <div>
+    abc
+  </div>
+</DocumentFragment>
+`;

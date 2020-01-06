@@ -29,15 +29,17 @@ export default function app(options: Options = {}) {
         next(err)
       }
     },
-    (err, req, res, next) => {
-      if (err.statusCode && err.statusCode < 500) {
-        // if a request error, do not log entire stack trace
-        console.log(err.message || err.body || err)
-      } else {
-        console.error(err)
-      }
-      next(err)
-    },
+    options.logging
+      ? (err, req, res, next) => {
+          if (err.statusCode && err.statusCode < 500) {
+            // if a request error, do not log entire stack trace
+            console.log(err.message || err.body || err)
+          } else {
+            console.error(err)
+          }
+          next(err)
+        }
+      : [],
     options.isProd
       ? (err, req, res, next) => {
           res.sendStatus(err.statusCode || 500)

@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Quarantine Component 1`] = `
+<DocumentFragment>
+  <div
+    data-id="abc"
+    data-type="div"
+  >
+    <div
+      data-error-component="fail"
+      data-error-id="def"
+      data-error-message="fail"
+    />
+    <div
+      data-id="xyz"
+      data-type="div"
+    />
+  </div>
+</DocumentFragment>
+`;
