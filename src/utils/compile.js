@@ -4,6 +4,7 @@ const crypto = require('crypto')
 const path = require('path')
 
 const Concat = require('concat-with-sourcemaps')
+const debug = require('debug')('composition:compile')
 
 const {
   getTree,
@@ -24,7 +25,7 @@ async function compile({ components, name, output, template, tree = null }) {
 
   const assetMap = {}
   components.forEach(component => {
-    ;[].concat(assets[`components/${component}/${output}`]).forEach(asset => {
+    ;(assets[`components/${component}/${output}`] || []).forEach(asset => {
       assetMap[asset] = false
     })
     assetMap[`components/${component}/${output}.js`] = component
@@ -46,9 +47,7 @@ async function compile({ components, name, output, template, tree = null }) {
     .update(css)
     .digest('hex')
 
-  const concat = new Concat(true, `${name}.js`, '\n')
-
-  ;[
+  const concat = [
     {
       asset: `${name}.js`,
       source: [
@@ -92,9 +91,10 @@ async function compile({ components, name, output, template, tree = null }) {
           })
       ))
     )
-  ].map(entry => {
+  ].reduce((concat, entry) => {
     concat.add(entry.asset, entry.source, entry.sourceMap)
-  })
+    return concat
+  }, new Concat(true, `${name}.js`, '\n'))
 
   const result = {
     js: concat.content,
@@ -117,15 +117,19 @@ async function compileTemplate({ template, output }) {
       ({ type }) => type
     )
 
-    return compile({
+    const result = await compile({
       components,
       name: `templates/${template}`,
       output,
       template,
       tree
     })
-  } finally {
-    console.log(`${template} compiled in ${(Date.now() - start) / 1000}s`)
+
+    debug(`${template} compiled in ${(Date.now() - start) / 1000}s`)
+
+    return result
+  } catch (error) {
+    console.error(error)
   }
 }
 

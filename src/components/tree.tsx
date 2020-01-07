@@ -2,6 +2,7 @@
 
 import React, { useContext } from 'react'
 
+import { isClient } from './utils'
 import QuarantineComponent from './quarantine'
 import componentContext from '../contexts/component'
 
@@ -29,6 +30,8 @@ export interface TreeProps {
   getContent?: (ContentConfig) => object
 }
 
+const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
+
 export function Tree(treeProps: TreeProps) {
   const context = useContext(compositionContext)
 
@@ -43,16 +46,13 @@ export function Tree(treeProps: TreeProps) {
 
   const cache = treeProps.cache || {}
 
-  const quarantine = Object.prototype.hasOwnProperty.call(
-    treeProps,
-    'quarantine'
-  )
-    ? treeProps.quarantine
-    : context.quarantine
+  const quarantine =
+    isClient ||
+    (Object.prototype.hasOwnProperty.call(treeProps, 'quarantine')
+      ? treeProps.quarantine
+      : context.quarantine)
 
-  const Quarantine = quarantine
-    ? QuarantineComponent
-    : ({ children }) => <>{children}</>
+  const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
   const componentCache = {}
   function getCachedComponent(node: TreeNode) {
