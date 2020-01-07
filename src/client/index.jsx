@@ -68,7 +68,7 @@ function render() {
   }
 
   try {
-    ReactDOM.render(
+    ReactDOM[Composition.method || 'render'](
       <CompositionComponent
         getComponent={getComponent}
         getContent={getContent}

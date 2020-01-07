@@ -23,6 +23,7 @@ const Script = ({ name }: ScriptProps) => (
 )
 
 interface ServerAppProps {
+  'hydrate-only'?: boolean
   id?: string
   static?: boolean
   'single-page'?: boolean
@@ -33,14 +34,19 @@ export function App(props: ServerAppProps) {
     compositionContext
   )
   const {
+    'hydrate-only': hydrateOnly = false,
     id = 'composition-app',
     static: isStatic = false,
     'single-page': singlePage = false
   } = props
 
-  if (isStatic && singlePage) {
-    throw new Error('`static` and `single-page` props are mutually-exclusive')
+  if ([hydrateOnly, isStatic, singlePage].filter(p => p).length > 1) {
+    throw new Error(
+      '`hydrate-only`, `static`, and `single-page` props are mutually-exclusive'
+    )
   }
+
+  const isCombinations = hydrateOnly || singlePage
 
   const contentCache = Object.keys(cache)
     .filter(entry => !(cache[entry] instanceof Promise))
@@ -64,7 +70,7 @@ export function App(props: ServerAppProps) {
           />
           <Script name="runtime" />
           <Script name="engine" />
-          <Script name={singlePage ? `combinations/${output}` : appName} />
+          <Script name={isCombinations ? `combinations/${output}` : appName} />
         </>
       )}
       <div id={id}>
@@ -76,13 +82,16 @@ export function App(props: ServerAppProps) {
           dangerouslySetInnerHTML={{
             __html: [
               `window.Composition=window.Composition||{}`,
-              `Composition.id=${JSON.stringify(id)}`,
-              `Composition.singlePage=${JSON.stringify(singlePage)}`,
               `Composition.cache=${JSON.stringify(contentCache)}`,
-              singlePage
+              `Composition.id=${JSON.stringify(id)}`,
+              `Composition.method=${JSON.stringify(
+                hydrateOnly ? 'hydrate' : 'render'
+              )}`,
+              `Composition.singlePage=${JSON.stringify(singlePage)}`,
+              isCombinations
                 ? `Composition.template=${JSON.stringify(template)}`
                 : null,
-              singlePage ? `Composition.tree=${JSON.stringify(tree)}` : null
+              isCombinations ? `Composition.tree=${JSON.stringify(tree)}` : null
             ]
               .filter(c => c)
               .join(';')
