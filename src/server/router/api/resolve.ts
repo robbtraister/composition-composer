@@ -2,7 +2,7 @@
 
 import express from 'express'
 
-import resolve from '../../resolve'
+import resolve from '../../../utils/resolve'
 
 export default function router(options) {
   const contentRouter = express()

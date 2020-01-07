@@ -1,37 +1,21 @@
 'use strict'
 
 const crypto = require('crypto')
-const { promises: fsPromises } = require('fs')
 const path = require('path')
 
 const Concat = require('concat-with-sourcemaps')
 
 const getDescendants = require('./descendants')
-const { readFile, writeFile } = require('./promises')
+const {
+  getTree,
+  readAsset,
+  readResourceFile,
+  writeCompilation
+} = require('./assets')
 
-const env = require('../../env')
-
-// async function merge({ components, output }, { projectRoot }) {
-//   const { assets } = JSON.parse(
-//     await fsPromises.readFile(path.join(projectRoot, 'build', 'assets.json'))
-//   )
-
-//   const assetMap = {}
-//   components.forEach(component => {
-//     ;[].concat(assets[`components/${component}/${output}`]).forEach(asset => {
-//       assetMap[asset] = false
-//     })
-//     assetMap[`components/${component}/${output}.js`] = component
-//   })
-//   const mappedAssets = Object.keys(assetMap)
-// }
-
-async function compile(
-  { components, name, output, tree = null },
-  { projectRoot = env.projectRoot } = {}
-) {
+async function compile({ components, name, output, tree = null }) {
   const { assets } = JSON.parse(
-    await fsPromises.readFile(path.join(projectRoot, 'build', 'assets.json'))
+    await readResourceFile(path.join('build', 'assets.json'))
   )
 
   const assetMap = {}
@@ -49,8 +33,7 @@ async function compile(
         .filter(asset => /\.css$/.test(asset))
         // try to keep compilation hashes consistent for re-use
         .sort()
-        .map(asset => path.join(projectRoot, 'build', 'dist', asset))
-        .map(filePath => readFile(filePath))
+        .map(asset => readAsset(asset))
     )
   ).join('\n')
 
@@ -59,7 +42,7 @@ async function compile(
     .update(css)
     .digest('hex')
 
-  const concat = new Concat(true, `build/dist/${name}.js`, '\n')
+  const concat = new Concat(true, `${name}.js`, '\n')
 
   ;[
     {
@@ -85,11 +68,10 @@ async function compile(
           // don't sort here; order matters
           .map(async asset => {
             const key = assetMap[asset]
-            const assetPath = path.join(projectRoot, 'build', 'dist', asset)
-            const source = await readFile(assetPath)
+            const source = await readAsset(asset)
             let sourceMap
             try {
-              sourceMap = JSON.parse(await readFile(`${assetPath}.map`))
+              sourceMap = JSON.parse(await readAsset(`${asset}.map`))
             } catch (_) {}
             const result = {
               asset,
@@ -119,49 +101,21 @@ async function compile(
     styleHash
   }
 
-  await Promise.all([
-    writeFile(
-      path.join(projectRoot, `build/dist/${name}/${output}.js`),
-      result.js
-    ),
-    result.jsMap &&
-      writeFile(
-        path.join(projectRoot, `build/dist/${name}/${output}.js.map`),
-        result.jsMap
-      ),
-    writeFile(
-      path.join(projectRoot, `build/dist/${name}/${output}.css.json`),
-      JSON.stringify({ styleHash: result.styleHash })
-    ),
-    writeFile(
-      path.join(
-        projectRoot,
-        `build/dist/styles/templates/${result.styleHash}.css`
-      ),
-      result.css
-    )
-  ])
+  await writeCompilation({ name, output }, result)
 
   return result
 }
 
-async function compileTemplate({ template, output }, { projectRoot }) {
+async function compileTemplate({ template, output }) {
   const start = Date.now()
 
   try {
-    const tree = JSON.parse(
-      await fsPromises.readFile(
-        path.join(projectRoot, 'templates', `${template}.json`)
-      )
-    )
+    const tree = await getTree(template)
     const components = getDescendants({ children: tree }).map(
       ({ type }) => type
     )
 
-    return compile(
-      { components, name: `templates/${template}`, output, tree },
-      { projectRoot }
-    )
+    return compile({ components, name: `templates/${template}`, output, tree })
   } finally {
     console.log(`${template} compiled in ${(Date.now() - start) / 1000}s`)
   }

@@ -2,7 +2,7 @@
 
 const { exec } = require('child_process')
 const crypto = require('crypto')
-const { writeFile } = require('../src/utils/promises')
+const { writeResourceFile } = require('../src/utils/assets')
 const path = require('path')
 
 const { DefinePlugin } = require('webpack')
@@ -55,8 +55,8 @@ async function writeAssets(stats) {
   exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
 
   // await here to ensure assets are available before compiling
-  await writeFile(
-    path.join(projectRoot, 'build/assets.json'),
+  await writeResourceFile(
+    path.join('build', 'assets.json'),
     JSON.stringify({ assets }, null, 2)
   )
 

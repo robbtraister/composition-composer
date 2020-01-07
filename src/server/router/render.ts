@@ -3,7 +3,7 @@
 import { Router } from 'express'
 
 import render from '../render'
-import resolve from '../resolve'
+import resolve from '../../utils/resolve'
 
 export default function router(options: Options) {
   const router = Router()
