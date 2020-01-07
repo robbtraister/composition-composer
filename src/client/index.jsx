@@ -15,33 +15,42 @@ function getComponent(node) {
   return Component
 }
 
+const contentFetches = {}
 function getContent({ source, query }) {
-  const cached =
-    Composition.cache[JSON.stringify({ content: { source, query } })]
+  const cacheKey = JSON.stringify({ content: { source, query } })
+  if (!(cacheKey in contentFetches)) {
+    const cached = Composition.cache[cacheKey]
 
-  const result = cached
-    ? Promise.resolve(cached)
-    : window
-        .fetch(
-          `/api/content/fetch?source=${encodeURIComponent(
-            source
-          )}&query=${encodeURIComponent(query)}`
-        )
-        .then(res => res.json())
+    const promise = cached
+      ? Promise.resolve(cached)
+      : window
+          .fetch(
+            `/api/content/fetch?source=${encodeURIComponent(
+              source
+            )}&query=${encodeURIComponent(query)}`
+          )
+          .then(res => res.json())
+          .then(data => {
+            promise.cached = data
+            return data
+          })
 
-  result.cached = cached
+    promise.cached = cached
 
-  return result
+    contentFetches[cacheKey] = promise
+  }
+  return contentFetches[cacheKey]
 }
 
+const resolutions = {}
 async function resolve(location) {
-  return window
-    .fetch(
-      `/api/resolve?uri=${encodeURIComponent(
-        location.pathname + location.search
-      )}`
-    )
-    .then(res => res.json())
+  const uri = location.pathname + location.search
+  if (!(uri in resolutions)) {
+    resolutions[uri] = window
+      .fetch(`/api/resolve?uri=${encodeURIComponent(uri)}`)
+      .then(res => res.json())
+  }
+  return resolutions[uri]
 }
 
 function render() {
