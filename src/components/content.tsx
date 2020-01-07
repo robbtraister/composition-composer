@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useComponentContext } from '../contexts/component'
 
-function useContent(props: ContentParams) {
+export function useContent(props: ContentParams) {
   const { getContent } = useComponentContext()
   const contentResult: ContentPromise = getContent(props)
   const [content, setContent] = useState(contentResult.cached)
@@ -24,23 +24,22 @@ function useContent(props: ContentParams) {
   return content
 }
 
-function Content(props: ContentComponentParams) {
+export function Content(props: ContentComponentParams) {
   const { children, component: Component, render, ...contentProps } = props
-  const { source, query, filter, ...otherProps } = contentProps
+  const { source, query, filter, ...passThroughProps } = contentProps
   const content = useContent({ source, query, filter }) || {}
 
   if (Component) {
-    return <Component {...otherProps} content={content} />
+    return <Component {...passThroughProps} content={content} />
   } else if (render) {
-    return render({ ...otherProps, content })
+    return render({ ...passThroughProps, content })
   } else if (children) {
     return []
       .concat(children || [])
       .map((Child, index) => (
-        <Child key={index} {...otherProps} content={content} />
+        <Child key={index} {...passThroughProps} content={content} />
       ))
   }
 }
 
 export default Content
-export { Content, useContent }

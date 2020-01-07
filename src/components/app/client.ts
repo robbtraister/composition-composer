@@ -1,6 +1,7 @@
 'use strict'
 
-import { Fragment } from 'react'
+export const App = () => {
+  throw new Error('`App` component is unavailable in the browser')
+}
 
-export const App = Fragment
 export default App

@@ -1,9 +1,10 @@
 'use strict'
 
-import { promises as fsPromises } from 'fs'
 import path from 'path'
 
 import React, { useContext } from 'react'
+
+import Resource from '../resource'
 
 import compositionContext from '../../contexts/composition'
 
@@ -17,44 +18,30 @@ interface StyleProps {
   name: string
 }
 
-const cachedFiles = {}
-async function getCachedFile(filePath) {
-  try {
-    cachedFiles[filePath] =
-      cachedFiles[filePath] || (await fsPromises.readFile(filePath))
-  } catch (_) {}
-  return cachedFiles[filePath]
+function InlineStyle({ resource, ...passThroughProps }: { resource: string }) {
+  return (
+    <style
+      {...passThroughProps}
+      dangerouslySetInnerHTML={{ __html: resource }}
+    />
+  )
 }
 
 export const Styles = ({ inline, ...passThroughProps }: StylesProps) => {
-  const {
-    appStyles = 'app',
-    cache = {},
-    projectRoot,
-    siteStyles = 'site'
-  } = useContext(compositionContext)
+  const { appStyles = 'app', siteStyles = 'site' } = useContext(
+    compositionContext
+  )
 
   const Style = inline
-    ? function Style({ name }: StyleProps) {
-        const key = JSON.stringify({ styles: name })
-        if (key in cache) {
-          return cache[key]
-        }
-        cache[key] = getCachedFile(
-          path.join(projectRoot, 'build', 'dist', `${name}.css`)
+    ? function Style({ name, ...compositionProps }: StyleProps) {
+        return (
+          <Resource
+            {...compositionProps}
+            {...passThroughProps}
+            name={path.join('build', 'dist', `${name}.css`)}
+            render={InlineStyle}
+          />
         )
-          .then(data => {
-            cache[key] = (
-              <style
-                {...passThroughProps}
-                dangerouslySetInnerHTML={{ __html: data }}
-              />
-            )
-          })
-          .catch(() => {
-            cache[key] = null
-          })
-        return null
       }
     : function Style({ name, ...compositionProps }: StyleProps) {
         return (

@@ -2,7 +2,7 @@
 
 const { URL } = require('url')
 
-const { getHash, getTree } = require('./assets')
+const { getHash, getTree } = require('../../utils/assets')
 
 async function resolve({ uri, output = 'default' }, options) {
   const url = new URL(uri, 'http://a.com')

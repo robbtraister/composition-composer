@@ -117,13 +117,14 @@ export default async function render(props, options) {
         const contentType = getContentType(Output, body)
 
         return {
-          body:
-            contentType.toLowerCase() !== 'text/html'
-              ? decodeHTML(body)
-              : /\w*<\w*html[\w>]/i.test(body)
-              ? // is a full html document
-                `<!DOCTYPE html>${body}`
-              : body,
+          body: !/^text\/html(;|$)/i.test(contentType)
+            ? // is not an HTML document
+              decodeHTML(body)
+            : /\w*<\w*html[\w>]/i.test(body)
+            ? // is a full HTML document
+              `<!DOCTYPE html>${body}`
+            : // is an HTML snippet
+              body,
           contentType
         }
       } finally {

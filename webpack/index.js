@@ -8,7 +8,11 @@ module.exports = (env, argv) =>
   smp.wrap(
     [].concat(
       ...[]
-        .concat(require('./server') || [], require('./client') || [])
+        .concat(
+          // server must be first because it contains webpack-dev-server
+          require('./server') || [],
+          require('./client') || []
+        )
         .map(config =>
           config instanceof Function ? config(env, argv) : config
         )

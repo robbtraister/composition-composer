@@ -56,7 +56,8 @@ async function getHash({ template, output }) {
       getAssetFile(path.join('templates', template, `${output}.css.json`))
     ))
   ) {
-    await compile({ template, output })
+    // this is a circular dependency; require it here to ensure everything is hydrated properly
+    await require('./compile')({ template, output })
   }
 
   const { styleHash } = JSON.parse(
@@ -81,6 +82,3 @@ module.exports = {
   writeResourceFile,
   writeCompilation
 }
-
-// this is a circular dependency; require it here to ensure everything is hydrated properly
-const compile = require('./compile')

@@ -1,6 +1,7 @@
 'use strict'
 
-import { Fragment } from 'react'
+export const Styles = () => {
+  throw new Error('`Styles` component is unavailable in the browser')
+}
 
-export const Styles = Fragment
 export default Styles

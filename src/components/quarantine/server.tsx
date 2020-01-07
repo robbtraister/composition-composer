@@ -3,7 +3,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 
-import Error from './error'
+import RenderError from './error'
 
 import { TreeNode } from '../tree'
 
@@ -13,7 +13,7 @@ export function Quarantine({ children }: TreeNode) {
     ReactDOM.renderToString(element)
     return element
   } catch (error) {
-    return <Error error={error} />
+    return <RenderError error={error} />
   }
 }
 

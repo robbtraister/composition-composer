@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import Error from './error'
+import RenderError from './error'
 
 import { TreeNode } from '../tree'
 
@@ -20,7 +20,7 @@ export class Quarantine extends React.Component<TreeNode, { error: any }> {
 
   render() {
     return this.state.error ? (
-      <Error error={this.state.error} />
+      <RenderError error={this.state.error} />
     ) : (
       this.props.children
     )

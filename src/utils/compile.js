@@ -5,13 +5,17 @@ const path = require('path')
 
 const Concat = require('concat-with-sourcemaps')
 
-const getDescendants = require('./descendants')
 const {
   getTree,
   readAsset,
   readResourceFile,
   writeCompilation
 } = require('./assets')
+
+function getDescendants(node) {
+  const children = [].concat(node.children || [])
+  return children.concat(...children.map(getDescendants))
+}
 
 async function compile({ components, name, output, tree = null }) {
   const { assets } = JSON.parse(

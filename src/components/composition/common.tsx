@@ -6,10 +6,7 @@ import { Tree, TreeProps } from '../tree'
 
 import compositionContext from '../../contexts/composition'
 
-function descendants({ children }) {
-  const childArray = [].concat(children || [])
-  return childArray.concat(...childArray.map(descendants))
-}
+import { getDescendants } from '../utils'
 
 export interface CompositionProps extends TreeProps {
   appName?: string
@@ -31,7 +28,7 @@ export function Common({
       value={{
         cache: {},
         ...value,
-        elements: descendants({ children: value.tree })
+        elements: getDescendants({ children: value.tree })
       }}>
       {children || <Tree />}
     </compositionContext.Provider>

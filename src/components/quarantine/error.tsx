@@ -4,7 +4,7 @@ import React from 'react'
 
 import { useComponentContext } from '../../contexts/component'
 
-function Error(props: { error }) {
+export function RenderError(props: { error }) {
   const { id, type } = useComponentContext()
   const { error = {} } = props
   return (
@@ -16,4 +16,4 @@ function Error(props: { error }) {
   )
 }
 
-export default Error
+export default RenderError
