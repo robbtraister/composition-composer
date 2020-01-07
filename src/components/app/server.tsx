@@ -29,7 +29,7 @@ interface ServerAppProps {
 }
 
 export function App(props: ServerAppProps) {
-  const { appName = 'app', cache, output, tree } = useContext(
+  const { appName = 'app', cache, output, template, tree } = useContext(
     compositionContext
   )
   const {
@@ -79,6 +79,9 @@ export function App(props: ServerAppProps) {
               `Composition.id=${JSON.stringify(id)}`,
               `Composition.singlePage=${JSON.stringify(singlePage)}`,
               `Composition.cache=${JSON.stringify(contentCache)}`,
+              singlePage
+                ? `Composition.template=${JSON.stringify(template)}`
+                : null,
               singlePage ? `Composition.tree=${JSON.stringify(tree)}` : null
             ]
               .filter(c => c)

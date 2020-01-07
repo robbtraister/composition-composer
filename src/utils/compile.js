@@ -17,7 +17,7 @@ function getDescendants(node) {
   return children.concat(...children.map(getDescendants))
 }
 
-async function compile({ components, name, output, tree = null }) {
+async function compile({ components, name, output, template, tree = null }) {
   const { assets } = JSON.parse(
     await readResourceFile(path.join('build', 'assets.json'))
   )
@@ -55,9 +55,7 @@ async function compile({ components, name, output, tree = null }) {
         `window.Composition=window.Composition||{}`,
         `Composition.output=${JSON.stringify(output)}`,
         `Composition.styleHash=${JSON.stringify(styleHash)}`,
-        `Composition.template=${JSON.stringify(
-          name.replace(/^templates[\\/]/, '')
-        )}`,
+        template ? `Composition.template=${JSON.stringify(template)}` : null,
         tree ? `Composition.tree=${JSON.stringify(tree)}` : null,
         `Composition.components=Composition.components||{}`
       ]
@@ -119,7 +117,13 @@ async function compileTemplate({ template, output }) {
       ({ type }) => type
     )
 
-    return compile({ components, name: `templates/${template}`, output, tree })
+    return compile({
+      components,
+      name: `templates/${template}`,
+      output,
+      template,
+      tree
+    })
   } finally {
     console.log(`${template} compiled in ${(Date.now() - start) / 1000}s`)
   }

@@ -28,7 +28,7 @@ function LocationWatcher(props: ClientCompositionProps) {
   } = props
 
   const [isInitialized, setInitialized] = useState(false)
-  const [{ tree, pageContent }, setPage] = useState<Resolution>({
+  const [{ template, tree, pageContent }, setPage] = useState<Resolution>({
     template: props.template,
     tree: props.tree,
     pageContent: props.pageContent
@@ -59,6 +59,7 @@ function LocationWatcher(props: ClientCompositionProps) {
     <Common
       value={{
         ...contextValue,
+        template,
         tree,
         pageContent
       }}
