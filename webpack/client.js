@@ -89,6 +89,12 @@ module.exports = (_, argv) => {
     devtool: isProd ? 'source-map' : 'eval-source-map',
     entry,
     mode: isProd ? 'production' : 'development',
+    node: {
+      __dirname: false,
+      __filename: false,
+      global: false,
+      process: false
+    },
     optimization: {
       runtimeChunk: {
         name: 'runtime'
