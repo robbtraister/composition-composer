@@ -58,8 +58,9 @@ test('Page Component', () => {
   const html = renderToString(
     <Composition
       getComponent={getComponent}
-      tree={tree}
       output="default"
+      template="test"
+      tree={tree}
       quarantine>
       <html>
         <head>
@@ -79,9 +80,10 @@ test('Inline Styles', () => {
   const html = renderToString(
     <Composition
       getComponent={getComponent}
-      tree={tree}
-      projectRoot=""
       output="default"
+      projectRoot=""
+      template="test"
+      tree={tree}
       quarantine>
       <html>
         <head>
