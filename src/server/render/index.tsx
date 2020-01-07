@@ -1,7 +1,5 @@
 'use strict'
 
-import path from 'path'
-
 import { decodeHTML } from 'entities'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
@@ -9,10 +7,7 @@ import { ServerStyleSheet } from 'styled-components'
 
 import { Composition, Tree } from '../../components'
 
-import compile from '../../utils/compile'
-
 import { Redirect } from '../errors'
-import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
@@ -49,36 +44,28 @@ export default async function render(props, options) {
   const { output, styleHash, template, tree, uri } = props
   const { projectRoot } = options
 
-  if (
-    !(await fileExists(
-      path.join(projectRoot, `build/dist/templates/${template}/${output}.js`)
-    ))
-  ) {
-    await compile({ template, output }, options)
-  }
-
   const Output = outputs[output]
 
   const cache = {}
-  async function renderAsync(renderOptions: RenderOptions = {}) {
-    function getContent({ source, query }: ContentParams) {
-      const key = JSON.stringify({ content: { source, query } })
-      if (key in cache) {
-        return cache[key]
-      }
-
-      cache[key] = fetch({ source, query })
-        .then(data => {
-          cache[key] = data
-          return data
-        })
-        .catch(() => {
-          cache[key] = null
-        })
-
-      return null
+  function getContent({ source, query }: ContentParams) {
+    const key = JSON.stringify({ content: { source, query } })
+    if (key in cache) {
+      return cache[key]
     }
 
+    cache[key] = fetch({ source, query })
+      .then(data => {
+        cache[key] = data
+        return data
+      })
+      .catch(() => {
+        cache[key] = null
+      })
+
+    return null
+  }
+
+  async function renderAsync(renderOptions: RenderOptions = {}) {
     function renderSync() {
       const sheet = new ServerStyleSheet()
       try {
