@@ -1,10 +1,3 @@
-interface Message {
-  id?: string
-  type?: string
-  action?: string
-  error?: object
-}
-
 interface Options {
   app?: {
     fileLimit?: number

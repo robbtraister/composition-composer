@@ -23,25 +23,13 @@ class OnBuildPlugin {
 }
 
 const entry = {
-  index: [
+  server: [
     'source-map-support/register',
     path.relative(projectRoot, path.resolve(__dirname, '..', 'src', 'server'))
-  ],
-  master: [
-    'source-map-support/register',
-    path.relative(
-      projectRoot,
-      path.resolve(__dirname, '..', 'src', 'server', 'master')
-    )
   ]
 }
 
-const buildArtifact = path.resolve(
-  projectRoot,
-  'build',
-  'server',
-  Object.keys(entry)[0]
-)
+const buildArtifact = path.resolve(projectRoot, 'build', Object.keys(entry)[0])
 
 const devMode = {
   // the following are set to enable proper server-side source-map error logging
@@ -61,15 +49,26 @@ const externals = (_, request, callback) => {
     : callback(null, `commonjs ${require.resolve(request)}`)
 }
 
+const serverConfigs = {
+  ...require('./shared'),
+  ...devMode,
+  name: 'server',
+  externals,
+  output: {
+    filename: '[name].js',
+    libraryTarget: 'commonjs2',
+    path: path.join(projectRoot, 'build')
+  },
+  target: 'node'
+}
+
 module.exports = (_, argv) => {
   const isProd = env.isProd || /^prod/i.test(argv.mode)
 
   return [
     {
-      ...require('./shared'),
+      ...serverConfigs,
       ...require('./shared/rules')({ isProd, extractCss: false }),
-      ...devMode,
-      name: 'server',
       devServer: {
         before: app => {
           app.use((req, res, next) => {
@@ -86,11 +85,6 @@ module.exports = (_, argv) => {
       },
       entry,
       externals: isProd ? {} : externals,
-      output: {
-        filename: '[name].js',
-        libraryTarget: 'commonjs2',
-        path: path.join(projectRoot, 'build', 'server')
-      },
       plugins: [
         // new SourceMapDevToolPlugin({
         //   test: /\.([cm]?[jt]sx?|s?[ac]ss|svg)$/,
@@ -112,23 +106,18 @@ module.exports = (_, argv) => {
                   })
               })
             ])
-      ],
-      target: 'node'
+      ]
     },
     {
-      ...require('./shared'),
+      ...serverConfigs,
       ...require('./shared/rules')({ isProd, extractCss: true }),
-      ...devMode,
-      name: 'server',
       entry: outputs,
-      externals,
       optimization: {
         minimizer: [new OptimizeCSSAssetsPlugin({})]
       },
       output: {
-        filename: 'junk/[name].js',
-        libraryTarget: 'commonjs2',
-        path: path.join(projectRoot, 'build')
+        ...serverConfigs.output,
+        filename: 'junk/[name].js'
       },
       plugins: [
         new MiniCssExtractPlugin({
@@ -137,8 +126,7 @@ module.exports = (_, argv) => {
         new OnBuildPlugin(async stats => {
           childProcess.exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
         })
-      ],
-      target: 'node'
+      ]
     }
   ]
 }

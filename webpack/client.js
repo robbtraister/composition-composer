@@ -146,13 +146,6 @@ module.exports = (_, argv) => {
       }),
       new OnBuildPlugin(writeAssets)
     ],
-    // resolve: {
-    //   ...require('./shared').resolve,
-    //   alias: {
-    //     ...require('./shared').resolve.alias,
-    //     '@composition/components': require.resolve('@composition/components')
-    //   }
-    // },
     target: 'web'
   }
 }

@@ -1,12 +1,14 @@
 'use strict'
 
+import cluster from 'cluster'
+
 import debugModule from 'debug'
 
 import app from './app'
 
 import * as env from '../../env'
 
-const debug = debugModule(`composition:worker:${process.pid}`)
+const debug = debugModule(`composition:server:${process.pid}`)
 
 export { app }
 
@@ -28,9 +30,31 @@ export function server(options: Options = {}) {
   )
 }
 
+async function createWorker() {
+  return new Promise(resolve => {
+    const worker = cluster.fork()
+    // add an exit handler so cluster will replace worker in the event of an unintentional termination
+    worker.on('exit', () => {
+      worker.exitedAfterDisconnect || createWorker()
+    })
+    worker.on('listening', resolve)
+  })
+}
+
+export async function master(options: Options = {}) {
+  const workerCount = Number(options.workerCount) || env.workerCount
+
+  const result = await Promise.all(
+    [...new Array(workerCount)].map(createWorker)
+  )
+  debug(`${workerCount} worker${workerCount === 1 ? '' : 's'} Created`)
+
+  return result
+}
+
 export default server
 
 // use eval and __filename instead of module to preserve functionality in webpack artifact
 // eslint-disable-next-line no-eval
 const isScript = eval('require.main && (require.main.filename === __filename)')
-isScript && server()
+isScript && (cluster.isMaster ? master : server)()
