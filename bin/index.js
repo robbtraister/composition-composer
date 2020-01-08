@@ -43,6 +43,7 @@ program.command('init').action(async () => {
         '.eslintrc.json',
         '.gitignore',
         '.prettierignore',
+        'server.js',
         'tsconfig.json'
       ].map(async fileName => {
         try {
