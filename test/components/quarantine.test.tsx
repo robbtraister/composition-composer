@@ -6,7 +6,6 @@ import React from 'react'
 import { render } from '@testing-library/react'
 
 import Composition from '../../src/components/composition'
-import { TreeNode } from '../../src/components/tree'
 import { useComponentContext } from '../../src/contexts/component'
 
 const x = 3
@@ -26,7 +25,7 @@ function Success({ children }: { children: React.ElementType }) {
   )
 }
 
-function getComponent({ type }: TreeNode): React.ComponentType {
+function getComponent(type: string): React.ComponentType {
   return type === 'fail' ? Fail : Success
 }
 

@@ -39,7 +39,7 @@ const ContextRender = () => {
   return <ComponentContext render={Display} />
 }
 
-function getComponent({ type }) {
+function getComponent(type: string) {
   switch (type) {
     case 'context-children':
       return ContextChildren

@@ -8,7 +8,6 @@ import { renderToString } from 'react-dom/server'
 import App from '../../src/components/app'
 import Composition from '../../src/components/composition'
 import Styles from '../../src/components/styles'
-import { TreeNode } from '../../src/components/tree'
 
 import { useComponentContext } from '../../src/contexts/component'
 
@@ -29,7 +28,7 @@ function Success({ children }: { children: React.ElementType }) {
   )
 }
 
-function getComponent({ type }: TreeNode): React.ComponentType {
+function getComponent(type: string): React.ComponentType {
   return type === 'fail' ? Fail : Success
 }
 

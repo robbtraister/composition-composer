@@ -36,7 +36,7 @@ function ContentRender(props) {
   return <Content {...props} render={Display} />
 }
 
-function getComponent({ type }) {
+function getComponent(type) {
   switch (type) {
     case 'content-children':
       return ContentChildren
