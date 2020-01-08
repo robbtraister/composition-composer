@@ -17,7 +17,7 @@ export const compositionContext = createContext<{
   template?: string
   tree?: TreeNode
 
-  getComponent?: (node) => React.ComponentType
+  getComponent?: (type: string) => React.ComponentType
   getContent?: (cp: ContentParams) => ContentResult
 }>({
   getComponent: () => React.Fragment,

@@ -14,8 +14,8 @@ import outputs from '~/../build/generated/outputs'
 
 import { fetch } from '../content'
 
-function getComponent(output, node) {
-  return components[node.type][output]
+function getComponent(output, type) {
+  return components[type][output]
 }
 
 function getContentType(Output, body) {
@@ -47,7 +47,7 @@ export default async function render(props, options) {
   const Output = outputs[output]
 
   const cache = {}
-  function getContent({ source, query }: ContentParams) {
+  function getContent({ source, query }: ContentParams): ContentPromise {
     const key = JSON.stringify({ content: { source, query } })
     if (key in cache) {
       return cache[key]

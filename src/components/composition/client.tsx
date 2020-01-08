@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { BrowserRouter, useLocation } from 'react-router-dom'
 
 import { Common, CompositionProps } from './common'
@@ -15,32 +15,44 @@ interface Resolution {
 
 interface ClientCompositionProps extends CompositionProps {
   forceRefresh?: boolean
-  resolve?: (String) => Promise<Resolution>
+  resolve?: (string) => Promise<Resolution>
   'single-page'?: boolean
 }
 
-function LocationWatcher(props: ClientCompositionProps) {
+const LocationWatcher = memo(function LocationWatcher(
+  props: ClientCompositionProps
+) {
   const {
-    forceRefresh = true,
+    pageContent,
     resolve,
     'single-page': singlePage,
-    ...contextValue
+    template,
+    tree,
+    ...contextProps
   } = props
 
-  const [isInitialized, setInitialized] = useState(false)
-  const [{ template, tree, pageContent }, setPage] = useState<Resolution>({
-    template: props.template,
-    tree: props.tree,
-    pageContent: props.pageContent
+  const [isInitialized, setInitialized] = useState<boolean>(false)
+  const [context, setContext] = useState<CompositionProps>({
+    pageContent,
+    template,
+    tree,
+    ...contextProps
   })
   const location = useLocation()
+
+  const forceRefresh = !singlePage || !resolve
+  const uri = location.pathname + location.search
 
   useEffect(() => {
     let doUpdate = true
 
     const awaitResolve = async () => {
-      const page = await resolve(location)
-      doUpdate && setPage(page)
+      const page = await resolve(uri)
+      doUpdate &&
+        setContext({
+          ...contextProps,
+          ...page
+        })
     }
     if (isInitialized) {
       forceRefresh
@@ -53,30 +65,19 @@ function LocationWatcher(props: ClientCompositionProps) {
     return () => {
       doUpdate = false
     }
-  }, [location])
+  }, [resolve, uri])
 
+  return <Common value={context} />
+})
+
+export const Composition = memo(function Composition(
+  props: ClientCompositionProps
+) {
   return (
-    <Common
-      value={{
-        ...contextValue,
-        template,
-        tree,
-        pageContent
-      }}
-    />
-  )
-}
-
-export function Composition(props: ClientCompositionProps) {
-  const { 'single-page': singlePage, resolve } = props
-
-  const forceRefresh = !singlePage || !resolve
-
-  return (
-    <BrowserRouter forceRefresh={forceRefresh}>
-      <LocationWatcher {...props} forceRefresh={forceRefresh} />
+    <BrowserRouter>
+      <LocationWatcher {...props} />
     </BrowserRouter>
   )
-}
+})
 
 export default Composition

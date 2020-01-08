@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { useContext } from 'react'
+import React, { memo, useContext } from 'react'
 
 import { isClient } from './utils'
 import QuarantineComponent from './quarantine'
@@ -26,13 +26,13 @@ export interface TreeProps {
   quarantine?: boolean
   tree?: TreeNode
 
-  getComponent?: (TreeNode) => React.ComponentType
+  getComponent?: (type: string) => React.ComponentType
   getContent?: (ContentConfig) => object
 }
 
 const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
 
-export function Tree(treeProps: TreeProps) {
+export const Tree = memo(function Tree(treeProps: TreeProps) {
   const context = useContext(compositionContext)
 
   const tree = treeProps.tree || context.tree
@@ -54,18 +54,9 @@ export function Tree(treeProps: TreeProps) {
 
   const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
-  const componentCache = {}
-  function getCachedComponent(node: TreeNode) {
-    const { type } = node
-    if (!componentCache[type]) {
-      componentCache[type] = getComponent(node)
-    }
-    return componentCache[type]
-  }
-
   function getCachedContent(contentParams: ContentParams): ContentPromise {
-    const { source, query, filter } = contentParams
-    const key = JSON.stringify({ source, query, filter })
+    const { source, query } = contentParams
+    const key = JSON.stringify({ content: { source, query } })
     if (!cache[key]) {
       const result: ContentResult = getContent(contentParams)
 
@@ -84,8 +75,8 @@ export function Tree(treeProps: TreeProps) {
   }
 
   function Node(node: TreeNode) {
-    const Component = getCachedComponent(node)
-    const { props = {}, children = [] } = node
+    const { props = {}, children = [], type } = node
+    const Component = getComponent(type)
 
     const componentContextValue = { ...node, getContent: getCachedContent }
 
@@ -103,6 +94,6 @@ export function Tree(treeProps: TreeProps) {
   }
 
   return <Node {...tree} />
-}
+})
 
 export default Tree

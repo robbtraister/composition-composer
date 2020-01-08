@@ -9,10 +9,12 @@ import { Composition as CompositionComponent } from '../components'
 
 import unpack from '../utils/unpack'
 
-function getComponent(node) {
-  const Component = unpack(Composition.components[node.type]) || node.type
-
-  return Component
+const componentCache = {}
+function getComponent(type) {
+  if (!(type in componentCache)) {
+    componentCache[type] = unpack(Composition.components[type]) || type
+  }
+  return componentCache[type]
 }
 
 const contentFetches = {}
@@ -43,8 +45,7 @@ function getContent({ source, query }) {
 }
 
 const resolutions = {}
-async function resolve(location) {
-  const uri = location.pathname + location.search
+async function resolve(uri) {
   if (!(uri in resolutions)) {
     resolutions[uri] = window
       .fetch(`/api/resolve?uri=${encodeURIComponent(uri)}`)

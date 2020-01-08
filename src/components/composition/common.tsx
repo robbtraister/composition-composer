@@ -1,6 +1,6 @@
 'use strict'
 
-import React from 'react'
+import React, { memo } from 'react'
 
 import { Tree, TreeProps } from '../tree'
 
@@ -16,7 +16,7 @@ export interface CompositionProps extends TreeProps {
   template?: string
 }
 
-export function Common({
+export const Common = memo(function Common({
   children,
   value
 }: {
@@ -33,4 +33,4 @@ export function Common({
       {children || <Tree />}
     </compositionContext.Provider>
   )
-}
+})
