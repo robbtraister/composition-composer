@@ -6,7 +6,7 @@ const componentContext = createContext<{
   type?: string
   id: any
   props?: object
-  getContent?: (cp: ContentParams) => ContentPromise
+  getContent?: (cp: ContentParams) => ContentResult
 }>({
   type: null,
   id: null,

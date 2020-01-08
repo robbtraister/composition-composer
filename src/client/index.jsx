@@ -17,31 +17,14 @@ function getComponent(type) {
   return componentCache[type]
 }
 
-const contentFetches = {}
 function getContent({ source, query }) {
-  const cacheKey = JSON.stringify({ content: { source, query } })
-  if (!(cacheKey in contentFetches)) {
-    const cached = Composition.cache[cacheKey]
-
-    const promise = cached
-      ? Promise.resolve(cached)
-      : window
-          .fetch(
-            `/api/content/fetch?source=${encodeURIComponent(
-              source
-            )}&query=${encodeURIComponent(query)}`
-          )
-          .then(res => res.json())
-          .then(data => {
-            promise.cached = data
-            return data
-          })
-
-    promise.cached = cached
-
-    contentFetches[cacheKey] = promise
-  }
-  return contentFetches[cacheKey]
+  return window
+    .fetch(
+      `/api/content/fetch?source=${encodeURIComponent(
+        source
+      )}&query=${encodeURIComponent(query)}`
+    )
+    .then(res => res.json())
 }
 
 const resolutions = {}
@@ -73,6 +56,7 @@ function render() {
       <CompositionComponent
         getComponent={getComponent}
         getContent={getContent}
+        cache={Composition.cache}
         output={Composition.output}
         resolve={resolve}
         single-page={Composition.singlePage}

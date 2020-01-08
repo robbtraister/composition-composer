@@ -49,10 +49,9 @@ export function App(props: ServerAppProps) {
   const isCombinations = hydrateOnly || singlePage
 
   const contentCache = Object.keys(cache)
-    .filter(entry => !(cache[entry] instanceof Promise))
-    .filter(entry => entry.startsWith('{"content":'))
-    .reduce((rollup, entry) => {
-      rollup[entry] = cache[entry]
+    .filter(key => key.startsWith('{"content":'))
+    .reduce((rollup, key) => {
+      rollup[key] = { value: (cache[key] || {}).value }
       return rollup
     }, {})
 

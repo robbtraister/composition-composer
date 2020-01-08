@@ -47,23 +47,6 @@ export default async function render(props, options) {
   const Output = outputs[output]
 
   const cache = {}
-  function getContent({ source, query }: ContentParams): ContentPromise {
-    const key = JSON.stringify({ content: { source, query } })
-    if (key in cache) {
-      return cache[key]
-    }
-
-    cache[key] = fetch({ source, query })
-      .then(data => {
-        cache[key] = data
-        return data
-      })
-      .catch(() => {
-        cache[key] = null
-      })
-
-    return null
-  }
 
   async function renderAsync(renderOptions: RenderOptions = {}) {
     function renderSync() {
@@ -78,7 +61,7 @@ export default async function render(props, options) {
               appStyles={`styles/templates/${styleHash}`}
               cache={cache}
               getComponent={getComponent.bind(null, output)}
-              getContent={getContent}
+              getContent={fetch}
               location={uri}
               output={output}
               routerContext={context}

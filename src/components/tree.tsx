@@ -21,7 +21,6 @@ export interface TreeNode {
 }
 
 export interface TreeProps {
-  cache?: object
   pageContent?: object
   quarantine?: boolean
   tree?: TreeNode
@@ -35,17 +34,15 @@ const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
 export const Tree = memo(function Tree(treeProps: TreeProps) {
   const context = useContext(compositionContext)
 
-  const tree = treeProps.tree || context.tree
   const getComponent = treeProps.getComponent || context.getComponent
-  const getContent =
-    treeProps.getContent || context.getContent || (() => Promise.resolve(null))
+  const tree = treeProps.tree || context.tree
 
   if (tree && !getComponent) {
     throw new Error('Use of `tree` requires `getComponent` function')
   }
 
-  const cache = treeProps.cache || {}
-
+  const getContent =
+    treeProps.getContent || context.getContent || (() => Promise.resolve(null))
   const quarantine =
     isClient ||
     (Object.prototype.hasOwnProperty.call(treeProps, 'quarantine')
@@ -54,31 +51,11 @@ export const Tree = memo(function Tree(treeProps: TreeProps) {
 
   const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
-  function getCachedContent(contentParams: ContentParams): ContentPromise {
-    const { source, query } = contentParams
-    const key = JSON.stringify({ content: { source, query } })
-    if (!cache[key]) {
-      const result: ContentResult = getContent(contentParams)
-
-      const promise: ContentPromise =
-        result instanceof Promise ? result : Promise.resolve(result)
-      const cached = result instanceof Promise ? promise.cached : result
-
-      const contentEntry: ContentPromise = promise.then(content => {
-        contentEntry.cached = content
-        return content
-      })
-
-      cache[key] = Object.assign(contentEntry, { cached })
-    }
-    return cache[key]
-  }
-
   function Node(node: TreeNode) {
     const { props = {}, children = [], type } = node
     const Component = getComponent(type)
 
-    const componentContextValue = { ...node, getContent: getCachedContent }
+    const componentContextValue = { ...node, getContent }
 
     return (
       <componentContext.Provider value={componentContextValue}>

@@ -1,25 +1,34 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useComponentContext } from '../contexts/component'
+import compositionContext from '../contexts/composition'
 
-export function useContent(props: ContentParams) {
+export function useContent(params: ContentParams) {
+  const { source, query } = params
+  const key = JSON.stringify({ content: { source, query } })
+
+  const { cache = {} } = useContext(compositionContext)
   const { getContent } = useComponentContext()
-  const contentResult: ContentPromise = getContent(props)
-  const [content, setContent] = useState(contentResult.cached)
 
-  useEffect(() => {
-    let doUpdate = true
-    const awaitFetch = async () => {
-      const updated = await contentResult
-      doUpdate && setContent(updated)
-    }
-    contentResult && awaitFetch()
+  /**
+   * cacheEntry will always be some combination of the following (possibly both):
+   * 1. a Promise
+   * 2. an Object with `value` property
+   */
 
-    return () => {
-      doUpdate = false
-    }
-  }, [contentResult])
+  const cacheEntry = (cache[key] =
+    cache[key] ||
+    Promise.resolve(getContent(params)).then(data => {
+      cacheEntry.value = data
+      return data
+    }))
+
+  const [content, setContent] = useState(cacheEntry.value)
+
+  if (cacheEntry instanceof Promise) {
+    cacheEntry.then(setContent)
+  }
 
   return content
 }

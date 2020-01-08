@@ -11,6 +11,7 @@ import { getDescendants } from '../utils'
 export interface CompositionProps extends TreeProps {
   appName?: string
   appStyles?: string
+  cache?: object
   output?: string
   siteStyles?: string
   template?: string

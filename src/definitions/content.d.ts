@@ -10,8 +10,8 @@ interface ContentComponentParams extends ContentParams {
   render?: Function
 }
 
-interface ContentPromise extends Promise<object> {
-  cached?: object
+interface CachedPromise extends Promise<object> {
+  value?: object
 }
 
-type ContentResult = ContentPromise | object
+type ContentResult = CachedPromise | object
