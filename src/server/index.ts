@@ -12,9 +12,6 @@ const debug = debugModule(`composition:server:${process.pid}`)
 
 export { app }
 
-// cache the default app config for faster reload
-export const devApp = env.isProd ? null : app()
-
 export function server(options: Options = {}) {
   process.on('disconnect', () => {
     debug('Disconnected')

@@ -62,6 +62,8 @@ const serverConfigs = {
   target: 'node'
 }
 
+let hotApp
+
 module.exports = (_, argv) => {
   const isProd = env.isProd || /^prod/i.test(argv.mode)
 
@@ -72,8 +74,9 @@ module.exports = (_, argv) => {
       devServer: {
         before: app => {
           app.use((req, res, next) => {
-            // require on each request because the cache may have been cleared
-            require(buildArtifact).devApp(req, res, next)
+            // re-require if recompiled so to get the latest code
+            hotApp = hotApp || require(buildArtifact).app()
+            hotApp(req, res, next)
           })
         },
         contentBase: path.join(projectRoot, 'public'),
@@ -98,12 +101,9 @@ module.exports = (_, argv) => {
         ...(isProd
           ? []
           : [
-              new OnBuildPlugin(async stats => {
-                Object.keys(require.cache)
-                  .filter(pkg => !/[\\/]node_modules[\\/]/.test(pkg))
-                  .forEach(pkg => {
-                    delete require.cache[pkg]
-                  })
+              new OnBuildPlugin(() => {
+                delete require.cache[require.resolve(buildArtifact)]
+                hotApp = undefined
               })
             ])
       ]
