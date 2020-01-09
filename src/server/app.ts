@@ -6,15 +6,21 @@ import express from 'express'
 import router from './router'
 
 import env from '../../env'
+import Controller from './controller'
 
-export default function app(options: Options = {}) {
+export default function app(inputOptions: Options = {}) {
+  const options = Object.assign({}, env, inputOptions)
+
   const app = express()
+
+  app.set('options', options)
+  app.set('controller', new Controller(options))
 
   app.disable('x-powered-by')
 
   app.use(compression())
 
-  app.use(router(Object.assign({}, env, options)))
+  app.use(router(options))
 
   app.use(
     (err, req, res, next) => {

@@ -3,7 +3,6 @@
 import express from 'express'
 
 import content from './content'
-import resolve from './resolve'
 
 import { Server as ServerError } from '../../errors'
 
@@ -20,7 +19,11 @@ export default function router(options) {
     next(new ServerError(+req.params.code || 500))
   })
 
-  apiRouter.use('/resolve', resolve(options))
+  apiRouter.use('/resolve', async (req, res, next) => {
+    const output = req.query.output
+    const uri = req.query.uri
+    res.send(await req.app.get('controller').resolve({ uri, output }))
+  })
 
   apiRouter.use('/uri', (req, res, next) => {
     res.send({ uri: req.originalUrl })

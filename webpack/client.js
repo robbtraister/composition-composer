@@ -2,7 +2,6 @@
 
 const { exec } = require('child_process')
 const crypto = require('crypto')
-const { writeResourceFile } = require('../src/utils/assets')
 const path = require('path')
 
 const { DefinePlugin } = require('webpack')
@@ -10,12 +9,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 
-const env = require('../env')
-const { projectRoot } = env
-
 const { components, outputs } = require('./manifest')
 
-const { compile } = require('../src/utils/compile')
+const env = require('../env')
+const ResourceHandler = require('../src/utils/resources')
+
+const { projectRoot } = env
+const resources = new ResourceHandler({ projectRoot })
 
 const componentNames = Object.keys(components)
 
@@ -55,13 +55,13 @@ async function writeAssets(stats) {
   exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
 
   // await here to ensure assets are available before compiling
-  await writeResourceFile(
+  await resources.writeResourceFile(
     path.join('build', 'assets.json'),
     JSON.stringify({ assets }, null, 2)
   )
 
   Object.keys(outputs).map(output =>
-    compile({
+    resources.compile({
       components: componentNames,
       name: 'combinations',
       output

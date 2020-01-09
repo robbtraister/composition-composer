@@ -16,6 +16,7 @@ interface Options {
   isProd?: boolean
   logging?: boolean
   port?: number
+  resources?: any
   projectRoot?: string
   workerCount?: number
 }

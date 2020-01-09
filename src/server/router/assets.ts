@@ -5,8 +5,6 @@ import path from 'path'
 
 import express from 'express'
 
-import compile from '../../utils/compile'
-
 export default function router(options: Options) {
   const publicRoot = path.resolve(options.projectRoot || '.', 'public')
 
@@ -31,7 +29,7 @@ export default function router(options: Options) {
       const template = req.params.template
       const output = req.params.output
       const ext = req.params[0]
-      await compile({ template, output }, options)
+      await req.app.get('controller').compile({ template, output })
       try {
         fs.createReadStream(
           path.join(
