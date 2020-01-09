@@ -79,6 +79,16 @@ class OnBuildPlugin {
   }
 }
 
+// if any of these libs are used in the bundle, output them into the shared/heavily-cached runtime asset
+const runtimeLibs = [
+  'prop-types',
+  'react',
+  'react-dom',
+  'react-router',
+  'react-router-dom',
+  'styled-components'
+]
+
 module.exports = (_, argv) => {
   const isProd = env.isProd || /^prod/i.test(argv.mode)
 
@@ -105,7 +115,16 @@ module.exports = (_, argv) => {
         name(mod, chunks, cacheGroupKey) {
           const chunkNames = [].concat(chunks).map(chunk => chunk.name)
 
-          if (chunkNames.includes('engine')) {
+          if (
+            // engine is always loaded in the browser and will not change across templates,
+            // so take advantage of heavy caching
+            chunkNames.includes('engine') ||
+            // if any standard libs are used, add to heavily-cached runtime asset
+            runtimeLibs.includes(mod.rawRequest) ||
+            // put all libs in runtime during dev to speed up recompilation
+            (!isProd &&
+              /[\\/]node_modules[\\/]/.test(mod.resource || mod.request))
+          ) {
             return 'runtime'
           } else if (chunkNames.length === 1) {
             return chunkNames[0]
