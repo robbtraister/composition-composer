@@ -52,9 +52,13 @@ export async function master(options: Options = {}) {
   return result
 }
 
+export function main(options: Options = {}) {
+  ;(cluster.isMaster ? master : server)(options)
+}
+
 export default server
 
 // use eval and __filename instead of module to preserve functionality in webpack artifact
 // eslint-disable-next-line no-eval
 const isScript = eval('require.main && (require.main.filename === __filename)')
-isScript && (cluster.isMaster ? master : server)()
+isScript && main()
