@@ -14,12 +14,14 @@ function getResourceFile(name) {
   return path.resolve(projectRoot, name)
 }
 
-async function readAssetFile(name) {
-  return readResourceFile(getAssetFile(name))
+async function readAssetFile(name, encoding) {
+  return readResourceFile(getAssetFile(name), encoding)
 }
 
-async function readResourceFile(name) {
-  return (await readFile(getResourceFile(name))).toString()
+async function readResourceFile(name, encoding = 'utf8') {
+  const buffer = await readFile(getResourceFile(name))
+
+  return /^buffer$/i.test(encoding) ? buffer : buffer.toString(encoding)
 }
 
 async function writeAssetFile(name, content) {

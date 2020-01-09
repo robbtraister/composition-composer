@@ -8,7 +8,6 @@ import { Common, CompositionProps } from './common'
 interface ServerCompositionProps extends CompositionProps {
   children?: React.ReactNode
   location?: string
-  projectRoot?: string
   routerContext?: { url?: string }
 }
 

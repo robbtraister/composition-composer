@@ -9,6 +9,8 @@ import App from '../../src/components/app'
 import Composition from '../../src/components/composition'
 import Styles from '../../src/components/styles'
 
+import { readResourceFile } from '../../src/utils/assets'
+
 import { useComponentContext } from '../../src/contexts/component'
 
 const x = 3
@@ -79,8 +81,8 @@ test('Inline Styles', () => {
   const html = renderToString(
     <Composition
       getComponent={getComponent}
+      getResource={readResourceFile}
       output="default"
-      projectRoot=""
       template="test"
       tree={tree}
       quarantine>

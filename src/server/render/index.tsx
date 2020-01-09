@@ -7,12 +7,12 @@ import { ServerStyleSheet } from 'styled-components'
 
 import { Composition, Tree } from '../../components'
 
+import { fetch } from '../content'
 import { Redirect } from '../errors'
+import { readResourceFile } from '../../utils/assets'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
-
-import { fetch } from '../content'
 
 function getComponent(output, type) {
   return components[type][output]
@@ -42,7 +42,6 @@ interface RenderOptions {
 
 export default async function render(props, options) {
   const { output, styleHash, template, tree, uri } = props
-  const { projectRoot } = options
 
   const Output = outputs[output]
 
@@ -62,11 +61,11 @@ export default async function render(props, options) {
               cache={cache}
               getComponent={getComponent.bind(null, output)}
               getContent={fetch}
+              getResource={readResourceFile}
               location={uri}
               output={output}
               routerContext={context}
               siteStyles={`styles/outputs/${output}`}
-              projectRoot={projectRoot}
               template={template}
               tree={tree}>
               <Output>

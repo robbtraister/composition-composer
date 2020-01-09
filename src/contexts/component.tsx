@@ -16,7 +16,8 @@ const componentContext = createContext<{
 })
 
 export function useComponentContext() {
-  return useContext(componentContext)
+  const { getContent, ...consumableContext } = useContext(componentContext)
+  return consumableContext
 }
 
 export function ComponentContext(props) {

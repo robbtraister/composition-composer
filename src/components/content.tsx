@@ -1,7 +1,7 @@
 'use strict'
 
 import React, { useContext, useState } from 'react'
-import { useComponentContext } from '../contexts/component'
+import componentContext from '../contexts/component'
 import compositionContext from '../contexts/composition'
 
 export function useContent(params: ContentParams) {
@@ -9,7 +9,7 @@ export function useContent(params: ContentParams) {
   const key = JSON.stringify({ content: { source, query } })
 
   const { cache = {} } = useContext(compositionContext)
-  const { getContent } = useComponentContext()
+  const { getContent } = useContext(componentContext)
 
   /**
    * cacheEntry will always be some combination of the following (possibly both):

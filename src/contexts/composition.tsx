@@ -11,7 +11,6 @@ export const compositionContext = createContext<{
   elements?: TreeNode[]
   output?: string
   pageContent?: object
-  projectRoot?: string
   quarantine?: boolean
   siteStyles?: string
   template?: string
@@ -19,19 +18,23 @@ export const compositionContext = createContext<{
 
   getComponent?: (type: string) => React.ComponentType
   getContent?: (cp: ContentParams) => ContentResult
+  getResource?: (name: string, encoding?: string) => any
 }>({
   getComponent: () => React.Fragment,
-  getContent: () => null
+  getContent: () => null,
+  getResource: () => null
 })
 
 export function useCompositionContext() {
   const {
     cache,
-    projectRoot,
     quarantine,
-    ...consumableAppContext
+    getComponent,
+    getContent,
+    getResource,
+    ...consumableContext
   } = useContext(compositionContext)
-  return consumableAppContext
+  return consumableContext
 }
 
 export function CompositionContext(props) {

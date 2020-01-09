@@ -15,6 +15,8 @@ export interface CompositionProps extends TreeProps {
   output?: string
   siteStyles?: string
   template?: string
+
+  getResource?: (name: string, encoding?: string) => any
 }
 
 export const Common = memo(function Common({

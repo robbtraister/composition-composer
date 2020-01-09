@@ -1,28 +1,15 @@
 'use strict'
 
-import { promises as fsPromises } from 'fs'
-import path from 'path'
-
 import React, { useContext } from 'react'
 
 import compositionContext from '../../contexts/composition'
 
-const cachedFiles = {}
-async function getCachedFile(filePath) {
-  if (!(filePath in cachedFiles)) {
-    try {
-      cachedFiles[filePath] = await fsPromises.readFile(filePath)
-    } catch (_) {}
-  }
-  return cachedFiles[filePath]
-}
-
 export function useResource(name, encoding = 'utf8') {
-  const { cache = {}, projectRoot } = useContext(compositionContext)
+  const { cache = {}, getResource } = useContext(compositionContext)
 
   const key = JSON.stringify({ resource: name })
   if (!(key in cache)) {
-    cache[key] = getCachedFile(path.join(projectRoot, name))
+    cache[key] = getResource(name, 'buffer')
       .then(data => {
         cache[key] = data
       })
