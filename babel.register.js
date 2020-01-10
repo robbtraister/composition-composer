@@ -1,3 +1,17 @@
 require('@babel/register')({
-  extensions: ['.es6', '.es', '.tsx', '.ts', '.jsx', '.js', '.mjs']
+  extensions: [
+    '.tsx',
+    '.ts',
+    '.es6x',
+    '.es6',
+    '.esx',
+    '.es',
+    '.mjsx',
+    '.mjs',
+    '.jsx',
+    '.js',
+    '.cjsx',
+    '.cjs',
+    '.json'
+  ]
 })
