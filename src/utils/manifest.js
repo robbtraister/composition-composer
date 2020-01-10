@@ -1,5 +1,7 @@
 'use strict'
 
+// this file must be .js to be used by bin/cli
+
 const path = require('path')
 
 const glob = require('glob')

@@ -24,6 +24,7 @@ export class Environment {
     const { assets } = JSON.parse(
       await this.readResourceFile(path.join('build', 'assets.json'))
     )
+
     const assetMap = {}
     components.forEach(component => {
       ;(assets[`components/${component}/${output}`] || []).forEach(asset => {
@@ -31,6 +32,7 @@ export class Environment {
       })
       assetMap[`components/${component}/${output}.js`] = component
     })
+
     const mappedAssets = Object.keys(assetMap)
     const css = (
       await Promise.all(
@@ -41,10 +43,12 @@ export class Environment {
           .map(asset => this.readAsset(asset))
       )
     ).join('\n')
+
     const styleHash = crypto
       .createHash('md5')
       .update(css)
       .digest('hex')
+
     const concat = [
       {
         asset: `${name}.js`,
@@ -93,13 +97,16 @@ export class Environment {
       concat.add(entry.asset, entry.source, entry.sourceMap)
       return concat
     }, new Concat(true, `${name}.js`, '\n'))
+
     const result = {
       js: concat.content,
       jsMap: concat.sourceMap,
       css,
       styleHash
     }
+
     await this.writeCompilation({ name, output }, result)
+
     return result
   }
 
