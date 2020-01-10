@@ -6,14 +6,29 @@
   "configurations": [
     {
       "type": "node",
+      "request": "attach",
+      "name": "Attach to Server",
+      "port": 9229
+    },
+    {
+      "type": "node",
       "request": "launch",
-      "name": "Launch via Compose",
+      "name": "Launch Server",
       "runtimeExecutable": "npx",
       "runtimeArgs": [
         "compose",
         "dev"
       ],
       "port": 9229
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome",
+      "url": "http://localhost:8080",
+      "sourceMapPathOverrides": {
+        "webpack:///*": "${workspaceFolder}/*"
+      }
     }
   ]
 }
