@@ -8,11 +8,13 @@ const path = require('path')
 const program = require('commander')
 const debug = require('debug')('composition')
 
+require('../babel.register')
+
 const npm = require('./npm')
 
 const { projectRoot } = require('../env')
 
-const manifest = require('../src/utils/manifest')
+const { manifest } = require('../src/utils/manifest')
 
 async function copyFile(src, dest, flags) {
   await fs.promises.mkdir(path.dirname(dest), { recursive: true })

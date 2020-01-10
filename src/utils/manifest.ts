@@ -1,12 +1,10 @@
 'use strict'
 
-// this file must be .js to be used by bin/cli
+import path from 'path'
 
-const path = require('path')
+import glob from 'glob'
 
-const glob = require('glob')
-
-module.exports = function({ projectRoot }) {
+export function manifest({ projectRoot }) {
   const srcRoot = path.join(projectRoot, 'src')
 
   function getProjectRelativeFile(sourceFile) {
@@ -96,3 +94,5 @@ module.exports = function({ projectRoot }) {
     outputs
   }
 }
+
+export default manifest
