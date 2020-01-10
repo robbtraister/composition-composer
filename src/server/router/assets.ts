@@ -31,7 +31,7 @@ export default function router(controller: ControllerType) {
       const template = req.params.template
       const output = req.params.output
       const ext = req.params[0]
-      await controller.compile({ template, output })
+      await controller.compileTemplate({ template, output })
       try {
         fs.createReadStream(
           path.join(

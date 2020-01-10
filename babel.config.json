@@ -6,6 +6,12 @@
         "legacy": true
       }
     ],
+    [
+      "@babel/proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
     "@babel/syntax-dynamic-import",
     [
       "@babel/transform-runtime",

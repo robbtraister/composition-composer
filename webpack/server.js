@@ -7,10 +7,10 @@ const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
-const env = require('../env')
-const { port, projectRoot } = env
-
+const environment = require('./environment')
 const { outputs } = require('./manifest')
+
+const { port, projectRoot } = environment
 
 class OnBuildPlugin {
   constructor(fn) {
@@ -65,7 +65,7 @@ const serverConfigs = {
 let hotApp
 
 module.exports = (_, argv) => {
-  const isProd = env.isProd || /^prod/i.test(argv.mode)
+  const isProd = environment.isProd || /^prod/i.test(argv.mode)
 
   return [
     {

@@ -9,11 +9,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 
+const environment = require('./environment')
 const { components, outputs } = require('./manifest')
 
-const Environment = require('../src/utils/environment')
-
-const environment = new Environment()
 const { projectRoot } = environment
 
 const componentNames = Object.keys(components)

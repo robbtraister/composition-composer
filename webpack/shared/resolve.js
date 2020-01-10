@@ -2,7 +2,7 @@
 
 const path = require('path')
 
-const { projectRoot } = require('../../env')
+const { projectRoot } = require('../environment')
 
 module.exports = {
   resolve: {

@@ -2,7 +2,7 @@
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const { fileLimit } = require('../../env')
+const { fileLimit } = require('../environment')
 
 module.exports = ({ isProd, extractCss }) => ({
   module: {

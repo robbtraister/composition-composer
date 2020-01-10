@@ -1,6 +1,6 @@
 'use strict'
 
-const { projectRoot } = require('../../env')
+const { projectRoot } = require('../environment')
 
 module.exports = {
   context: projectRoot

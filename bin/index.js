@@ -8,6 +8,8 @@ const path = require('path')
 const program = require('commander')
 const debug = require('debug')('composition')
 
+// require('../babel.register')
+
 const npm = require('./npm')
 
 const { projectRoot } = require('../env')
@@ -61,7 +63,7 @@ program.command('init').action(async () => {
 })
 
 program.command('manifest').action(async () => {
-  console.log(JSON.stringify(manifest(), null, 2))
+  console.log(JSON.stringify(manifest({ projectRoot }), null, 2))
 })
 ;['build', 'clean', 'dev', 'generate', 'prod', 'watch'].map(cmd => {
   program.command(cmd).action(npm(cmd))

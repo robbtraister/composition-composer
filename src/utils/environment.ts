@@ -1,17 +1,21 @@
 'use strict'
 
-const crypto = require('crypto')
-const path = require('path')
+import crypto from 'crypto'
+import path from 'path'
 
-const Concat = require('concat-with-sourcemaps')
+import Concat from 'concat-with-sourcemaps'
 
-const { readFile, writeFile } = require('./promises')
+import { readFile, writeFile } from './promises'
 
-const env = require('../../env')
+import env from '../../env'
 
-class Environment {
-  constructor(inputOptions = {}) {
-    Object.assign(this, env, inputOptions)
+export class Environment {
+  projectRoot: string
+  readAsset: Function
+  writeAsset: Function
+
+  constructor(options: Options = {}) {
+    Object.assign(this, env, options)
     this.readAsset = this.readAssetFile
     this.writeAsset = this.writeAssetFile
   }
@@ -107,7 +111,7 @@ class Environment {
     return path.resolve(this.projectRoot, name)
   }
 
-  async readAssetFile(name, encoding) {
+  async readAssetFile(name, encoding = 'utf8') {
     return this.readResourceFile(this.getAssetFile(name), encoding)
   }
 
@@ -142,4 +146,4 @@ class Environment {
   }
 }
 
-module.exports = Environment
+export default Environment

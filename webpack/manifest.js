@@ -1,3 +1,5 @@
 'use strict'
 
-module.exports = require('../src/utils/manifest')()
+const { projectRoot } = require('./environment')
+
+module.exports = require('../src/utils/manifest')({ projectRoot })

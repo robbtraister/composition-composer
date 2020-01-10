@@ -52,16 +52,6 @@ interface RenderOptions {
 }
 
 class Controller extends Environment {
-  compile: Function
-  getAssetFile: Function
-  readAssetFile: Function
-  readResourceFile: Function
-
-  // eslint-disable-next-line no-useless-constructor
-  constructor(options: Options) {
-    super(options)
-  }
-
   async compileTemplate({ template, output }) {
     const start = Date.now()
 

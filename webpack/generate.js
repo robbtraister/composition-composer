@@ -4,15 +4,16 @@ const childProcess = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
-const env = require('../env')
-const { projectRoot } = env
+require('../babel.register')
+
+const { projectRoot } = require('./environment')
 
 const {
   components,
   'content-sources': contentSources,
   outputs
 } = require('./manifest')
-const unpack = require('../src/utils/unpack')
+const { unpack } = require('../src/utils/unpack')
 
 function writeCollection(name, collection) {
   const outputFile = path.join(projectRoot, 'build', 'generated', `${name}.js`)
