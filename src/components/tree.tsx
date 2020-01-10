@@ -32,20 +32,25 @@ export const Tree = memo(function Tree(treeProps: TreeProps) {
 
   function Node(node: TreeNode) {
     const { props = {}, children = [], type } = node
-    const Component = getComponent(type)
+    const Component = getComponent(type) || null
 
     const componentContextValue = { ...node, getContent }
 
     return (
-      <componentContext.Provider value={componentContextValue}>
-        <Quarantine {...node}>
-          <Component {...props}>
-            {[].concat(children || []).map((child, index) => (
-              <Node key={child.id || index} {...child} />
-            ))}
-          </Component>
-        </Quarantine>
-      </componentContext.Provider>
+      Component && (
+        <componentContext.Provider value={componentContextValue}>
+          <Quarantine {...node}>
+            <Component {...props}>
+              {[]
+                .concat(children || [])
+                .filter(({ type }) => getComponent(type))
+                .map((child, index) => (
+                  <Node key={child.id || index} {...child} />
+                ))}
+            </Component>
+          </Quarantine>
+        </componentContext.Provider>
+      )
     )
   }
 

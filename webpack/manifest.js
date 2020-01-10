@@ -2,4 +2,6 @@
 
 const { projectRoot } = require('./environment')
 
-module.exports = require('../src/utils/manifest')({ projectRoot })
+const { manifest } = require('../src/utils/manifest')
+
+module.exports = manifest({ projectRoot })

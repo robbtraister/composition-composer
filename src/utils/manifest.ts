@@ -33,20 +33,16 @@ export function manifest({ projectRoot }) {
     )
   }
 
-  function getComponentFile(componentName, outputName) {
+  function getComponentFile(componentName, outputNames) {
     return []
       .concat(
-        glob.sync(
-          `${path.join(
-            srcRoot,
-            'components'
-          )}/${componentName}/${outputName}.{js,jsx,ts,tsx}`
-        ),
-        glob.sync(
-          `${path.join(
-            srcRoot,
-            'components'
-          )}/${componentName}/index.{js,jsx,ts,tsx}`
+        ...outputNames.map(output =>
+          glob.sync(
+            `${path.join(
+              srcRoot,
+              'components'
+            )}/${componentName}/${output}.{js,jsx,ts,tsx}`
+          )
         ),
         glob.sync(
           `${path.join(srcRoot, 'components')}/${componentName}.{js,jsx,ts,tsx}`
@@ -66,7 +62,29 @@ export function manifest({ projectRoot }) {
     })
   }
 
-  function getComponents(outputNames) {
+  function getOutputOptions(outputs) {
+    return Object.keys(outputs).reduce((fallbacks, output) => {
+      const Output = require(outputs[output].replace('~', srcRoot))
+      switch (Output.fallbacks) {
+        case null:
+        case false:
+          fallbacks[output] = [output]
+          break
+        case undefined:
+        case true:
+          fallbacks[output] = [output, 'default', 'index']
+          break
+        default:
+          fallbacks[output] = [output].concat(Output.fallbacks)
+      }
+      return fallbacks
+    }, {})
+  }
+
+  function getComponents(outputs) {
+    const outputOptions = getOutputOptions(outputs)
+    const outputNames = Object.keys(outputOptions)
+
     const componentNames = getComponentNames(outputNames)
     return Object.assign(
       {},
@@ -77,7 +95,7 @@ export function manifest({ projectRoot }) {
             ...outputNames.map(outputName => {
               return {
                 [outputName]: getProjectRelativeFile(
-                  getComponentFile(componentName, outputName)
+                  getComponentFile(componentName, outputOptions[outputName])
                 )
               }
             })
@@ -89,7 +107,7 @@ export function manifest({ projectRoot }) {
 
   const outputs = getEntries(path.join(srcRoot, 'outputs'))
   return {
-    components: getComponents(Object.keys(outputs)),
+    components: getComponents(outputs),
     'content-sources': getEntries(path.join(srcRoot, 'content-sources')),
     outputs
   }

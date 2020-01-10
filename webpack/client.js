@@ -23,9 +23,11 @@ const entry = Object.assign(
   },
   ...[].concat(
     ...componentNames.map(component =>
-      Object.keys(components[component]).map(output => ({
-        [`components/${component}/${output}`]: components[component][output]
-      }))
+      Object.keys(components[component])
+        .filter(output => components[component][output])
+        .map(output => ({
+          [`components/${component}/${output}`]: components[component][output]
+        }))
     )
   )
 )

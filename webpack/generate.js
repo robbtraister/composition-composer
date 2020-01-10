@@ -27,11 +27,13 @@ ${unpack}
 
 export default {
   ${Object.keys(collection)
+    .filter(type => collection[type])
     .map(type => {
       return typeof collection[type] === 'string'
         ? `'${type}': unpack(require('${collection[type]}'))`
         : `'${type}': {
     ${Object.keys(collection[type])
+      .filter(subtype => collection[type][subtype])
       .map(subtype => {
         return `'${subtype}': unpack(require('${collection[type][subtype]}'))`
       })

@@ -30,7 +30,10 @@ export class Environment {
       ;(assets[`components/${component}/${output}`] || []).forEach(asset => {
         assetMap[asset] = false
       })
-      assetMap[`components/${component}/${output}.js`] = component
+      const componentEntry = `components/${component}/${output}.js`
+      if (componentEntry in assetMap) {
+        assetMap[componentEntry] = component
+      }
     })
 
     const mappedAssets = Object.keys(assetMap)
