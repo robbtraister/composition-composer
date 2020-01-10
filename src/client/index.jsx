@@ -5,7 +5,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { Composition as CompositionComponent } from '../components'
+import { Composition as Root } from '../components'
 
 import unpack from '../utils/unpack'
 
@@ -31,7 +31,11 @@ const resolutions = {}
 async function resolve(uri) {
   if (!(uri in resolutions)) {
     resolutions[uri] = window
-      .fetch(`/api/resolve?uri=${encodeURIComponent(uri)}`)
+      .fetch(
+        `/api/resolve?uri=${encodeURIComponent(
+          uri
+        )}&output=${encodeURIComponent(Composition.output)}`
+      )
       .then(res => res.json())
   }
   return resolutions[uri]
@@ -53,7 +57,7 @@ function render() {
 
   try {
     ReactDOM[Composition.method || 'render'](
-      <CompositionComponent
+      <Root
         getComponent={getComponent}
         getContent={getContent}
         cache={Composition.cache}
