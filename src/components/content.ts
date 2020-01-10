@@ -1,6 +1,9 @@
 'use strict'
 
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
+
+import { render } from './render'
+
 import componentContext from '../contexts/component'
 import compositionContext from '../contexts/composition'
 
@@ -33,22 +36,11 @@ export function useContent(params: ContentParams) {
   return content
 }
 
-export function Content(props: ContentComponentParams) {
-  const { children, component: Component, render, ...contentProps } = props
-  const { source, query, filter, ...passThroughProps } = contentProps
+export function Content(props: RenderableProps<ContentParams, ContentStruct>) {
+  const { source, query, filter, ...passThroughProps } = props
   const content = useContent({ source, query, filter }) || {}
 
-  if (Component) {
-    return <Component {...passThroughProps} content={content} />
-  } else if (render) {
-    return render({ ...passThroughProps, content })
-  } else if (children) {
-    return []
-      .concat(children || [])
-      .map((Child, index) => (
-        <Child key={index} {...passThroughProps} content={content} />
-      ))
-  }
+  return render({ ...passThroughProps, content })
 }
 
 export default Content

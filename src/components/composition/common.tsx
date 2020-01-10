@@ -2,22 +2,11 @@
 
 import React, { memo } from 'react'
 
-import { Tree, TreeProps } from '../tree'
+import { Tree } from '../tree'
 
 import compositionContext from '../../contexts/composition'
 
 import { getDescendants } from '../utils'
-
-export interface CompositionProps extends TreeProps {
-  appName?: string
-  appStyles?: string
-  cache?: object
-  output?: string
-  siteStyles?: string
-  template?: string
-
-  getResource?: (name: string, encoding?: string) => any
-}
 
 export const Common = memo(function Common({
   children,

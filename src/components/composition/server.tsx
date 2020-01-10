@@ -3,13 +3,7 @@
 import React from 'react'
 import { StaticRouter } from 'react-router'
 
-import { Common, CompositionProps } from './common'
-
-interface ServerCompositionProps extends CompositionProps {
-  children?: React.ReactNode
-  location?: string
-  routerContext?: { url?: string }
-}
+import { Common } from './common'
 
 export function Composition(props: ServerCompositionProps) {
   const { children, location, routerContext = {}, ...contextValue } = props

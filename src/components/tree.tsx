@@ -8,27 +8,6 @@ import componentContext from '../contexts/component'
 
 import compositionContext from '../contexts/composition'
 
-export interface ContentConfig {
-  source: string
-  query: object
-}
-
-export interface TreeNode {
-  id: string
-  type: string
-  props?: object
-  children?: object
-}
-
-export interface TreeProps {
-  pageContent?: object
-  quarantine?: boolean
-  tree?: TreeNode
-
-  getComponent?: (type: string) => React.ComponentType
-  getContent?: (ContentConfig) => object
-}
-
 const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
 
 export const Tree = memo(function Tree(treeProps: TreeProps) {

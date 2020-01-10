@@ -18,14 +18,9 @@ interface StyleProps {
   name: string
 }
 
-function InlineStyle({ resource, ...passThroughProps }: { resource: string }) {
-  return (
-    <style
-      {...passThroughProps}
-      dangerouslySetInnerHTML={{ __html: resource }}
-    />
-  )
-}
+const InlineStyle = ({ resource, ...passThroughProps }: ResourceStruct) => (
+  <style {...passThroughProps} dangerouslySetInnerHTML={{ __html: resource }} />
+)
 
 export const Styles = ({ inline, ...passThroughProps }: StylesProps) => {
   const { appStyles = 'app', siteStyles = 'site' } = useContext(
@@ -34,14 +29,14 @@ export const Styles = ({ inline, ...passThroughProps }: StylesProps) => {
 
   const Style = inline
     ? function Style({ name, ...compositionProps }: StyleProps) {
-        return (
-          <Resource
-            {...compositionProps}
-            {...passThroughProps}
-            name={path.join('build', 'dist', `${name}.css`)}
-            render={InlineStyle}
-          />
-        )
+        const resourceProps = {
+          ...compositionProps,
+          ...passThroughProps,
+          name: path.join('build', 'dist', `${name}.css`),
+          component: undefined,
+          render: InlineStyle
+        }
+        return <Resource {...resourceProps} />
       }
     : function Style({ name, ...compositionProps }: StyleProps) {
         return (

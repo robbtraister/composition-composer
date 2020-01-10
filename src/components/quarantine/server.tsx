@@ -5,8 +5,6 @@ import ReactDOM from 'react-dom/server'
 
 import RenderError from './error'
 
-import { TreeNode } from '../tree'
-
 export function Quarantine({ children }: TreeNode) {
   try {
     const element = <>{children}</>
