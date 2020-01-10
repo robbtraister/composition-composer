@@ -131,7 +131,7 @@ class Controller extends Environment {
                 location={uri}
                 output={output}
                 routerContext={context}
-                siteStyles={`styles/outputs/${output}`}
+                outputStyles={`styles/outputs/${output}`}
                 template={template}
                 tree={tree}>
                 <Output>

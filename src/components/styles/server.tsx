@@ -19,11 +19,15 @@ interface StyleProps {
 }
 
 const InlineStyle = ({ resource, ...passThroughProps }: ResourceStruct) => (
-  <style {...passThroughProps} dangerouslySetInnerHTML={{ __html: resource }} />
+  <style
+    {...passThroughProps}
+    type="text/css"
+    dangerouslySetInnerHTML={{ __html: resource }}
+  />
 )
 
 export const Styles = ({ inline, ...passThroughProps }: StylesProps) => {
-  const { appStyles = 'app', siteStyles = 'site' } = useContext(
+  const { appStyles = 'app', outputStyles = 'site' } = useContext(
     compositionContext
   )
 
@@ -43,15 +47,16 @@ export const Styles = ({ inline, ...passThroughProps }: StylesProps) => {
           <link
             {...compositionProps}
             {...passThroughProps}
-            href={`/dist/${name}.css`}
             rel="stylesheet"
+            type="text/css"
+            href={`/dist/${name}.css`}
           />
         )
       }
 
   return (
     <>
-      <Style name={siteStyles} id="composition-site-styles" />
+      <Style name={outputStyles} id="composition-output-styles" />
       <Style name={appStyles} id="composition-app-styles" />
       <StyledComponents />
     </>

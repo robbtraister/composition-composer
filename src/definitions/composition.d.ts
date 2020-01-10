@@ -42,7 +42,7 @@ interface CommonCompositionProps extends TreeProps {
   cache?: object
   elements?: TreeNode[]
   output?: string
-  siteStyles?: string
+  outputStyles?: string
   template?: string
 
   getResource?: ResourceFetcher
