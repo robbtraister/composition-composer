@@ -11,11 +11,10 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 
 const { components, outputs } = require('./manifest')
 
-const env = require('../env')
-const ResourceHandler = require('../src/utils/resources')
+const Environment = require('../src/utils/environment')
 
-const { projectRoot } = env
-const resources = new ResourceHandler({ projectRoot })
+const environment = new Environment()
+const { projectRoot } = environment
 
 const componentNames = Object.keys(components)
 
@@ -55,13 +54,13 @@ async function writeAssets(stats) {
   exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
 
   // await here to ensure assets are available before compiling
-  await resources.writeResourceFile(
+  await environment.writeResourceFile(
     path.join('build', 'assets.json'),
     JSON.stringify({ assets }, null, 2)
   )
 
   Object.keys(outputs).map(output =>
-    resources.compile({
+    environment.compile({
       components: componentNames,
       name: 'combinations',
       output
@@ -90,7 +89,7 @@ const runtimeLibs = [
 ]
 
 module.exports = (_, argv) => {
-  const isProd = env.isProd || /^prod/i.test(argv.mode)
+  const isProd = environment.isProd || /^prod/i.test(argv.mode)
 
   return {
     ...require('./shared'),

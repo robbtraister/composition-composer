@@ -1,5 +1,11 @@
 {
   "plugins": [
+    [
+      "@babel/proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
     "@babel/syntax-dynamic-import",
     [
       "@babel/transform-runtime",

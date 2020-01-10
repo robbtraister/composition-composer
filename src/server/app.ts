@@ -5,22 +5,19 @@ import express from 'express'
 
 import router from './router'
 
-import env from '../../env'
-import Controller from './controller'
+import Controller, { ControllerType } from './controller'
 
-export default function app(inputOptions: Options = {}) {
-  const options = Object.assign({}, env, inputOptions)
-
+export default function app(options: Options = {}) {
   const app = express()
 
-  app.set('options', options)
-  app.set('controller', new Controller(options))
+  const controller: ControllerType = new Controller(options)
+  // app.set('controller', controller)
 
   app.disable('x-powered-by')
 
   app.use(compression())
 
-  app.use(router(options))
+  app.use(router(controller))
 
   app.use(
     (err, req, res, next) => {
@@ -35,7 +32,7 @@ export default function app(inputOptions: Options = {}) {
         next(err)
       }
     },
-    options.logging
+    controller.logging
       ? (err, req, res, next) => {
           if (err.statusCode && err.statusCode < 500) {
             // if a request error, do not log entire stack trace
@@ -46,7 +43,7 @@ export default function app(inputOptions: Options = {}) {
           next(err)
         }
       : [],
-    options.isProd
+    controller.isProd
       ? (err, req, res, next) => {
           res.sendStatus(err.statusCode || 500)
         }

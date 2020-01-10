@@ -2,13 +2,14 @@
 
 import { Router } from 'express'
 
-export default function router(options: Options) {
+import { ControllerType } from '../controller'
+
+export default function router(controller: ControllerType) {
   const router = Router()
 
   router.get('*', async (req, res, next) => {
     const uri = req.originalUrl
     const output = req.query.output
-    const controller = req.app.get('controller')
     const { body, contentType } = await controller.render(
       await controller.resolve({ uri, output })
     )

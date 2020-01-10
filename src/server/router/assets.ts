@@ -5,8 +5,10 @@ import path from 'path'
 
 import express from 'express'
 
-export default function router(options: Options) {
-  const publicRoot = path.resolve(options.projectRoot || '.', 'public')
+import { ControllerType } from '../controller'
+
+export default function router(controller: ControllerType) {
+  const publicRoot = path.resolve(controller.projectRoot || '.', 'public')
 
   const assetRouter = express()
 
@@ -20,7 +22,7 @@ export default function router(options: Options) {
 
   assetRouter.use(
     '/dist',
-    express.static(path.resolve(options.projectRoot || '.', 'build', 'dist'))
+    express.static(path.resolve(controller.projectRoot || '.', 'build', 'dist'))
   )
 
   assetRouter.use(
@@ -29,11 +31,11 @@ export default function router(options: Options) {
       const template = req.params.template
       const output = req.params.output
       const ext = req.params[0]
-      await req.app.get('controller').compile({ template, output })
+      await controller.compile({ template, output })
       try {
         fs.createReadStream(
           path.join(
-            options.projectRoot,
+            controller.projectRoot,
             'build',
             'dist',
             'templates',

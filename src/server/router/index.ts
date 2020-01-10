@@ -9,24 +9,26 @@ import assets from './assets'
 import auth, { verify } from './auth'
 import render from './render'
 
-export default function router(options: Options) {
+import { ControllerType } from '../controller'
+
+export default function router(controller: ControllerType) {
   const router = express()
 
-  router.use(assets(options))
+  router.use(assets(controller))
 
   router.use(cookieParser())
 
   // don't serve under '/auth' because we need to run authorization on all endpoints
-  router.use(auth(options))
+  router.use(auth(controller))
 
   router.use(csurf({ cookie: true }))
 
-  router.use('/api', options.auth ? verify() : [], api(options))
+  router.use('/api', controller.auth ? verify() : [], api(controller))
 
   router.use(
     // reserved paths that should not be rendered
     /^(?!\/(api|auth|dist|logout|signout|use?r)(\/|$))/,
-    render(options)
+    render(controller)
   )
 
   return router

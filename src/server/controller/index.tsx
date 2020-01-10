@@ -13,12 +13,15 @@ import { Redirect } from '../errors'
 
 import { Composition, Tree } from '../../components'
 import { getDescendants } from '../../components/utils'
+
+import Environment from '../../utils/environment'
 import { fileExists } from '../../utils/promises'
-import ResourceHandler from '../../utils/resources'
 
 import components from '~/../build/generated/components'
 import contentSources from '~/../build/generated/content-sources'
 import outputs from '~/../build/generated/outputs'
+
+export type ControllerType = Controller & Options
 
 const debug = debugModule('composition:compile')
 
@@ -48,7 +51,7 @@ interface RenderOptions {
   quarantine?: boolean
 }
 
-class Controller extends ResourceHandler {
+class Controller extends Environment {
   compile: Function
   getAssetFile: Function
   readAssetFile: Function

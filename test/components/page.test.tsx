@@ -9,11 +9,11 @@ import App from '../../src/components/app'
 import Composition from '../../src/components/composition'
 import Styles from '../../src/components/styles'
 
-import ResourceHandler from '../../src/utils/resources'
-
 import { useComponentContext } from '../../src/contexts/component'
 
-const resourceHandler = new ResourceHandler({ projectRoot: '.' })
+import Environment from '../../src/utils/environment'
+
+const env = new Environment()
 
 const x = 3
 function Fail() {
@@ -83,7 +83,7 @@ test('Inline Styles', () => {
   const html = renderToString(
     <Composition
       getComponent={getComponent}
-      getResource={resourceHandler.readResourceFile.bind(resourceHandler)}
+      getResource={env.readResourceFile.bind(env)}
       output="default"
       template="test"
       tree={tree}

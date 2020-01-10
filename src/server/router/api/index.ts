@@ -5,11 +5,12 @@ import express from 'express'
 import content from './content'
 
 import { Server as ServerError } from '../../errors'
+import { ControllerType } from '../../controller'
 
-export default function router(options) {
+export default function router(controller: ControllerType) {
   const apiRouter = express()
 
-  apiRouter.use('/content', content(options))
+  apiRouter.use('/content', content(controller))
 
   apiRouter.use('/csrf', (req, res, next) => {
     res.send({ csrf: req.csrfToken() })
@@ -22,7 +23,7 @@ export default function router(options) {
   apiRouter.use('/resolve', async (req, res, next) => {
     const output = req.query.output
     const uri = req.query.uri
-    res.send(await req.app.get('controller').resolve({ uri, output }))
+    res.send(await controller.resolve({ uri, output }))
   })
 
   apiRouter.use('/uri', (req, res, next) => {

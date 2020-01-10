@@ -20,3 +20,11 @@ interface Options {
   projectRoot?: string
   workerCount?: number
 }
+
+interface AuthenticateOptions {
+  cookie: string
+  secret: string
+  scope?: string[]
+  state?: string
+  successRedirect?: any
+}

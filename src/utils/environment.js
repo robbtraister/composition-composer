@@ -7,10 +7,11 @@ const Concat = require('concat-with-sourcemaps')
 
 const { readFile, writeFile } = require('./promises')
 
-class ResourceHandler {
-  constructor({ isProd, projectRoot }) {
-    this.projectRoot = projectRoot
+const env = require('../../env')
 
+class Environment {
+  constructor(inputOptions = {}) {
+    Object.assign(this, env, inputOptions)
     this.readAsset = this.readAssetFile
     this.writeAsset = this.writeAssetFile
   }
@@ -141,4 +142,4 @@ class ResourceHandler {
   }
 }
 
-module.exports = ResourceHandler
+module.exports = Environment

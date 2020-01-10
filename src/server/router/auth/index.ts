@@ -7,6 +7,7 @@ import facebook from './facebook'
 import google from './google'
 import jwt from './jwt'
 
+import { ControllerType } from '../../controller'
 import { Redirect, Unauthenticated, Unauthorized } from '../../errors'
 
 passport.serializeUser(function(user, done) {
@@ -17,10 +18,10 @@ passport.deserializeUser(function(token, done) {
   done(null, JSON.parse(token))
 })
 
-export default function router(options: Options) {
+export default function router(controller: ControllerType) {
   const router = Router()
 
-  if (!options.auth) {
+  if (!controller.auth) {
     router.use('/auth', (req, res, next) => {
       res.sendStatus(404)
     })
@@ -31,17 +32,18 @@ export default function router(options: Options) {
     })
   } else {
     router.use(/(\/auth)?\/(log|sign)out/, (req, res, next) => {
-      res.clearCookie(options.auth.cookie)
+      res.clearCookie(controller.auth.cookie)
       next(new Redirect('/'))
     })
 
     router.use(passport.initialize({}))
 
-    options.auth.providers.facebook &&
-      router.use('/auth/facebook', facebook(options))
-    options.auth.providers.google && router.use('/auth/google', google(options))
+    controller.auth.providers.facebook &&
+      router.use('/auth/facebook', facebook(controller))
+    controller.auth.providers.google &&
+      router.use('/auth/google', google(controller))
 
-    router.use(jwt(options))
+    router.use(jwt(controller))
 
     router.use((req, res, next) => {
       // ensure user is defined

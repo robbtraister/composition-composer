@@ -6,16 +6,18 @@ import FacebookStrategy from 'passport-facebook'
 
 import { authenticate } from './jwt'
 
+import { ControllerType } from '../../controller'
+
 const defaultRedirect = '/'
 const FACEBOOK_NAME = 'facebook'
 
-export default (options: Options) => {
+export default (controller: ControllerType) => {
   const {
     auth: {
       providers: { facebook }
     },
     host
-  } = options
+  } = controller
 
   if (facebook) {
     passport.use(
@@ -39,7 +41,7 @@ export default (options: Options) => {
 
     router.use((req, res, next) =>
       authenticate(FACEBOOK_NAME, {
-        ...options.auth,
+        ...controller.auth,
         scope: ['email'], // , 'profile'],
         state: req.query.redirect
           ? JSON.stringify({ redirect: req.query.redirect })

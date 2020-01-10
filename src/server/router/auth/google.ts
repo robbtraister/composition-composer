@@ -6,16 +6,18 @@ import GoogleStrategy from 'passport-google-oauth20'
 
 import { authenticate } from './jwt'
 
+import { ControllerType } from '../../controller'
+
 const defaultRedirect = '/'
 const GOOGLE_NAME = 'google'
 
-export default (options: Options) => {
+export default (controller: ControllerType) => {
   const {
     auth: {
       providers: { google }
     },
     host
-  } = options
+  } = controller
 
   if (google) {
     passport.use(
@@ -38,7 +40,7 @@ export default (options: Options) => {
 
     router.use((req, res, next) =>
       authenticate(GOOGLE_NAME, {
-        ...options.auth,
+        ...controller.auth,
         scope: ['email', 'profile'],
         state: req.query.redirect
           ? JSON.stringify({ redirect: req.query.redirect })

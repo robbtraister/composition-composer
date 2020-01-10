@@ -4,21 +4,13 @@ import jsonwebtoken from 'jsonwebtoken'
 import passport from 'passport'
 import { Strategy as JwtStrategy } from 'passport-jwt'
 
+import { ControllerType } from '../../controller'
 import { Redirect } from '../../errors'
 
 const algorithm = 'HS512'
 const JWT_NAME = 'jwt'
 
-export function authenticate(
-  strategy: string,
-  options: {
-    cookie: string
-    secret: string
-    scope?: string[]
-    state?: string
-    successRedirect?: any
-  }
-) {
+export function authenticate(strategy: string, options: AuthenticateOptions) {
   const { cookie, secret } = options
 
   const successRedirect = !options.successRedirect
@@ -51,14 +43,14 @@ export function authenticate(
   }
 }
 
-export default (options: Options) => {
+export default (controller: ControllerType) => {
   passport.use(
     JWT_NAME,
     new JwtStrategy(
       {
-        secretOrKey: options.auth.secret,
+        secretOrKey: controller.auth.secret,
         jwtFromRequest: req =>
-          req && req.cookies && req.cookies[options.auth.cookie],
+          req && req.cookies && req.cookies[controller.auth.cookie],
         algorithms: [algorithm]
       },
       function(payload, done) {
@@ -67,5 +59,5 @@ export default (options: Options) => {
     )
   )
 
-  return authenticate(JWT_NAME, options.auth)
+  return authenticate(JWT_NAME, controller.auth)
 }
