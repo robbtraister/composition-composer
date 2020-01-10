@@ -1,11 +1,13 @@
 'use strict'
 
+const path = require('path')
+
 const { projectRoot } = require('./env')
 
 require('@babel/register')({
   root: __dirname,
   ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
-  only: [__dirname, projectRoot],
+  only: [path.join(__dirname, 'src'), path.join(projectRoot, 'src')],
 
   extensions: [
     '.tsx',
@@ -19,7 +21,6 @@ require('@babel/register')({
     '.jsx',
     '.js',
     '.cjsx',
-    '.cjs',
-    '.json'
+    '.cjs'
   ]
 })
