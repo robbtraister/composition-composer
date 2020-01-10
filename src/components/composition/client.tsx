@@ -40,12 +40,10 @@ const LocationWatcher = memo(function LocationWatcher(
           ...page
         })
     }
-    if (isInitialized) {
-      forceRefresh
-        ? // fix back button
-          window.location.reload()
-        : awaitResolve()
-    }
+    forceRefresh
+      ? // fix back button
+        isInitialized && window.location.reload()
+      : awaitResolve()
     setInitialized(true)
 
     return () => {
