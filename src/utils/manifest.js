@@ -94,7 +94,3 @@ module.exports = function({ projectRoot }) {
     outputs
   }
 }
-
-if (module === require.main) {
-  console.log(JSON.stringify(module.exports(), null, 2))
-}

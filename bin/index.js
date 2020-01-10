@@ -8,8 +8,6 @@ const path = require('path')
 const program = require('commander')
 const debug = require('debug')('composition')
 
-// require('../babel.register')
-
 const npm = require('./npm')
 
 const { projectRoot } = require('../env')
