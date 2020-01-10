@@ -3,21 +3,7 @@
 import React, { memo, useEffect, useState } from 'react'
 import { BrowserRouter, useLocation } from 'react-router-dom'
 
-import { Common, CompositionProps } from './common'
-
-import { TreeNode } from '../tree'
-
-interface Resolution {
-  template: string
-  tree: TreeNode
-  pageContent: object
-}
-
-interface ClientCompositionProps extends CompositionProps {
-  forceRefresh?: boolean
-  resolve?: (string) => Promise<Resolution>
-  'single-page'?: boolean
-}
+import { Common } from './common'
 
 const LocationWatcher = memo(function LocationWatcher(
   props: ClientCompositionProps

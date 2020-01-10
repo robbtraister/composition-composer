@@ -4,8 +4,6 @@ import React from 'react'
 
 import RenderError from './error'
 
-import { TreeNode } from '../tree'
-
 export class Quarantine extends React.PureComponent<TreeNode, { error: any }> {
   static displayName: string
 
