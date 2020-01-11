@@ -9,7 +9,8 @@ exports[`Quarantine Component 1`] = `
     <div
       data-error-component="fail"
       data-error-id="def"
-      data-error-message="fail"
+      data-error-message="component render failed"
+      style="display: none;"
     />
     <div
       data-id="xyz"

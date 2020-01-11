@@ -43,7 +43,6 @@ interface CommonCompositionProps extends TreeProps {
   elements?: TreeNode[]
   output?: string
   outputStyles?: string
-  template?: string
 
   getResource?: ResourceFetcher
 }

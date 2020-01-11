@@ -11,7 +11,7 @@ import { useComponentContext } from '../../src/contexts/component'
 const x = 3
 function Fail() {
   if (x === 3) {
-    throw new Error('fail')
+    throw new Error('component render failed')
   }
   return <React.Fragment />
 }

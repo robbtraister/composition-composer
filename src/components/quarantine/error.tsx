@@ -12,6 +12,7 @@ export function RenderError(props: { error }) {
       data-error-component={type}
       data-error-id={id}
       data-error-message={error.message || error}
+      style={{ display: 'none' }}
     />
   )
 }
