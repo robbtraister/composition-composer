@@ -3,8 +3,8 @@
 const fs = require('fs')
 const path = require('path')
 
-const DISABLED_PATTERN = /^(disabled?|false|no|off)$/i
-// const ENABLED_PATTERN = /^(enabled?|true|on|yes)$/i
+const DISABLED_PATTERN = /^(disabled?|false|no|off|0)$/i
+// const ENABLED_PATTERN = /^(enabled?|true|yes|on|1)$/i
 
 function prefix(dir = '.') {
   function _prefix(dir) {
@@ -38,6 +38,8 @@ const { config = {} } = JSON.parse(
 const isProd = /^prod/i.test(process.env.NODE_ENV)
 
 module.exports = {
+  isPreact: !DISABLED_PATTERN.test(process.env.PREACT),
+
   isProd,
 
   logging: !DISABLED_PATTERN.test(process.env.LOGGING),

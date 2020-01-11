@@ -12,7 +12,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 const environment = require('./environment')
 const { components, outputs } = require('./manifest')
 
-const { projectRoot } = environment
+const { isPreact, projectRoot } = environment
 
 const componentNames = Object.keys(components)
 
@@ -88,11 +88,13 @@ const runtimeLibs = [
   'styled-components'
 ]
 
+const sharedConfigs = require('./shared')
+
 module.exports = (_, argv) => {
   const isProd = environment.isProd || /^prod/i.test(argv.mode)
 
   return {
-    ...require('./shared'),
+    ...sharedConfigs,
     ...require('./shared/rules')({ isProd, extractCss: true }),
     name: 'client',
     devtool: isProd ? 'source-map' : 'eval-source-map',
@@ -170,6 +172,16 @@ module.exports = (_, argv) => {
       }),
       new OnBuildPlugin(writeAssets)
     ],
+    resolve: {
+      ...sharedConfigs.resolve,
+      alias: {
+        ...sharedConfigs.resolve.alias,
+        react: require.resolve(isPreact && isProd ? 'preact/compat' : 'react'),
+        'react-dom': require.resolve(
+          isPreact && isProd ? 'preact/compat' : 'react-dom'
+        )
+      }
+    },
     target: 'web'
   }
 }
