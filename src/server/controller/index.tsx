@@ -11,7 +11,7 @@ import { ServerStyleSheet } from 'styled-components'
 
 import { Redirect } from '../errors'
 
-import { Composition, Tree } from '../../components'
+import { Composition, StyledComponents, Tree } from '../../components'
 import { getDescendants } from '../../components/utils'
 
 import Environment from '../../utils/environment'
@@ -41,7 +41,6 @@ function getContentType(Output, body) {
       'text/plain'
 }
 
-const StyledComponents = 'composition:styled-components'
 const STYLED_COMPONENTS_PATTERN = new RegExp(
   `<${StyledComponents}></${StyledComponents}>`,
   'g'
@@ -144,10 +143,13 @@ class Controller extends Environment {
             throw new Redirect(context.url)
           }
 
-          const body = html.replace(
-            STYLED_COMPONENTS_PATTERN,
-            sheet.getStyleTags()
-          )
+          const body = html
+            .replace(
+              STYLED_COMPONENTS_PATTERN,
+              sheet.getStyleTags().replace(/<\/?style[^>]*>/g, '')
+            )
+            // remove empty, orphaned style tag if styled-components is not used
+            .replace(/<style><\/style>/g, '')
 
           const contentType = getContentType(Output, body)
 

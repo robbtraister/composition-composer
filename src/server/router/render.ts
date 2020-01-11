@@ -9,7 +9,7 @@ export default function router(controller: ControllerType) {
 
   router.get('*', async (req, res, next) => {
     const uri = req.originalUrl
-    const output = req.query.output
+    const output = req.query.output || 'default'
     const { body, contentType } = await controller.render(
       await controller.resolve({ uri, output })
     )

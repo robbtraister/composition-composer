@@ -85,3 +85,7 @@ interface ResourceParams {
 interface ResourceStruct {
   resource: any
 }
+
+interface StylesStruct {
+  styles: any
+}
