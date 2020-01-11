@@ -1,6 +1,5 @@
 'use strict'
 
-const { exec } = require('child_process')
 const crypto = require('crypto')
 const path = require('path')
 
@@ -11,6 +10,7 @@ const TerserJSPlugin = require('terser-webpack-plugin')
 
 const environment = require('./environment')
 const { components, outputs } = require('./manifest')
+const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { isPreact, projectRoot } = environment
 
@@ -51,8 +51,6 @@ async function writeAssets(stats) {
       })
   )
 
-  exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
-
   // await here to ensure assets are available before compiling
   await environment.writeResourceFile(
     path.join('build', 'assets.json'),
@@ -66,16 +64,6 @@ async function writeAssets(stats) {
       output
     })
   )
-}
-
-class OnBuildPlugin {
-  constructor(fn) {
-    this.fn = fn
-  }
-
-  apply(compiler) {
-    compiler.hooks.done.tap('OnBuildPlugin', this.fn)
-  }
 }
 
 // if any of these libs are used in the bundle, output them into the shared/heavily-cached runtime asset

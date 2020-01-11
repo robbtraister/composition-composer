@@ -9,18 +9,9 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const environment = require('./environment')
 const { outputs } = require('./manifest')
+const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { port, projectRoot } = environment
-
-class OnBuildPlugin {
-  constructor(fn) {
-    this.fn = fn
-  }
-
-  apply(compiler) {
-    compiler.hooks.done.tap('OnBuildPlugin', this.fn)
-  }
-}
 
 const entry = {
   server: [
@@ -98,14 +89,15 @@ module.exports = (_, argv) => {
           'typeof process': JSON.stringify(typeof {}),
           'typeof window': JSON.stringify(undefined)
         }),
-        ...(isProd
-          ? []
-          : [
-              new OnBuildPlugin(() => {
-                delete require.cache[require.resolve(buildArtifact)]
-                hotApp = undefined
-              })
-            ])
+        new OnBuildPlugin(async stats => {
+          delete require.cache[require.resolve(buildArtifact)]
+          hotApp = undefined
+
+          // clear compilation cache
+          childProcess.exec(
+            `rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`
+          )
+        })
       ]
     },
     {
@@ -124,6 +116,7 @@ module.exports = (_, argv) => {
           filename: 'dist/styles/outputs/[name].css'
         }),
         new OnBuildPlugin(async stats => {
+          // remove extraneous assets
           childProcess.exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
         })
       ]

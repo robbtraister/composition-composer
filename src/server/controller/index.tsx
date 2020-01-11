@@ -100,9 +100,10 @@ class Controller extends Environment {
   }
 
   async getTree(template) {
-    return JSON.parse(
-      await this.readResourceFile(path.join('templates', `${template}.json`))
-    )
+    return require(`~/../templates/${template}.json`)
+    // return JSON.parse(
+    //   await this.readResourceFile(path.join('templates', `${template}.json`))
+    // )
   }
 
   async render(props) {
