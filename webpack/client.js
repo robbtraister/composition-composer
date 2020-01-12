@@ -110,33 +110,38 @@ module.exports = (_, argv) => {
       splitChunks: {
         chunks: 'all',
         minSize: 0,
-        name(mod, chunks, cacheGroupKey) {
-          const chunkNames = [].concat(chunks).map(chunk => chunk.name)
+        cacheGroups: {
+          customCacheGroup: {
+            enforce: true,
+            name(mod, chunks, cacheGroupKey) {
+              const chunkNames = [].concat(chunks).map(chunk => chunk.name)
 
-          if (
-            // engine is always loaded in the browser and will not change across templates,
-            // so take advantage of heavy caching
-            chunkNames.includes('engine') ||
-            // if any standard libs are used, add to heavily-cached runtime asset
-            isRuntimeLib(mod) ||
-            // put all libs in runtime during dev to speed up recompilation
-            (!isProd &&
-              /[\\/]node_modules[\\/]/.test(mod.resource || mod.request))
-          ) {
-            return 'runtime'
-          } else if (chunkNames.length === 1) {
-            return chunkNames[0]
+              if (
+                // engine is always loaded in the browser and will not change across templates,
+                // so take advantage of heavy caching
+                chunkNames.includes('engine') ||
+                // if any standard libs are used, add to heavily-cached runtime asset
+                isRuntimeLib(mod) ||
+                // put all libs in runtime during dev to speed up recompilation
+                (!isProd &&
+                  /[\\/]node_modules[\\/]/.test(mod.resource || mod.request))
+              ) {
+                return 'runtime'
+              } else if (chunkNames.length === 1) {
+                return chunkNames[0]
+              }
+
+              const chunkName = chunkNames.sort().join('~')
+
+              const hash = crypto
+                .createHash('md5')
+                .update(chunkName)
+                .digest()
+                .toString('hex')
+
+              return `components/_shared/${hash}`
+            }
           }
-
-          const chunkName = chunkNames.sort().join('~')
-
-          const hash = crypto
-            .createHash('md5')
-            .update(chunkName)
-            .digest()
-            .toString('hex')
-
-          return `components/_shared/${hash}`
         }
       },
       minimizer: [
