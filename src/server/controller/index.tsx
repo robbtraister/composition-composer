@@ -3,7 +3,6 @@
 import path from 'path'
 import { URL } from 'url'
 
-import debugModule from 'debug'
 import { decodeHTML } from 'entities'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
@@ -15,6 +14,7 @@ import { Composition, StyledComponents, Tree } from '../../components'
 import { getDescendants } from '../../components/utils'
 
 import Environment from '../../utils/environment'
+import logger from '../../utils/logger'
 import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
@@ -22,8 +22,6 @@ import contentSources from '~/../build/generated/content-sources'
 import outputs from '~/../build/generated/outputs'
 
 export type ControllerType = Controller & Options
-
-const debug = debugModule('composition:compile')
 
 function getComponent(output, type) {
   return components[type][output]
@@ -68,7 +66,7 @@ class Controller extends Environment {
         tree
       })
 
-      debug(`${template} compiled in ${(Date.now() - start) / 1000}s`)
+      logger.info(`${template} compiled in ${(Date.now() - start) / 1000}s`)
 
       return result
     } catch (error) {

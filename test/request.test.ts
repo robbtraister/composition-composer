@@ -40,13 +40,13 @@ test('uri', () => {
 })
 
 test('logging 400', () => {
-  return request(app({ auth: null, logging: true }))
+  return request(app({ auth: null, logLevel: 'info' }))
     .get('/api/error/400')
     .expect(400)
 })
 
 test('logging 500', () => {
-  return request(app({ auth: null, logging: true }))
+  return request(app({ auth: null, logLevel: 'info' }))
     .get('/api/error')
     .expect(500)
 })

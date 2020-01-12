@@ -1,5 +1,6 @@
 'use strict'
 
+import debugModule from 'debug'
 import React, { memo, useContext } from 'react'
 
 import { isClient } from './utils'
@@ -7,6 +8,8 @@ import QuarantineComponent from './quarantine'
 import componentContext from '../contexts/component'
 
 import compositionContext from '../contexts/composition'
+
+const debug = debugModule('composition:components:tree')
 
 const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
 
@@ -32,7 +35,14 @@ export const Tree = memo(function Tree(treeProps: TreeProps) {
 
   function Node(node: TreeNode) {
     const { props = {}, children = [], type } = node
+
     const Component = getComponent(type) || null
+    debug('rendering component:', {
+      output: context.output,
+      type,
+      Component,
+      props
+    })
 
     const componentContextValue = { ...node, getContent }
 
@@ -53,6 +63,12 @@ export const Tree = memo(function Tree(treeProps: TreeProps) {
       )
     )
   }
+
+  debug('rendering tree:', {
+    output: context.output,
+    template: context.template,
+    quarantine
+  })
 
   return <Node {...tree} />
 })

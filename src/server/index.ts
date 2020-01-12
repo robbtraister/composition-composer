@@ -2,28 +2,28 @@
 
 import cluster from 'cluster'
 
-import debugModule from 'debug'
-
 import app from './app'
 
-import * as env from '../../env'
+import logger from '../utils/logger'
 
-const debug = debugModule(`composition:server:${process.pid}`)
+import * as env from '../../env'
 
 export { app }
 
 export function server(options: Options = {}) {
   process.on('disconnect', () => {
-    debug('Disconnected')
+    logger.info(`Worker[${process.pid}] disconnected`)
   })
   process.on('exit', code => {
-    debug(`Exited with code: ${code}`)
+    logger.info(`Worker[${process.pid}] exited with code: ${code}`)
   })
 
   const port = Number(options.port) || env.port
 
   return app(options).listen(port, err =>
-    err ? console.error(err) : debug(`Listening on port: ${port}`)
+    err
+      ? console.error(err)
+      : logger.info(`Worker[${process.pid}] listening on port: ${port}`)
   )
 }
 
@@ -44,7 +44,7 @@ export async function master(options: Options = {}) {
   const result = await Promise.all(
     [...new Array(workerCount)].map(createWorker)
   )
-  debug(`${workerCount} worker${workerCount === 1 ? '' : 's'} Created`)
+  logger.info(`${workerCount} worker${workerCount === 1 ? '' : 's'} Created`)
 
   return result
 }

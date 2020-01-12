@@ -14,7 +14,7 @@ interface Options {
   }
   host?: string
   isProd?: boolean
-  logging?: boolean
+  logLevel?: string
   port?: number
   resources?: any
   projectRoot?: string

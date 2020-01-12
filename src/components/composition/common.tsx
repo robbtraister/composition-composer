@@ -1,5 +1,6 @@
 'use strict'
 
+import debugModule from 'debug'
 import React, { memo } from 'react'
 
 import { Tree } from '../tree'
@@ -8,6 +9,8 @@ import compositionContext from '../../contexts/composition'
 
 import { getDescendants } from '../utils'
 
+const debug = debugModule('composition:components:context')
+
 export const Common = memo(function Common({
   children,
   value
@@ -15,13 +18,14 @@ export const Common = memo(function Common({
   children?: React.ReactNode
   value: CompositionProps
 }) {
+  const context = {
+    cache: {},
+    ...value,
+    elements: getDescendants({ children: value.tree })
+  }
+  debug('rendering with context', context)
   return (
-    <compositionContext.Provider
-      value={{
-        cache: {},
-        ...value,
-        elements: getDescendants({ children: value.tree })
-      }}>
+    <compositionContext.Provider value={context}>
       {children || <Tree />}
     </compositionContext.Provider>
   )

@@ -6,11 +6,12 @@ const fs = require('fs')
 const path = require('path')
 
 const program = require('commander')
-const debug = require('debug')('composition')
 
 const npm = require('./npm')
 
 const { projectRoot } = require('../env')
+
+const logger = require('../src/utils/logger')
 
 async function copyFile(src, dest, flags) {
   await fs.promises.mkdir(path.dirname(dest), { recursive: true })
@@ -20,9 +21,9 @@ async function copyFile(src, dest, flags) {
 program.version(require('../package.json').version)
 
 program.command('init').action(async () => {
-  debug('initializing')
+  logger.info('initializing')
   try {
-    debug('creating directories')
+    logger.info('creating directories')
     await Promise.all(
       ['components', 'content-sources', 'definitions', 'outputs'].map(dir =>
         fs.promises.mkdir(path.join(projectRoot, 'src', dir), {
@@ -31,7 +32,7 @@ program.command('init').action(async () => {
       )
     )
 
-    debug('copying config files')
+    logger.info('copying config files')
     await Promise.all(
       [
         '.vscode/launch.json',

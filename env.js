@@ -42,7 +42,7 @@ module.exports = {
 
   isProd,
 
-  logging: !DISABLED_PATTERN.test(process.env.LOGGING),
+  logLevel: (process.env.LOG_LEVEL || 'info').toLowerCase(),
 
   port: Number(process.env.PORT) || Number(config.port) || 8080,
 
