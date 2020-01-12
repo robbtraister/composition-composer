@@ -41,6 +41,7 @@ interface CommonCompositionProps extends TreeProps {
   appStyles?: string
   cache?: object
   elements?: TreeNode[]
+  location?: string
   output?: string
   outputStyles?: string
 
@@ -55,7 +56,6 @@ interface ClientCompositionProps extends CommonCompositionProps {
 
 interface ServerCompositionProps extends CommonCompositionProps {
   children?: React.ReactNode
-  location?: string
   routerContext?: { url?: string }
 }
 

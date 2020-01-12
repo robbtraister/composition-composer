@@ -41,7 +41,7 @@ const InlineStyles = ({ amp, ...props }) => {
     // default implementation; can be overridden
     children: StyleTag,
     ...props,
-    'amp-custom': amp ? 'true' : null,
+    'amp-custom': amp ? '' : null,
     styles
   })
 }

@@ -158,7 +158,7 @@ class Controller extends Environment {
             body: !/^text\/html(;|$)/i.test(contentType)
               ? // is not an HTML document
                 decodeHTML(body)
-              : /\w*<\w*html[\w>]/i.test(body)
+              : /\s*<\s*html[\s>]/i.test(body)
               ? // is a full HTML document
                 `<!DOCTYPE html>${body}`
               : // is an HTML snippet

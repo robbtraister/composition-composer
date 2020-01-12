@@ -61,6 +61,11 @@ function render() {
         getComponent={getComponent}
         getContent={getContent}
         cache={Composition.cache}
+        location={
+          window.location.pathname +
+          window.location.search +
+          window.location.hash
+        }
         output={Composition.output}
         resolve={resolve}
         single-page={Composition.singlePage}
