@@ -2,6 +2,7 @@
 
 import compression from 'compression'
 import express from 'express'
+import morgan from 'morgan'
 
 import Controller, { ControllerType } from './controller'
 import router from './router'
@@ -17,6 +18,16 @@ export default function app(options: Options = {}) {
   app.disable('x-powered-by')
 
   app.use(compression())
+
+  app.use(
+    morgan(options.isProd ? 'short' : 'dev', {
+      stream: {
+        write: msg => {
+          logger.info(msg.replace(/\n$/, ''))
+        }
+      }
+    })
+  )
 
   app.use(router(controller))
 
