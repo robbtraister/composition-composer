@@ -14,13 +14,32 @@ const OnBuildPlugin = require('./plugins/on-build-plugin')
 const { port, projectRoot } = environment
 
 const entry = {
-  server: [
+  index: [
     'source-map-support/register',
     path.relative(projectRoot, path.resolve(__dirname, '..', 'src', 'server'))
+  ],
+  master: [
+    // 'source-map-support/register',
+    path.relative(
+      projectRoot,
+      path.resolve(__dirname, '..', 'src', 'server', 'master')
+    )
+  ],
+  lambda: [
+    // 'source-map-support/register',
+    path.relative(
+      projectRoot,
+      path.resolve(__dirname, '..', 'src', 'server', 'lambda')
+    )
   ]
 }
 
-const buildArtifact = path.resolve(projectRoot, 'build', Object.keys(entry)[0])
+const buildArtifact = path.resolve(
+  projectRoot,
+  'build',
+  'server',
+  Object.keys(entry)[0]
+)
 
 const devMode = {
   // the following are set to enable proper server-side source-map error logging
@@ -46,7 +65,7 @@ const serverConfigs = {
   name: 'server',
   externals,
   output: {
-    filename: '[name].js',
+    filename: 'server/[name].js',
     libraryTarget: 'commonjs2',
     path: path.join(projectRoot, 'build')
   },

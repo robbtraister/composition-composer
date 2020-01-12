@@ -2,4 +2,4 @@
 
 'use strict'
 
-module === require.main && require('./build/server').main()
+module === require.main && require('./build/server/master').main()

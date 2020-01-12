@@ -1,12 +1,10 @@
 'use strict'
 
-import cluster from 'cluster'
-
 import app from './app'
 
 import logger from '../utils/logger'
 
-import * as env from '../../env'
+import { port as envPort } from '../../env'
 
 export { app }
 
@@ -18,7 +16,7 @@ export function server(options: Options = {}) {
     logger.info(`Worker[${process.pid}] exited with code: ${code}`)
   })
 
-  const port = Number(options.port) || env.port
+  const port = Number(options.port) || envPort
 
   return app(options).listen(port, err =>
     err
@@ -27,30 +25,9 @@ export function server(options: Options = {}) {
   )
 }
 
-async function createWorker() {
-  return new Promise(resolve => {
-    const worker = cluster.fork()
-    // add an exit handler so cluster will replace worker in the event of an unintentional termination
-    worker.on('exit', () => {
-      worker.exitedAfterDisconnect || createWorker()
-    })
-    worker.on('listening', resolve)
-  })
-}
-
-export async function master(options: Options = {}) {
-  const workerCount = Number(options.workerCount) || env.workerCount
-
-  const result = await Promise.all(
-    [...new Array(workerCount)].map(createWorker)
-  )
-  logger.info(`${workerCount} worker${workerCount === 1 ? '' : 's'} Created`)
-
-  return result
-}
-
 export function main(options: Options = {}) {
-  ;(cluster.isMaster ? master : server)(options)
+  process.title = `Composition Server [${process.pid}]`
+  return server(options)
 }
 
 export default server
