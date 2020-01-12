@@ -76,6 +76,15 @@ const runtimeLibs = [
   'styled-components'
 ]
 
+function isRuntimeLib(mod) {
+  let pkg = mod
+  while (pkg) {
+    if (runtimeLibs.includes(pkg.rawRequest)) return true
+    pkg = pkg.issuer
+  }
+  return false
+}
+
 const sharedConfigs = require('./shared')
 
 module.exports = (_, argv) => {
@@ -109,7 +118,7 @@ module.exports = (_, argv) => {
             // so take advantage of heavy caching
             chunkNames.includes('engine') ||
             // if any standard libs are used, add to heavily-cached runtime asset
-            runtimeLibs.includes(mod.rawRequest) ||
+            isRuntimeLib(mod) ||
             // put all libs in runtime during dev to speed up recompilation
             (!isProd &&
               /[\\/]node_modules[\\/]/.test(mod.resource || mod.request))
