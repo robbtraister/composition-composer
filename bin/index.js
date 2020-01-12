@@ -8,13 +8,9 @@ const path = require('path')
 const program = require('commander')
 const debug = require('debug')('composition')
 
-require('../babel.register')
-
 const npm = require('./npm')
 
 const { projectRoot } = require('../env')
-
-const { manifest } = require('../src/utils/manifest')
 
 async function copyFile(src, dest, flags) {
   await fs.promises.mkdir(path.dirname(dest), { recursive: true })
@@ -44,6 +40,7 @@ program.command('init').action(async () => {
         '.eslintignore',
         '.eslintrc.json',
         '.gitignore',
+        '.nvmrc',
         '.prettierignore',
         'server.js',
         'tsconfig.json'
@@ -63,6 +60,10 @@ program.command('init').action(async () => {
 })
 
 program.command('manifest').action(async () => {
+  require('../babel.register')
+
+  const { manifest } = require('../src/utils/manifest')
+
   console.log(JSON.stringify(manifest({ projectRoot }), null, 2))
 })
 ;['build', 'clean', 'dev', 'generate', 'prod', 'watch'].map(cmd => {
