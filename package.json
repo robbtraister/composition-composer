@@ -108,6 +108,7 @@
   "files": [
     "bin",
     "build",
+    "bundle",
     "src",
     "webpack",
     "aliases.js",
