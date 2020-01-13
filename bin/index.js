@@ -42,7 +42,7 @@ program.command('init').action(async () => {
         '.dockerignore',
         '.eslintignore',
         '.eslintrc.json',
-        '.gitignore',
+        '-.gitignore',
         '.nvmrc',
         '.prettierignore',
         'server.js',
@@ -50,7 +50,7 @@ program.command('init').action(async () => {
       ].map(async fileName => {
         try {
           return copyFile(
-            path.join(__dirname, `templates/${fileName}`),
+            path.join(__dirname, `templates/${fileName.replace(/^-/, '')}`),
             path.join(projectRoot, fileName),
             fs.COPYFILE_EXCL
           )
