@@ -119,7 +119,7 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^~/(.*)": "<rootDir>/src/$1"
+      "^~/(.*)": "<rootDir>/bundle/src/$1"
     },
     "testPathIgnorePatterns": [
       "<rootDir>/build/",
