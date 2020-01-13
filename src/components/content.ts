@@ -7,7 +7,7 @@ import { render } from './render'
 import componentContext from '../contexts/component'
 import compositionContext from '../contexts/composition'
 
-export function useContent(params: ContentParams) {
+export function useContent(params: Composition.ContentParams) {
   const { source, query } = params
   const key = JSON.stringify({ content: { source, query } })
 
@@ -36,7 +36,12 @@ export function useContent(params: ContentParams) {
   return content
 }
 
-export function Content(props: RenderableProps<ContentParams, ContentStruct>) {
+export function Content(
+  props: Composition.RenderableProps<
+    Composition.ContentParams,
+    Composition.ContentStruct
+  >
+) {
   const { source, query, filter, ...passThroughProps } = props
   const content = useContent({ source, query, filter }) || {}
 

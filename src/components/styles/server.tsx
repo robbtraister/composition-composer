@@ -12,7 +12,7 @@ import { useCompositionContext } from '../../contexts/composition'
 
 export const StyledComponents = 'composition:styled-components'
 
-interface StylesProps extends RenderProps<{}> {
+interface StylesProps extends Composition.RenderProps<{}> {
   amp?: boolean
   inline?: boolean
 }
@@ -30,7 +30,7 @@ export const useStyles = () => {
     ''}<${StyledComponents}></${StyledComponents}>`
 }
 
-const StyleTag = ({ styles, ...props }: StylesStruct) => (
+const StyleTag = ({ styles, ...props }: Composition.StylesStruct) => (
   <style {...props} dangerouslySetInnerHTML={{ __html: styles }} />
 )
 

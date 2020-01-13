@@ -59,14 +59,14 @@ export function getContentSource(source) {
   return contentSourceCache[source]
 }
 
-export async function clear({ source, query }: ContentParams) {
+export async function clear({ source, query }: Composition.ContentParams) {
   return getContentSource(source).clear(query)
 }
 
-export async function fetch({ source, query }: ContentParams) {
+export async function fetch({ source, query }: Composition.ContentParams) {
   return getContentSource(source).fetch(query)
 }
 
-export async function update({ source, query }: ContentParams) {
+export async function update({ source, query }: Composition.ContentParams) {
   return getContentSource(source).update(query)
 }

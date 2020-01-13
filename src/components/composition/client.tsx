@@ -6,7 +6,7 @@ import { BrowserRouter, useLocation } from 'react-router-dom'
 import { Common } from './common'
 
 const LocationWatcher = memo(function LocationWatcher(
-  props: ClientCompositionProps
+  props: Composition.ClientCompositionProps
 ) {
   const {
     pageContent,
@@ -18,7 +18,7 @@ const LocationWatcher = memo(function LocationWatcher(
   } = props
 
   const [isInitialized, setInitialized] = useState<boolean>(false)
-  const [context, setContext] = useState<CompositionProps>({
+  const [context, setContext] = useState<Composition.CompositionProps>({
     pageContent,
     template,
     tree,
@@ -55,7 +55,7 @@ const LocationWatcher = memo(function LocationWatcher(
 })
 
 export const Composition = memo(function Composition(
-  props: ClientCompositionProps
+  props: Composition.ClientCompositionProps
 ) {
   return (
     <BrowserRouter>

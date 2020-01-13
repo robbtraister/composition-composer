@@ -9,7 +9,7 @@ import router from './router'
 
 import logger from '../utils/logger'
 
-export default function app(options: Options = {}) {
+export default function app(options: Composition.Options = {}) {
   const app = express()
 
   const controller: ControllerType = new Controller(options)

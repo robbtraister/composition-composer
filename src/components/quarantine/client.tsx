@@ -7,7 +7,10 @@ import RenderError from './error'
 
 const debug = debugModule('composition:components:quarantine')
 
-export class Quarantine extends React.PureComponent<TreeNode, { error: any }> {
+export class Quarantine extends React.PureComponent<
+  Composition.TreeNode,
+  { error: any }
+> {
   static displayName: string
 
   constructor(props) {

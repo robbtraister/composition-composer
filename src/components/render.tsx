@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-export function render(props: RenderableProps<any, any>) {
+export function render(props: Composition.RenderableProps<any, any>) {
   const { children, component: Component, render, ...passThroughProps } = props
 
   if (Component) {

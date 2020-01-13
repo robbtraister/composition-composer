@@ -10,7 +10,10 @@ import { Redirect } from '../../errors'
 const algorithm = 'HS512'
 const JWT_NAME = 'jwt'
 
-export function authenticate(strategy: string, options: AuthenticateOptions) {
+export function authenticate(
+  strategy: string,
+  options: Composition.AuthenticateOptions
+) {
   const { cookie, secret } = options
 
   const successRedirect = !options.successRedirect

@@ -14,7 +14,7 @@ export class Environment {
   readAsset: Function
   writeAsset: Function
 
-  constructor(options: Options = {}) {
+  constructor(options: Composition.Options = {}) {
     Object.assign(this, env, options)
     this.readAsset = this.readAssetFile
     this.writeAsset = this.writeAssetFile

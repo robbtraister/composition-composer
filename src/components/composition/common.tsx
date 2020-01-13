@@ -16,7 +16,7 @@ export const Common = memo(function Common({
   value
 }: {
   children?: React.ReactNode
-  value: CompositionProps
+  value: Composition.CompositionProps
 }) {
   const context = {
     cache: {},

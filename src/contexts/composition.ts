@@ -4,7 +4,9 @@ import { createContext, useContext } from 'react'
 
 import { render } from '../components/render'
 
-export const compositionContext = createContext<CompositionProps>({})
+export const compositionContext = createContext<Composition.CompositionProps>(
+  {}
+)
 
 export function useCompositionContext() {
   const {
@@ -18,7 +20,9 @@ export function useCompositionContext() {
   return consumableContext
 }
 
-export function CompositionContext(props: RenderableProps<{}, ContextStruct>) {
+export function CompositionContext(
+  props: Composition.RenderableProps<{}, Composition.ContextStruct>
+) {
   const context = useCompositionContext()
   return render({ ...props, context })
 }

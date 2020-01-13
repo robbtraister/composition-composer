@@ -22,7 +22,7 @@ import { fileExists } from '../../utils/promises'
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
 
-export type ControllerType = Controller & Options
+export type ControllerType = Controller & Composition.Options
 
 function getComponent(output, type) {
   return components[type][output]
@@ -75,15 +75,15 @@ class Controller extends Environment {
     }
   }
 
-  async clear({ source, query }: ContentParams) {
+  async clear({ source, query }: Composition.ContentParams) {
     return getContentSource(source).clear(query)
   }
 
-  async fetch({ source, query }: ContentParams) {
+  async fetch({ source, query }: Composition.ContentParams) {
     return getContentSource(source).fetch(query)
   }
 
-  async update({ source, query }: ContentParams) {
+  async update({ source, query }: Composition.ContentParams) {
     return getContentSource(source).update(query)
   }
 

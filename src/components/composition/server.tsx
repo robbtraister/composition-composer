@@ -5,7 +5,7 @@ import { StaticRouter } from 'react-router'
 
 import { Common } from './common'
 
-export function Composition(props: ServerCompositionProps) {
+export function Composition(props: Composition.ServerCompositionProps) {
   const { children, routerContext = {}, ...contextValue } = props
   return (
     <StaticRouter location={props.location} context={routerContext}>

@@ -8,7 +8,7 @@ import RenderError from './error'
 
 const debug = debugModule('composition:components:quarantine')
 
-export function Quarantine(node: TreeNode) {
+export function Quarantine(node: Composition.TreeNode) {
   const { id, type, props, children } = node
   try {
     const element = <>{children}</>

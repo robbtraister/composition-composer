@@ -10,7 +10,7 @@ import * as env from '../../env'
 
 export { app }
 
-export function server(options: Options = {}) {
+export function server(options: Composition.Options = {}) {
   process.on('disconnect', () => {
     logger.info(`Worker[${process.pid}] disconnected`)
   })
@@ -38,7 +38,7 @@ async function createWorker() {
   })
 }
 
-export async function master(options: Options = {}) {
+export async function master(options: Composition.Options = {}) {
   const workerCount = Number(options.workerCount) || env.workerCount
 
   const result = await Promise.all(
@@ -49,7 +49,7 @@ export async function master(options: Options = {}) {
   return result
 }
 
-export function main(options: Options = {}) {
+export function main(options: Composition.Options = {}) {
   ;(cluster.isMaster ? master : server)(options)
 }
 

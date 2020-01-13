@@ -11,9 +11,11 @@ import compositionContext from '../contexts/composition'
 
 const debug = debugModule('composition:components:tree')
 
-const QuarantineFragment = ({ children }: TreeNode) => <>{children}</>
+const QuarantineFragment = ({ children }: Composition.TreeNode) => (
+  <>{children}</>
+)
 
-export const Tree = memo(function Tree(treeProps: TreeProps) {
+export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   const context = useContext(compositionContext)
 
   const getComponent = treeProps.getComponent || context.getComponent
@@ -33,7 +35,7 @@ export const Tree = memo(function Tree(treeProps: TreeProps) {
 
   const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
-  function Node(node: TreeNode) {
+  function Node(node: Composition.TreeNode) {
     const { props = {}, children = [], type } = node
 
     const Component = getComponent(type) || null

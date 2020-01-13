@@ -6,7 +6,10 @@ import render from '../render'
 
 import compositionContext from '../../contexts/composition'
 
-export function useResource({ name, encoding = 'utf8' }: ResourceParams) {
+export function useResource({
+  name,
+  encoding = 'utf8'
+}: Composition.ResourceParams) {
   const { cache = {}, getResource } = useContext(compositionContext)
 
   const key = JSON.stringify({ resource: name })
@@ -28,7 +31,10 @@ export function useResource({ name, encoding = 'utf8' }: ResourceParams) {
 }
 
 export function Resource(
-  props: RenderableProps<ResourceParams, ResourceStruct>
+  props: Composition.RenderableProps<
+    Composition.ResourceParams,
+    Composition.ResourceStruct
+  >
 ) {
   const { name, encoding, ...passThroughProps } = props
   const resource = useResource({ name, encoding })

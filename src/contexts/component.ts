@@ -5,7 +5,7 @@ import { createContext, useContext } from 'react'
 import { render } from '../components/render'
 
 const componentContext = createContext<
-  TreeNode & { getContent: ContentFetcher }
+  Composition.TreeNode & { getContent: Composition.ContentFetcher }
 >({
   type: null,
   id: null,
@@ -19,7 +19,9 @@ export function useComponentContext() {
   return consumableContext
 }
 
-export function ComponentContext(props: RenderableProps<{}, ContextStruct>) {
+export function ComponentContext(
+  props: Composition.RenderableProps<{}, Composition.ContextStruct>
+) {
   const context = useComponentContext()
   return render({ ...props, context })
 }
