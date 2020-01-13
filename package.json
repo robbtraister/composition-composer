@@ -48,6 +48,7 @@
     "json-loader": "^0.5.7",
     "jsonwebtoken": "^8.5.1",
     "mini-css-extract-plugin": "^0.9.0",
+    "mock-require": "^3.0.3",
     "morgan": "^1.9.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "passport": "^0.4.1",

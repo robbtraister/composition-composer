@@ -2,11 +2,14 @@
 
 const path = require('path')
 
+const mockRequire = require('mock-require')
+
+const aliases = require('./aliases')
 const { projectRoot } = require('./env')
 
 require('@babel/register')({
   root: __dirname,
-  ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
+  ignore: [/[\\/]node_modules[\\/]/],
   only: [path.join(__dirname, 'src'), path.join(projectRoot, 'src')],
 
   extensions: [
@@ -24,3 +27,7 @@ require('@babel/register')({
     '.cjs'
   ]
 })
+
+Object.entries(aliases).forEach(([key, value]) =>
+  mockRequire(key, require(value))
+)
