@@ -1,15 +1,13 @@
 'use strict'
 
-import path from 'path'
+const path = require('path')
 
-import babelRegister from '@babel/register'
-import glob from 'glob'
-import mockRequire from 'mock-require'
+const babelRegister = require('@babel/register')
+const glob = require('glob')
+const mockRequire = require('mock-require')
 
-import aliases from '../../aliases'
-import { projectRoot } from '../../env'
-
-import { writeFile } from './promises'
+const aliases = require('../../aliases')
+const { projectRoot } = require('../../env')
 
 let registered = false
 function register() {
@@ -38,7 +36,7 @@ function register() {
       ]
     })
 
-    Object.entries(aliases).forEach(([key, value]: [string, string]) =>
+    Object.entries(aliases).forEach(([key, value]) =>
       mockRequire(key, require(value))
     )
 
@@ -46,7 +44,7 @@ function register() {
   }
 }
 
-export function manifest({ projectRoot }) {
+function manifest({ projectRoot }) {
   register()
 
   const srcRoot = path.join(projectRoot, 'src')
@@ -155,13 +153,4 @@ export function manifest({ projectRoot }) {
   }
 }
 
-export default manifest
-
-if (module === require.main) {
-  const manifestJSON = JSON.stringify(manifest({ projectRoot }), null, 2)
-  writeFile(path.resolve(projectRoot, 'build', 'manifest.json'), manifestJSON)
-
-  if (!process.argv.includes('--quiet')) {
-    console.log(manifestJSON)
-  }
-}
+module.exports = manifest

@@ -9,6 +9,8 @@ const program = require('commander')
 
 const npm = require('./npm')
 
+const { scripts } = require('./package.json')
+
 const { projectRoot } = require('../env')
 
 const { logger } = require('../build/utils/logger')
@@ -59,8 +61,20 @@ program.command('init').action(async () => {
     console.error(e)
   }
 })
-;['build', 'clean', 'dev', 'generate', 'manifest', 'prod', 'watch'].map(cmd => {
-  program.command(cmd).action(npm(cmd))
-})
+
+Object.keys(scripts)
+  .filter(
+    script =>
+      !(
+        script.startsWith('pre') &&
+        Object.prototype.hasOwnProperty.call(
+          scripts,
+          script.replace(/^pre/, '')
+        )
+      )
+  )
+  .map(cmd => {
+    program.command(cmd).action(npm(cmd))
+  })
 
 program.parse(process.argv)

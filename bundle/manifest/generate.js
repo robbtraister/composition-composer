@@ -4,14 +4,10 @@ const childProcess = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
-const { projectRoot } = require('./environment')
+const { projectRoot } = require('../../env')
+const { unpack } = require('../../build/utils/unpack')
 
-const {
-  components,
-  'content-sources': contentSources,
-  outputs
-} = require('./manifest')
-const { unpack } = require('../build/utils/unpack')
+const { components, 'content-sources': contentSources, outputs } = require('.')
 
 function writeCollection(name, collection) {
   const outputFile = path.join(projectRoot, 'build', 'generated', `${name}.js`)
@@ -43,6 +39,8 @@ export default {
   )
 }
 
-writeCollection('components', components)
-writeCollection('content-sources', contentSources)
-writeCollection('outputs', outputs)
+if (module === require.main) {
+  writeCollection('components', components)
+  writeCollection('content-sources', contentSources)
+  writeCollection('outputs', outputs)
+}

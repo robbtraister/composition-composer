@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const environment = require('./environment')
-const { outputs } = require('./manifest')
+const { outputs } = require('../bundle/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { port, projectRoot } = environment

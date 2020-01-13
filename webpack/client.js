@@ -9,7 +9,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 
 const environment = require('./environment')
-const { components, outputs } = require('./manifest')
+const { components, outputs } = require('../bundle/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { isPreact, projectRoot } = environment
