@@ -105,6 +105,15 @@
   "bin": {
     "compose": "./bin/index.js"
   },
+  "files": [
+    "bin",
+    "build",
+    "src",
+    "webpack",
+    "aliases.js",
+    "babel.config.json",
+    "env.js"
+  ],
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
