@@ -2,9 +2,53 @@
 
 import path from 'path'
 
+import babelRegister from '@babel/register'
 import glob from 'glob'
+import mockRequire from 'mock-require'
+
+import aliases from '../../aliases'
+import { projectRoot } from '../../env'
+
+import { writeFile } from './promises'
+
+let registered = false
+function register() {
+  if (!registered) {
+    babelRegister({
+      root: path.resolve(__dirname, '..', '..'),
+      ignore: [/[\\/]node_modules[\\/]/],
+      only: [
+        path.resolve(__dirname, '..', '..', 'src'),
+        path.join(projectRoot, 'src')
+      ],
+
+      extensions: [
+        '.tsx',
+        '.ts',
+        '.es6x',
+        '.es6',
+        '.esx',
+        '.es',
+        '.mjsx',
+        '.mjs',
+        '.jsx',
+        '.js',
+        '.cjsx',
+        '.cjs'
+      ]
+    })
+
+    Object.entries(aliases).forEach(([key, value]: [string, string]) =>
+      mockRequire(key, require(value))
+    )
+
+    registered = true
+  }
+}
 
 export function manifest({ projectRoot }) {
+  register()
+
   const srcRoot = path.join(projectRoot, 'src')
 
   function getProjectRelativeFile(sourceFile) {
@@ -62,28 +106,23 @@ export function manifest({ projectRoot }) {
     })
   }
 
-  function getOutputOptions(outputs) {
-    return Object.keys(outputs).reduce((fallbacks, output) => {
-      const Output = require(outputs[output].replace('~', srcRoot))
-      switch (Output.fallbacks) {
-        case null:
-        case false:
-          fallbacks[output] = [output]
-          break
-        case undefined:
-        case true:
-          fallbacks[output] = [output, 'default', 'index']
-          break
-        default:
-          fallbacks[output] = [output].concat(Output.fallbacks)
-      }
-      return fallbacks
-    }, {})
+  function getFallbacks(srcFile) {
+    const Output = require(srcFile.replace('~', srcRoot))
+
+    switch (Output.fallbacks) {
+      case null:
+      case false:
+        return null
+      case undefined:
+      case true:
+        return ['default', 'index']
+      default:
+        return Output.fallbacks
+    }
   }
 
   function getComponents(outputs) {
-    const outputOptions = getOutputOptions(outputs)
-    const outputNames = Object.keys(outputOptions)
+    const outputNames = Object.keys(outputs)
 
     const componentNames = getComponentNames(outputNames)
     return Object.assign(
@@ -95,7 +134,10 @@ export function manifest({ projectRoot }) {
             ...outputNames.map(outputName => {
               return {
                 [outputName]: getProjectRelativeFile(
-                  getComponentFile(componentName, outputOptions[outputName])
+                  getComponentFile(
+                    componentName,
+                    [outputName].concat(getFallbacks(outputs[outputName]))
+                  )
                 )
               }
             })
@@ -114,3 +156,12 @@ export function manifest({ projectRoot }) {
 }
 
 export default manifest
+
+if (module === require.main) {
+  const manifestJSON = JSON.stringify(manifest({ projectRoot }), null, 2)
+  writeFile(path.resolve(projectRoot, 'build', 'manifest.json'), manifestJSON)
+
+  if (!process.argv.includes('--quiet')) {
+    console.log(manifestJSON)
+  }
+}

@@ -11,7 +11,7 @@ const npm = require('./npm')
 
 const { projectRoot } = require('../env')
 
-const logger = require('../src/utils/logger')
+const { logger } = require('../build/utils/logger')
 
 async function copyFile(src, dest, flags) {
   await fs.promises.mkdir(path.dirname(dest), { recursive: true })
@@ -59,15 +59,7 @@ program.command('init').action(async () => {
     console.error(e)
   }
 })
-
-program.command('manifest').action(async () => {
-  require('../babel.register')
-
-  const { manifest } = require('../src/utils/manifest')
-
-  console.log(JSON.stringify(manifest({ projectRoot }), null, 2))
-})
-;['build', 'clean', 'dev', 'generate', 'prod', 'watch'].map(cmd => {
+;['build', 'clean', 'dev', 'generate', 'manifest', 'prod', 'watch'].map(cmd => {
   program.command(cmd).action(npm(cmd))
 })
 

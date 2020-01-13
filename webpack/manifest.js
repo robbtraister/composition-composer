@@ -1,7 +1,7 @@
 'use strict'
 
+const path = require('path')
+
 const { projectRoot } = require('./environment')
 
-const { manifest } = require('../src/utils/manifest')
-
-module.exports = manifest({ projectRoot })
+module.exports = require(path.join(projectRoot, 'build', 'manifest.json'))

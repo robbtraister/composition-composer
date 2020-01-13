@@ -4,8 +4,6 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 
 const smp = new SpeedMeasurePlugin()
 
-require('../babel.register')
-
 module.exports = (env, argv) =>
   smp.wrap(
     [].concat(

@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "echo": "echo $(npm bin)",
+    "prebuild": "npm run generate",
+    "build": "$(npm --prefix=.. bin)/webpack --config ../webpack",
+    "clean": "rm -rf \"${PROJECT_ROOT:-$INIT_CWD}\"/build/*",
+    "predev": "npm run generate",
+    "dev": "node --inspect=0.0.0.0:9229 $(npm --prefix=.. bin)/webpack-dev-server --config ../webpack",
+    "pregenerate": "npm run clean && npm run manifest -- --quiet",
+    "generate": "node ../webpack/generate.js",
+    "manifest": "node ../build/utils/manifest.js",
+    "prod": "NODE_ENV=production npm run build && NODE_ENV=production node \"${PROJECT_ROOT:-$INIT_CWD}\"/build/server",
+    "watch": "npm run build -- --watch"
+  }
+}

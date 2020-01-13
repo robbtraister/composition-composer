@@ -1,12 +1,12 @@
 'use strict'
 
-const winston = require('winston')
+import winston from 'winston'
 
-const { logLevel } = require('../../env')
+import { logLevel } from '../../env'
 
 const LEVELS = ['error', 'warn', 'info', 'verbose', 'debug', 'silly']
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({
       level: logLevel,
@@ -30,4 +30,4 @@ const logger = winston.createLogger({
   ]
 })
 
-module.exports = logger
+export default logger

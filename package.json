@@ -2,19 +2,15 @@
   "name": "@composition/composer",
   "version": "0.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "./src/index.ts",
   "scripts": {
-    "prebuild": "npm run generate",
-    "build": "webpack --config ./webpack",
-    "clean": "rm -rf \"${PROJECT_ROOT:-$INIT_CWD}\"/build/*",
-    "predev": "npm run generate",
-    "dev": "node --inspect=0.0.0.0:9229 $(npm bin)/webpack-dev-server --config ./webpack",
-    "pregenerate": "npm run clean",
-    "generate": "node ./webpack/generate.js",
+    "prebuild": "npm run clean",
+    "build": "babel ./src/utils --out-dir ./build/utils --extensions=.js,.jsx,.ts,.tsx --ignore=\"**/*.d.ts\" --source-maps",
+    "clean": "rm -rf ./build/*",
     "lint:css": "prettier **/*.{css,sass,scss}",
     "lint:ts": "eslint --ext .cjs,.cjsx,.js,.jsx,.mjs,.mjsx,.ts,.tsx .",
     "lint": "npm run lint:ts -- --fix && npm run lint:css -- --write",
-    "prod": "NODE_ENV=production npm run build && NODE_ENV=production node \"${PROJECT_ROOT:-$INIT_CWD}\"/build/server",
+    "prepare": "npm run build",
     "test": "npm audit && tsc --noEmit && npm run lint:ts && jest --coverage",
     "watch": "npm run build -- --watch"
   },
@@ -77,6 +73,7 @@
     "yaml-loader": "^0.5.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.0",
     "@testing-library/react": "^9.4.0",
     "@types/express": "^4.17.2",
     "@types/jest": "^24.0.25",

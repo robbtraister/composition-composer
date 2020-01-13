@@ -5,6 +5,7 @@ const path = require('path')
 
 const { projectRoot } = require('../env')
 
+const cliRoot = path.resolve(__dirname)
 const compositionRoot = path.resolve(__dirname, '..')
 
 const spawn = (cmd, args, options) =>
@@ -39,19 +40,15 @@ const npm = cmd =>
 
     // spawn will throw on SIGINT
     try {
-      await spawn(
-        'npm',
-        ['run', '--prefix', compositionRoot, cmd, ...options],
-        {
-          cwd: compositionRoot,
-          env: {
-            ...process.env,
-            COMPOSITION_ROOT: compositionRoot,
-            PROJECT_ROOT: projectRoot
-          },
-          stdio: 'inherit'
-        }
-      )
+      await spawn('npm', ['run', '--prefix', cliRoot, cmd, ...options], {
+        cwd: projectRoot,
+        env: {
+          ...process.env,
+          COMPOSITION_ROOT: compositionRoot,
+          PROJECT_ROOT: projectRoot
+        },
+        stdio: 'inherit'
+      })
     } catch (e) {
       // ignore SIGINT
     }
