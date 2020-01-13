@@ -16,7 +16,7 @@ function register() {
   if (!registered) {
     babelRegister({
       root: path.resolve(__dirname, '..', '..'),
-      ignore: [/[\\/]node_modules[\\/]/],
+      ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
       only: [
         path.resolve(__dirname, '..', '..', 'src'),
         path.join(projectRoot, 'src')
