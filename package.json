@@ -108,6 +108,7 @@
   },
   "files": [
     "bin",
+    "bin/templates/.gitignore",
     "build",
     "bundle",
     "src",
