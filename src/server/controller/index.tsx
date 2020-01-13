@@ -8,6 +8,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
 
+import { getContentSource } from './content'
+
 import { Redirect } from '../errors'
 
 import { Composition, StyledComponents, Tree } from '../../components'
@@ -18,7 +20,6 @@ import logger from '../../utils/logger'
 import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
-import contentSources from '~/../build/generated/content-sources'
 import outputs from '~/../build/generated/outputs'
 
 export type ControllerType = Controller & Options
@@ -74,8 +75,16 @@ class Controller extends Environment {
     }
   }
 
-  async fetch({ source, query }) {
-    return contentSources[source].fetch(query)
+  async clear({ source, query }: ContentParams) {
+    return getContentSource(source).clear(query)
+  }
+
+  async fetch({ source, query }: ContentParams) {
+    return getContentSource(source).fetch(query)
+  }
+
+  async update({ source, query }: ContentParams) {
+    return getContentSource(source).update(query)
   }
 
   async getHash({ template, output }) {
