@@ -16,7 +16,10 @@ const { port, projectRoot } = environment
 const entry = {
   server: [
     'source-map-support/register',
-    path.relative(projectRoot, path.resolve(__dirname, '..', 'src', 'server'))
+    `./${path.relative(
+      projectRoot,
+      path.resolve(__dirname, '..', 'src', 'server')
+    )}`
   ]
 }
 
