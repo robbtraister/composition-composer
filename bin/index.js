@@ -50,8 +50,8 @@ program.command('init').action(async () => {
       ].map(async fileName => {
         try {
           return copyFile(
-            path.join(__dirname, `templates/${fileName.replace(/^-/, '')}`),
-            path.join(projectRoot, fileName),
+            path.join(__dirname, `templates/${fileName}`),
+            path.join(projectRoot, fileName.replace(/^-/, '')),
             fs.COPYFILE_EXCL
           )
         } catch (_) {}
