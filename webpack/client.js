@@ -146,7 +146,13 @@ module.exports = (_, argv) => {
       },
       minimizer: [
         new TerserJSPlugin({
-          sourceMap: true
+          sourceMap: true,
+          cache: path.join(
+            projectRoot,
+            'node_modules',
+            '.cache',
+            'terser-webpack-plugin'
+          )
         }),
         new OptimizeCSSAssetsPlugin({
           // cssProcessorOptions: {

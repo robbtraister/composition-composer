@@ -45,7 +45,15 @@ const npm = cmd =>
         env: {
           ...process.env,
           COMPOSITION_ROOT: compositionRoot,
-          PROJECT_ROOT: projectRoot
+          PROJECT_ROOT: projectRoot,
+          BABEL_CACHE_PATH: path.resolve(
+            projectRoot,
+            'node_modules',
+            '.cache',
+            '@babel',
+            'register',
+            '.babel.json'
+          )
         },
         stdio: 'inherit'
       })
