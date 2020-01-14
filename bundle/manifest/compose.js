@@ -2,50 +2,10 @@
 
 const path = require('path')
 
-const babelRegister = require('@babel/register')
 const glob = require('glob')
-const mockRequire = require('mock-require')
-
-const aliases = require('../../aliases')
-const { projectRoot } = require('../../env')
-
-let registered = false
-function register() {
-  if (!registered) {
-    babelRegister({
-      root: path.resolve(__dirname, '..', '..'),
-      ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
-      only: [
-        path.resolve(__dirname, '..', '..', 'src'),
-        path.join(projectRoot, 'src')
-      ],
-
-      extensions: [
-        '.tsx',
-        '.ts',
-        '.es6x',
-        '.es6',
-        '.esx',
-        '.es',
-        '.mjsx',
-        '.mjs',
-        '.jsx',
-        '.js',
-        '.cjsx',
-        '.cjs'
-      ]
-    })
-
-    Object.entries(aliases).forEach(([key, value]) =>
-      mockRequire(key, require(value))
-    )
-
-    registered = true
-  }
-}
 
 function manifest({ projectRoot }) {
-  register()
+  require('./register')
 
   const srcRoot = path.join(projectRoot, 'src')
 
