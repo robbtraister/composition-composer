@@ -14,7 +14,7 @@ function prefix(dir = '.') {
     ) {
       return dir
     } else {
-      const nextDir = path.resolve(dir, '..')
+      const nextDir = path.dirname(dir)
       if (nextDir !== dir) {
         return _prefix(nextDir)
       }

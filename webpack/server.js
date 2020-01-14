@@ -83,11 +83,6 @@ module.exports = (_, argv) => {
       entry,
       externals: isProd ? {} : externals,
       plugins: [
-        // new SourceMapDevToolPlugin({
-        //   test: /\.([cm]?[jt]sx?|s?[ac]ss|svg)$/,
-        //   filename: '[name].js.map',
-        //   sourceRoot: path.resolve(__dirname, '..')
-        // }),
         new DefinePlugin({
           'typeof process': JSON.stringify(typeof {}),
           'typeof window': JSON.stringify(undefined)

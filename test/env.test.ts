@@ -11,7 +11,7 @@ beforeEach(() => {
 test('verify env logic', () => {
   const env = require('../env')
   expect(env.isProd).toBe(false)
-  expect(env.projectRoot).toBe(path.resolve(__dirname, '..'))
+  expect(env.projectRoot).toBe(path.dirname(__dirname))
 })
 
 test('verify env logic', () => {
@@ -30,7 +30,7 @@ test('verify env logic', () => {
   })
   const env = require('../env')
   expect(env.isProd).toBe(true)
-  expect(env.projectRoot).toBe(path.resolve(__dirname, '..'))
+  expect(env.projectRoot).toBe(path.dirname(__dirname))
   // expect(env.auth.cookie).toBe('cookie')
   // expect(env.auth.secret).toBe('secret')
   expect(env.workerCount).toBe(2)
@@ -51,7 +51,7 @@ test('verify env logic', () => {
   })
   const env = require('../env')
   expect(env.isProd).toBe(true)
-  expect(env.projectRoot).toBe(path.resolve(__dirname, '..'))
+  expect(env.projectRoot).toBe(path.dirname(__dirname))
   // expect(env.auth.cookie).toBe('jwt-token')
   // expect(env.auth.secret).toBe('secret')
   // expect(env.workerCount).toBe(4)

@@ -6,7 +6,7 @@ const path = require('path')
 const { projectRoot } = require('../env')
 
 const cliRoot = path.resolve(__dirname)
-const compositionRoot = path.resolve(__dirname, '..')
+const compositionRoot = path.dirname(cliRoot)
 
 const spawn = (cmd, args, options) =>
   new Promise((resolve, reject) => {

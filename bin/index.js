@@ -4,8 +4,10 @@
 
 const fs = require('fs')
 const path = require('path')
+const { promisify } = require('util')
 
 const program = require('commander')
+const glob = promisify(require('glob'))
 
 const npm = require('./npm')
 
@@ -23,6 +25,8 @@ async function copyFile(src, dest, flags) {
 program.version(require('../package.json').version)
 
 program.command('init').action(async () => {
+  const templateRoot = path.join(__dirname, 'templates')
+
   logger.info('initializing')
   try {
     logger.info('creating directories')
@@ -36,24 +40,22 @@ program.command('init').action(async () => {
 
     logger.info('copying config files')
     await Promise.all(
-      [
-        '.vscode/launch.json',
-        'src/definitions/styles.d.ts',
-        '.dockerignore',
-        '.eslintignore',
-        '.eslintrc.json',
-        '-.gitignore',
-        '.nvmrc',
-        '.prettierignore',
-        'server.js',
-        'tsconfig.json'
-      ].map(async fileName => {
+      (
+        await glob('**/*', {
+          cwd: templateRoot,
+          dot: true,
+          nodir: true
+        })
+      ).map(async fileName => {
         try {
-          return copyFile(
-            path.join(__dirname, `templates/${fileName}`),
-            path.join(projectRoot, fileName.replace(/^-/, '')),
-            fs.COPYFILE_EXCL
-          )
+          const srcFile = path.join(templateRoot, fileName)
+          const destFile = path.join(projectRoot, fileName.replace(/^-/, ''))
+
+          await fs.promises.mkdir(path.dirname(destFile), {
+            recursive: true
+          })
+
+          return copyFile(srcFile, destFile, fs.COPYFILE_EXCL)
         } catch (_) {}
       })
     )
