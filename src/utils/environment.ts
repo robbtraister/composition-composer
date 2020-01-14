@@ -5,11 +5,14 @@ import path from 'path'
 
 import Concat from 'concat-with-sourcemaps'
 
+import { Mongo } from './mongo'
 import { readFile, writeFile } from './promises'
 
 import env from '../../env'
 
 export class Environment {
+  mongo: object
+  mongoUrl?: string
   projectRoot: string
   readAsset: Function
   writeAsset: Function
@@ -18,6 +21,7 @@ export class Environment {
     Object.assign(this, env, options)
     this.readAsset = this.readAssetFile
     this.writeAsset = this.writeAssetFile
+    this.mongo = this.mongoUrl ? Mongo(this.mongoUrl) : null
   }
 
   async compile({ components, name, output, template, tree = null }) {

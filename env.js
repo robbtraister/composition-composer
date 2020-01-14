@@ -44,6 +44,8 @@ module.exports = {
 
   logLevel: (process.env.LOG_LEVEL || 'info').toLowerCase(),
 
+  mongoUrl: process.env.MONGO_URL,
+
   port: Number(process.env.PORT) || Number(config.port) || 8080,
 
   projectRoot,

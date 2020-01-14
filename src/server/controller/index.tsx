@@ -50,11 +50,19 @@ interface RenderOptions {
 }
 
 class Controller extends Environment {
-  async compileTemplate({ template, output }) {
+  getTree: Function
+
+  constructor(options: Composition.Options = {}) {
+    super(options)
+
+    this.getTree = this.mongo ? this.getTreeFromDB : this.getTreeFromFS
+  }
+
+  async compileTemplate({ template, output, tree = null }) {
     const start = Date.now()
 
     try {
-      const tree = await this.getTree(template)
+      tree = tree || (await this.getTree(template))
       const components = getDescendants({ children: tree }).map(
         ({ type }) => type
       )
@@ -87,7 +95,7 @@ class Controller extends Environment {
     return getContentSource(source).update(query)
   }
 
-  async getHash({ template, output }) {
+  async getHash({ template, output, tree = null }) {
     if (
       !(await fileExists(
         this.getAssetFile(
@@ -95,7 +103,7 @@ class Controller extends Environment {
         )
       ))
     ) {
-      await this.compileTemplate({ template, output })
+      await this.compileTemplate({ template, output, tree })
     }
 
     const { styleHash } = JSON.parse(
@@ -106,11 +114,14 @@ class Controller extends Environment {
     return styleHash
   }
 
-  async getTree(template) {
-    return require(`~/../templates/${template}.json`)
-    // return JSON.parse(
-    //   await this.readResourceFile(path.join('templates', `${template}.json`))
-    // )
+  async getTreeFromDB(template) {
+    return this.mongo.getModel('templates').get(template)
+  }
+
+  async getTreeFromFS(template) {
+    return JSON.parse(
+      await this.readResourceFile(path.join('templates', `${template}.json`))
+    )
   }
 
   async render(props) {
@@ -197,12 +208,13 @@ class Controller extends Environment {
   async resolve({ uri, output = 'default' }) {
     const url = new URL(uri, 'http://a.com')
     const template = url.pathname === '/' ? 'homepage' : 'article'
+    const tree = await this.getTree(template)
 
     return {
       output,
-      styleHash: await this.getHash({ template, output }),
+      styleHash: await this.getHash({ template, output, tree }),
       template,
-      tree: await this.getTree(template),
+      tree,
       uri
     }
   }

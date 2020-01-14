@@ -108,6 +108,7 @@ declare namespace Composition {
     host?: string
     isProd?: boolean
     logLevel?: string
+    mongoUrl?: string
     port?: number
     resources?: any
     projectRoot?: string
