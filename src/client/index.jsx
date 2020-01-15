@@ -22,7 +22,7 @@ function getContent({ source, query }) {
     .fetch(
       `/api/content/fetch?source=${encodeURIComponent(
         source
-      )}&query=${encodeURIComponent(query)}`
+      )}&query=${encodeURIComponent(JSON.stringify(query))}`
     )
     .then(res => res.json())
 }
