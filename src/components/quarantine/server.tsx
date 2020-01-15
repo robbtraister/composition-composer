@@ -4,7 +4,7 @@ import debugModule from 'debug'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 
-import RenderError from './error'
+import RenderError from '../error'
 
 const debug = debugModule('composition:components:quarantine')
 

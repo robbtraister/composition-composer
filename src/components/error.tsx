@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { useComponentContext } from '../../contexts/component'
+import { useComponentContext } from '../contexts/component'
 
 export function RenderError(props: { error }) {
   const { id, type } = useComponentContext()
