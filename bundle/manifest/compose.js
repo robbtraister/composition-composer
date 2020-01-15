@@ -21,20 +21,25 @@ function manifest({ projectRoot }) {
 
     return Object.assign(
       {},
-      ...files.map(sourceFile => {
-        const { dir, name } = path.parse(
-          path
-            .relative(base, sourceFile)
-            .split(path.sep)
-            .join(path.sep)
-        )
+      ...files
+        // ignore test files
+        .filter(sourceFile => !/\.(spec|test)\.[^/.]+?$/.test(sourceFile))
+        // ignore underscore-prefixed segments
+        .filter(sourceFile => !/\/_/.test(sourceFile))
+        .map(sourceFile => {
+          const { dir, name } = path.parse(
+            path
+              .relative(base, sourceFile)
+              .split(path.sep)
+              .join(path.sep)
+          )
 
-        return {
-          [path
-            .join(dir, name)
-            .replace(/[\\/]index$/, '')]: getProjectRelativeFile(sourceFile)
-        }
-      })
+          return {
+            [path
+              .join(dir, name)
+              .replace(/[\\/]index$/, '')]: getProjectRelativeFile(sourceFile)
+          }
+        })
     )
   }
 
