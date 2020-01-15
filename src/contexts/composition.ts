@@ -21,10 +21,10 @@ export function useCompositionContext() {
 }
 
 export function CompositionContext(
-  props: Composition.RenderableProps<{}, Composition.ContextStruct>
+  props: Composition.RenderableProps<{}, Composition.CompositionProps>
 ) {
   const context = useCompositionContext()
-  return render({ ...props, context })
+  return render({ ...props, ...context })
 }
 
 export default compositionContext

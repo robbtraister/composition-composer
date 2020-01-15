@@ -12,14 +12,12 @@ import {
   useComponentContext
 } from '../../src/contexts/component'
 
-function Display({ context }) {
-  return <div>{context.id}</div>
+function Display({ id }) {
+  return <div>{id}</div>
 }
 
 Display.propTypes = {
-  context: PropTypes.shape({
-    id: PropTypes.string
-  })
+  id: PropTypes.string
 }
 
 const ContextChildren = () => {
@@ -32,7 +30,7 @@ const ContextComponent = () => {
 
 const ContextHook = () => {
   const context = useComponentContext()
-  return <Display context={context} />
+  return <Display {...context} />
 }
 
 const ContextRender = () => {

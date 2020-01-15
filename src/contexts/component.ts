@@ -20,10 +20,10 @@ export function useComponentContext() {
 }
 
 export function ComponentContext(
-  props: Composition.RenderableProps<{}, Composition.ContextStruct>
+  props: Composition.RenderableProps<{}, Composition.TreeNode>
 ) {
   const context = useComponentContext()
-  return render({ ...props, context })
+  return render({ ...props, ...context })
 }
 
 export default componentContext
