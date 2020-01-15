@@ -8,8 +8,12 @@ export default function router(controller: ControllerType) {
   const contentRouter = express()
 
   contentRouter.use('/fetch', async (req, res, next) => {
-    const { source, query } = req.query
-    res.send(await controller.fetch({ source, query: JSON.parse(query) }))
+    try {
+      const { source, query } = req.query
+      res.send(await controller.fetch({ source, query: JSON.parse(query) }))
+    } catch (error) {
+      next(error)
+    }
   })
 
   return contentRouter

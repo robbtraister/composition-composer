@@ -25,20 +25,40 @@ import outputs from '~/../build/generated/outputs'
 
 export type ControllerType = Controller & Composition.Options
 
-function getComponent(type, output) {
+function getComponent(output, type) {
   return components[type][output]
 }
 
-function getContentType(Output, body) {
-  if (Output.contentType) {
-    return `${Output.contentType}`.toLowerCase()
-  }
+function getContentType(body) {
+  return typeof body === 'string'
+    ? /\w*</i.test(body)
+      ? // is an HTML/XML document
+        'text/html'
+      : // is not an HTML/XML document
+        'text/plain'
+    : 'application/json'
+}
 
-  return /\w*</i.test(body)
-    ? // is an HTML/XML document
-      'text/html'
-    : // is not an HTML/XML document
-      'text/plain'
+function wrapResult(result, context, Output) {
+  const body = Output.transform ? Output.transform(result, context) : result
+
+  const contentType = Output.contentType
+    ? `${Output.contentType}`.toLowerCase()
+    : getContentType(body)
+
+  return {
+    body: !/^text\/html(;|$)/i.test(contentType)
+      ? // is not an HTML document
+        typeof body === 'string'
+        ? decodeHTML(body)
+        : body
+      : /\s*<\s*html[\s>]/i.test(body)
+      ? // is a full HTML document
+        `<!DOCTYPE html>${body}`
+      : // is an HTML snippet
+        body,
+    contentType
+  }
 }
 
 const STYLED_COMPONENTS_PATTERN = new RegExp(
@@ -134,78 +154,72 @@ class Controller extends Environment {
 
     const cache = {}
 
+    const context = {
+      appName: `templates/${template}/${output}`,
+      appStyles: `styles/templates/${styleHash}`,
+      cache,
+      getComponent: getComponent.bind(null, output),
+      getContent: this.fetch.bind(this),
+      getResource: this.readResourceFile.bind(this),
+      location: uri,
+      output,
+      outputStyles: `styles/outputs/${output}`,
+      template,
+      tree
+    }
+
     const renderAsync = async (renderOptions: RenderOptions = {}) => {
       const renderSync = () => {
         const sheet = new ServerStyleSheet()
         try {
-          const context: { url?: string } = {}
+          const routerContext: { url?: string } = {}
           const html = ReactDOM.renderToStaticMarkup(
             sheet.collectStyles(
               <Composition
                 {...renderOptions}
-                appName={`templates/${template}/${output}`}
-                appStyles={`styles/templates/${styleHash}`}
-                cache={cache}
-                getComponent={getComponent}
-                getContent={this.fetch.bind(this)}
-                getResource={this.readResourceFile.bind(this)}
-                location={uri}
-                output={output}
-                routerContext={context}
-                outputStyles={`styles/outputs/${output}`}
-                template={template}
-                tree={tree}>
+                {...context}
+                routerContext={routerContext}>
                 <Output>
                   <Tree />
                 </Output>
               </Composition>
             )
           )
-          if (context && context.url) {
-            throw new Redirect(context.url)
+          if (routerContext && routerContext.url) {
+            throw new Redirect(routerContext.url)
           }
 
-          const body = html
-            .replace(
-              STYLED_COMPONENTS_PATTERN,
-              sheet.getStyleTags().replace(/<\/?style[^>]*>/g, '')
-            )
-            // remove empty, orphaned style tag if styled-components is not used
-            .replace(/<style><\/style>/g, '')
-
-          const contentType = getContentType(Output, body)
-
-          return {
-            body: !/^text\/html(;|$)/i.test(contentType)
-              ? // is not an HTML document
-                decodeHTML(body)
-              : /\s*<\s*html[\s>]/i.test(body)
-              ? // is a full HTML document
-                `<!DOCTYPE html>${body}`
-              : // is an HTML snippet
-                body,
-            contentType
-          }
+          return (
+            html
+              .replace(
+                STYLED_COMPONENTS_PATTERN,
+                sheet.getStyleTags().replace(/<\/?style[^>]*>/g, '')
+              )
+              // remove empty, orphaned style tag if styled-components is not used
+              .replace(/<style><\/style>/g, '')
+          )
         } finally {
           sheet.seal()
         }
       }
 
-      let html = renderSync()
+      let result = renderSync()
       const promises = Object.values(cache)
       if (promises.length > 0) {
         await Promise.all(promises)
-        html = renderSync()
+        result = renderSync()
       }
-      return html
+      return result
     }
 
+    let result
     try {
-      return await renderAsync()
+      result = await renderAsync()
     } catch (error) {
       console.error(error)
-      return renderAsync({ quarantine: true })
+      result = renderAsync({ quarantine: true })
     }
+    return wrapResult(result, context, Output)
   }
 
   async resolve({ uri, output = 'default' }) {

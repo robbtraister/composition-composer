@@ -36,7 +36,7 @@ declare namespace Composition {
     pageContent?: object
   }
 
-  type ComponentFetcher = (type: string, output?: string) => React.ComponentType
+  type ComponentFetcher = (type: string) => React.ComponentType
   type ContentFetcher = (ContentParams) => object
   type ResourceFetcher = (name: string, encoding?: string) => any
   type Resolver = (string) => Promise<Resolution>

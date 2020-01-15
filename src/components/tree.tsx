@@ -39,11 +39,10 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
   function getCachedComponent(type) {
-    const key = JSON.stringify({ type, output })
-    if (!(key in componentCache)) {
-      componentCache[key] = withTimer(getComponent(type, output))
+    if (!(type in componentCache)) {
+      componentCache[type] = withTimer(getComponent(type))
     }
-    return componentCache[key]
+    return componentCache[type]
   }
 
   function Node(node: Composition.TreeNode) {
@@ -51,7 +50,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
 
     const Component = getCachedComponent(type) || null
     debug('rendering component:', {
-      output: context.output,
+      output,
       type,
       id,
       Component,
