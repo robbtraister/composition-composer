@@ -25,7 +25,7 @@ export default function router(controller: ControllerType) {
     express.static(path.resolve(controller.projectRoot || '.', 'build', 'dist'))
   )
 
-  assetRouter.use(
+  assetRouter.all(
     '/dist/templates/:template/:output.(css|js)',
     async (req, res, next) => {
       const template = req.params.template
@@ -54,7 +54,7 @@ export default function router(controller: ControllerType) {
     res.sendStatus(404)
   })
 
-  assetRouter.use(express.static(publicRoot))
+  assetRouter.all(/\.[^/]+$/, express.static(publicRoot))
 
   return assetRouter
 }
