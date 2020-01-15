@@ -1,4 +1,4 @@
 'use strict'
 
 export * from './component'
-export * from './composition'
+export * from './page'

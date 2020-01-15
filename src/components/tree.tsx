@@ -3,12 +3,12 @@
 import debugModule from 'debug'
 import React, { memo, useContext, useState } from 'react'
 
-import QuarantineComponent from './quarantine'
+import { Quarantine as QuarantineComponent } from './quarantine'
 import { withTimer } from './timer'
 import { isClient } from './utils'
-import componentContext from '../contexts/component'
 
-import compositionContext from '../contexts/composition'
+import componentContext from '../contexts/component'
+import pageContext from '../contexts/page'
 
 const debug = debugModule('composition:components:tree')
 
@@ -18,7 +18,7 @@ const QuarantineFragment = ({ children }: Composition.TreeNode) => (
 
 export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   const [componentCache] = useState({})
-  const context = useContext(compositionContext)
+  const context = useContext(pageContext)
 
   const getComponent = treeProps.getComponent || context.getComponent
   const tree = treeProps.tree || context.tree

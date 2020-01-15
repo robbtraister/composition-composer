@@ -4,11 +4,10 @@ import path from 'path'
 
 import React from 'react'
 
-// import Resource from '../resource'
 import { render } from '../render'
+import { useResource } from '../resource'
 
-import { useResource } from '../../components/resource'
-import { useCompositionContext } from '../../contexts/composition'
+import { usePageContext } from '../../contexts/page'
 
 export const StyledComponents = 'composition:styled-components'
 
@@ -18,7 +17,7 @@ interface StylesProps extends Composition.RenderProps<{}> {
 }
 
 export const useStyles = () => {
-  const { appStyles = 'app', outputStyles = 'site' } = useCompositionContext()
+  const { appStyles = 'app', outputStyles = 'site' } = usePageContext()
   const outputStylesContent = useResource({
     name: path.join('build', 'dist', `${outputStyles}.css`)
   })
@@ -49,7 +48,7 @@ const InlineStyles = ({ amp, ...props }) => {
 const StyleLink = props => <link {...props} rel="stylesheet" type="text/css" />
 
 const LinkStyles = props => {
-  const { appStyles = 'app', outputStyles = 'site' } = useCompositionContext()
+  const { appStyles = 'app', outputStyles = 'site' } = usePageContext()
 
   return (
     <>

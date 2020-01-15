@@ -5,8 +5,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import Composition from '../../src/components/composition'
-import { useComponentContext } from '../../src/contexts/component'
+import { Page, useComponentContext } from '../../src'
 
 const x = 3
 function Fail() {
@@ -52,7 +51,7 @@ const tree = {
 
 test('Quarantine Component', () => {
   const { asFragment } = render(
-    <Composition getComponent={getComponent} tree={tree} quarantine />
+    <Page getComponent={getComponent} tree={tree} quarantine />
   )
   expect(asFragment()).toMatchSnapshot()
 })

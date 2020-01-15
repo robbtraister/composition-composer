@@ -2,8 +2,8 @@
 
 import React, { useContext } from 'react'
 
-import Tree from '../tree'
-import compositionContext from '../../contexts/composition'
+import { Tree } from '../tree'
+import pageContext from '../../contexts/page'
 
 const polyfills = {
   assign: '(window.Object&&window.Object.assign)',
@@ -31,7 +31,7 @@ interface ServerAppProps {
 
 export function App(props: ServerAppProps) {
   const { appName = 'app', cache, output, template, tree } = useContext(
-    compositionContext
+    pageContext
   )
   const {
     'hydrate-only': hydrateOnly = false,

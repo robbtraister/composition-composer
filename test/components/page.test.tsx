@@ -5,12 +5,7 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import App from '../../src/components/app'
-import Composition from '../../src/components/composition'
-import Styles from '../../src/components/styles'
-
-import { useComponentContext } from '../../src/contexts/component'
-
+import { App, Page, Styles, useComponentContext } from '../../src'
 import Environment from '../../src/utils/environment'
 
 const env = new Environment()
@@ -59,7 +54,7 @@ const tree = {
 
 test('Page Component', () => {
   const html = renderToString(
-    <Composition
+    <Page
       getComponent={getComponent}
       output="default"
       template="test"
@@ -74,14 +69,14 @@ test('Page Component', () => {
           <App single-page />
         </body>
       </html>
-    </Composition>
+    </Page>
   )
   expect(html).toMatchSnapshot()
 })
 
 test('Inline Styles', () => {
   const html = renderToString(
-    <Composition
+    <Page
       getComponent={getComponent}
       getResource={env.readResourceFile.bind(env)}
       output="default"
@@ -97,7 +92,7 @@ test('Inline Styles', () => {
           <App single-page />
         </body>
       </html>
-    </Composition>
+    </Page>
   )
   expect(html).toMatchSnapshot()
 })

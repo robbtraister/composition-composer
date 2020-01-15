@@ -6,8 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { act, render } from '@testing-library/react'
 
-import Composition from '../../src/components/composition'
-import { Content, useContent } from '../../src/components/content'
+import { Content, Page, useContent } from '../../src/components'
 
 function Display({ content }) {
   return <div>{content && content.data}</div>
@@ -64,7 +63,7 @@ const tree = {
 async function testContentComponent(componentType) {
   const cache = {}
   const result = render(
-    <Composition
+    <Page
       getComponent={getComponent}
       getContent={getContent}
       tree={{ ...tree, type: componentType }}

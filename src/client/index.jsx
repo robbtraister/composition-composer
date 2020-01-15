@@ -5,7 +5,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { Composition as Root } from '../components'
+import { Page } from '../components'
 
 import unpack from '../utils/unpack'
 
@@ -53,7 +53,7 @@ function render() {
 
   try {
     ReactDOM[Composition.method || 'render'](
-      <Root
+      <Page
         getComponent={getComponent}
         getContent={getContent}
         cache={Composition.cache}

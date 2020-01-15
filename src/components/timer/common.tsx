@@ -3,11 +3,12 @@
 import debugModule from 'debug'
 import React from 'react'
 
-import { ComponentContext, useComponentContext } from '../../contexts/component'
 import {
-  CompositionContext,
-  useCompositionContext
-} from '../../contexts/composition'
+  ComponentContext,
+  PageContext,
+  useComponentContext,
+  usePageContext
+} from '../../contexts'
 
 const debug = debugModule('composition:components:timer')
 
@@ -41,7 +42,7 @@ export function withTicTimer(tic) {
 
             render() {
               return (
-                <CompositionContext>
+                <PageContext>
                   {({ output }) => (
                     <ComponentContext>
                       {({ type, id }) =>
@@ -53,12 +54,12 @@ export function withTicTimer(tic) {
                       }
                     </ComponentContext>
                   )}
-                </CompositionContext>
+                </PageContext>
               )
             }
           }
         : props => {
-            const { output } = useCompositionContext()
+            const { output } = usePageContext()
             const { type, id } = useComponentContext()
             return timedRender(Component.bind(null, props), {
               output,

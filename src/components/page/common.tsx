@@ -4,19 +4,18 @@ import debugModule from 'debug'
 import React, { memo } from 'react'
 
 import { Tree } from '../tree'
-
-import compositionContext from '../../contexts/composition'
-
 import { getDescendants } from '../utils'
+
+import pageContext from '../../contexts/page'
 
 const debug = debugModule('composition:components:context')
 
-export const Common = memo(function Common({
+export const CommonPage = memo(function CommonPage({
   children,
   value
 }: {
   children?: React.ReactNode
-  value: Composition.CompositionProps
+  value: Composition.PageProps
 }) {
   const context = {
     cache: {},
@@ -25,8 +24,8 @@ export const Common = memo(function Common({
   }
   debug('rendering with context', context)
   return (
-    <compositionContext.Provider value={context}>
+    <pageContext.Provider value={context}>
       {children || <Tree />}
-    </compositionContext.Provider>
+    </pageContext.Provider>
   )
 })
