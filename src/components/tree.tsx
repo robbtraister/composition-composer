@@ -1,10 +1,11 @@
 'use strict'
 
 import debugModule from 'debug'
-import React, { memo, useContext } from 'react'
+import React, { memo, useContext, useState } from 'react'
 
-import { isClient } from './utils'
 import QuarantineComponent from './quarantine'
+import { withTimer } from './timer'
+import { isClient } from './utils'
 import componentContext from '../contexts/component'
 
 import compositionContext from '../contexts/composition'
@@ -16,6 +17,7 @@ const QuarantineFragment = ({ children }: Composition.TreeNode) => (
 )
 
 export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
+  const [componentCache] = useState({})
   const context = useContext(compositionContext)
 
   const getComponent = treeProps.getComponent || context.getComponent
@@ -27,6 +29,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
 
   const getContent =
     treeProps.getContent || context.getContent || (() => Promise.resolve(null))
+  const output = context.output
   const quarantine =
     isClient ||
     (Object.prototype.hasOwnProperty.call(treeProps, 'quarantine')
@@ -35,13 +38,22 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
 
   const Quarantine = quarantine ? QuarantineComponent : QuarantineFragment
 
-  function Node(node: Composition.TreeNode) {
-    const { props = {}, children = [], type } = node
+  function getCachedComponent(type) {
+    const key = JSON.stringify({ type, output })
+    if (!(key in componentCache)) {
+      componentCache[key] = withTimer(getComponent(type, output))
+    }
+    return componentCache[key]
+  }
 
-    const Component = getComponent(type) || null
+  function Node(node: Composition.TreeNode) {
+    const { props = {}, children = [], type, id } = node
+
+    const Component = getCachedComponent(type) || null
     debug('rendering component:', {
       output: context.output,
       type,
+      id,
       Component,
       props
     })
@@ -55,7 +67,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
             <Component {...props}>
               {[]
                 .concat(children || [])
-                .filter(({ type }) => getComponent(type))
+                .filter(({ type }) => getCachedComponent(type))
                 .map((child, index) => (
                   <Node key={child.id || index} {...child} />
                 ))}
@@ -67,7 +79,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   }
 
   debug('rendering tree:', {
-    output: context.output,
+    output,
     template: context.template,
     quarantine
   })

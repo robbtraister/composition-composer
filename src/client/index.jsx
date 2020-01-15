@@ -9,12 +9,8 @@ import { Composition as Root } from '../components'
 
 import unpack from '../utils/unpack'
 
-const componentCache = {}
 function getComponent(type) {
-  if (!(type in componentCache)) {
-    componentCache[type] = unpack(Composition.components[type]) || type
-  }
-  return componentCache[type]
+  return unpack(Composition.components[type]) || type
 }
 
 function getContent({ source, query }) {

@@ -25,7 +25,7 @@ import outputs from '~/../build/generated/outputs'
 
 export type ControllerType = Controller & Composition.Options
 
-function getComponent(output, type) {
+function getComponent(type, output) {
   return components[type][output]
 }
 
@@ -146,7 +146,7 @@ class Controller extends Environment {
                 appName={`templates/${template}/${output}`}
                 appStyles={`styles/templates/${styleHash}`}
                 cache={cache}
-                getComponent={getComponent.bind(null, output)}
+                getComponent={getComponent}
                 getContent={this.fetch.bind(this)}
                 getResource={this.readResourceFile.bind(this)}
                 location={uri}
