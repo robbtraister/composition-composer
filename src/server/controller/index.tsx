@@ -9,6 +9,7 @@ import ReactDOM from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
 
 import { getContentSource } from './content'
+import { Mongo } from './mongo'
 
 import { Redirect } from '../errors'
 
@@ -49,13 +50,25 @@ interface RenderOptions {
   quarantine?: boolean
 }
 
+async function getTreeFromDB(template) {
+  return this.mongo.getModel('templates').get(template)
+}
+
+async function getTreeFromFS(template) {
+  return JSON.parse(
+    await this.readResourceFile(path.join('templates', `${template}.json`))
+  )
+}
+
 class Controller extends Environment {
   getTree: Function
+  mongo: object
 
   constructor(options: Composition.Options = {}) {
     super(options)
 
-    this.getTree = this.mongo ? this.getTreeFromDB : this.getTreeFromFS
+    this.mongo = this.mongoUrl ? Mongo(this.mongoUrl) : null
+    this.getTree = this.mongo ? getTreeFromDB : getTreeFromFS
   }
 
   async compileTemplate({ template, output, tree = null }) {
@@ -112,16 +125,6 @@ class Controller extends Environment {
       )
     )
     return styleHash
-  }
-
-  async getTreeFromDB(template) {
-    return this.mongo.getModel('templates').get(template)
-  }
-
-  async getTreeFromFS(template) {
-    return JSON.parse(
-      await this.readResourceFile(path.join('templates', `${template}.json`))
-    )
   }
 
   async render(props) {
