@@ -18,19 +18,19 @@ import app from '../src/server/app'
 // })
 
 test('favicon', () => {
-  return request(app({ auth: null }))
+  return request(app())
     .get('/favicon.ico')
     .expect(404)
 })
 
 test('favicon', () => {
-  return request(app({ auth: null, projectRoot: null }))
+  return request(app({ projectRoot: null }))
     .get('/favicon.ico')
     .expect(404)
 })
 
 test('uri', () => {
-  return request(app({ auth: null }))
+  return request(app())
     .get('/api/uri')
     .expect(200)
     .expect('Content-Type', /^application\/json(;|$)/)
@@ -40,25 +40,25 @@ test('uri', () => {
 })
 
 test('logging 400', () => {
-  return request(app({ auth: null, logLevel: 'info' }))
+  return request(app({ logLevel: 'info' }))
     .get('/api/error/400')
     .expect(400)
 })
 
 test('logging 500', () => {
-  return request(app({ auth: null, logLevel: 'info' }))
+  return request(app({ logLevel: 'info' }))
     .get('/api/error')
     .expect(500)
 })
 
 test('production 400', () => {
-  return request(app({ auth: null, isProd: true }))
+  return request(app({ isProd: true }))
     .get('/api/error/400')
     .expect(400)
 })
 
 test('production 500', () => {
-  return request(app({ auth: null, isProd: true }))
+  return request(app({ isProd: true }))
     .get('/api/error')
     .expect(500)
 })

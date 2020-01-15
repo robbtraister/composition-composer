@@ -12,10 +12,6 @@ export default function router(controller: ControllerType) {
 
   apiRouter.use('/content', content(controller))
 
-  apiRouter.use('/csrf', (req, res, next) => {
-    res.send({ csrf: req.csrfToken() })
-  })
-
   apiRouter.use(['/error/:code(\\d+)', '/error'], (req, res, next) => {
     next(new ServerError(+req.params.code || 500))
   })
