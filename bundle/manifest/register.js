@@ -6,9 +6,11 @@ const babelRegister = require('@babel/register')
 const mockRequire = require('mock-require')
 
 const aliases = require('../../aliases')
+const babelConfigs = require('../../babel.config.json')
 const { projectRoot } = require('../../env')
 
 babelRegister({
+  ...babelConfigs,
   root: path.resolve(__dirname, '..', '..'),
   ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
   only: [
@@ -28,7 +30,20 @@ babelRegister({
     '.jsx',
     '.js',
     '.cjsx',
-    '.cjs'
+    '.cjs',
+    '.sass',
+    '.scss',
+    '.css'
+  ],
+
+  plugins: [
+    ...babelConfigs.plugins,
+    [
+      'transform-require-ignore',
+      {
+        extensions: ['.css', '.sass', '.scss']
+      }
+    ]
   ]
 })
 

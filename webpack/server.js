@@ -103,6 +103,8 @@ module.exports = (_, argv) => {
       ...require('./shared/rules')({ isProd, extractCss: true }),
       entry: outputs,
       optimization: {
+        ...serverConfigs.optimization,
+        minimize: isProd,
         minimizer: [new OptimizeCSSAssetsPlugin({})]
       },
       output: {
