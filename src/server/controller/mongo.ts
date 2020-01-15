@@ -17,7 +17,7 @@ async function getNewConnection(mongoUrl) {
   })
 }
 
-export function Mongo(mongoUrl) {
+export function Mongo(mongoUrl): Composition.DB {
   const dbName = new URL(mongoUrl).pathname.replace(/^\/+/, '')
 
   let dbPromise
@@ -56,7 +56,7 @@ export function Mongo(mongoUrl) {
 
   const models = {}
   return {
-    getModel(modelName) {
+    getModel(modelName): Composition.Model {
       models[modelName] = models[modelName] || {
         name: modelName,
 

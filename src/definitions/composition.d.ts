@@ -1,4 +1,15 @@
 declare namespace Composition {
+  interface Model {
+    findAll: (query: object) => object[]
+    findOne: (query: object) => object
+    get: (id: any) => object
+    put: (document: object) => void
+  }
+
+  interface DB {
+    getModel: (string) => Model
+  }
+
   interface CachedPromise extends Promise<object> {
     value?: object
   }

@@ -1,15 +1,19 @@
 'use strict'
 
+import debugModule from 'debug'
+
 import contentSources from '~/../build/generated/content-sources'
 import request from 'request-promise-native'
 
 import logger from '../../utils/logger'
 
+const debug = debugModule('composition:controller:content')
+
 const contentCache = {}
 
 class ContentSource {
   name: string
-  fetchDirect: Function
+  fetchDirect: (query: object) => object | Promise<object>
 
   constructor(name, { fetch, resolve }) {
     this.name = name
@@ -37,7 +41,9 @@ class ContentSource {
       logger.info(`Content not found in cache; fetching [${cacheKey}]`)
       contentCache[cacheKey] = await this.fetchDirect(query)
     }
-    return contentCache[cacheKey]
+    const data = contentCache[cacheKey]
+    debug(`hydrated content [${cacheKey}]`, data)
+    return data
   }
 
   getCacheKey(query) {

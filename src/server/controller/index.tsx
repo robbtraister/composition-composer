@@ -51,7 +51,7 @@ interface RenderOptions {
 }
 
 async function getTreeFromDB(template) {
-  return this.mongo.getModel('templates').get(template)
+  return this.db.getModel('templates').get(template)
 }
 
 async function getTreeFromFS(template) {
@@ -62,13 +62,13 @@ async function getTreeFromFS(template) {
 
 class Controller extends Environment {
   getTree: Function
-  mongo: object
+  db: Composition.DB
 
   constructor(options: Composition.Options = {}) {
     super(options)
 
-    this.mongo = this.mongoUrl ? Mongo(this.mongoUrl) : null
-    this.getTree = this.mongo ? getTreeFromDB : getTreeFromFS
+    this.db = this.mongoUrl ? Mongo(this.mongoUrl) : null
+    this.getTree = this.db ? getTreeFromDB : getTreeFromFS
   }
 
   async compileTemplate({ template, output, tree = null }) {
