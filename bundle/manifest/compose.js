@@ -4,6 +4,9 @@ const path = require('path')
 
 const glob = require('glob')
 
+const fileExtensions = ['js', 'jsx', 'ts', 'tsx']
+const fileExtensionGlob = `{${fileExtensions.join(',')}}`
+
 function manifest({ projectRoot }) {
   require('./register')
 
@@ -14,7 +17,7 @@ function manifest({ projectRoot }) {
   }
 
   function getEntries(base) {
-    const files = [].concat(glob.sync(`${base}/**/*.{js,jsx,ts,tsx}`))
+    const files = [].concat(glob.sync(`${base}/**/*.${fileExtensionGlob}`))
 
     return Object.assign(
       {},
@@ -43,11 +46,14 @@ function manifest({ projectRoot }) {
             `${path.join(
               srcRoot,
               'components'
-            )}/${componentName}/${output}.{js,jsx,ts,tsx}`
+            )}/${componentName}/${output}.${fileExtensionGlob}`
           )
         ),
         glob.sync(
-          `${path.join(srcRoot, 'components')}/${componentName}.{js,jsx,ts,tsx}`
+          `${path.join(
+            srcRoot,
+            'components'
+          )}/${componentName}.${fileExtensionGlob}`
         )
       )
       .find(c => c)
@@ -67,16 +73,17 @@ function manifest({ projectRoot }) {
   function getFallbacks(srcFile) {
     const Output = require(srcFile.replace('~', srcRoot))
 
-    switch (Output.fallbacks) {
-      case null:
-      case false:
-        return null
-      case undefined:
-      case true:
-        return ['default', 'index']
-      default:
-        return Output.fallbacks
+    const { fallbacks = true } = Output
+
+    if (!fallbacks) {
+      return []
     }
+
+    if (fallbacks === true) {
+      return ['index']
+    }
+
+    return fallbacks
   }
 
   function getComponents(outputs) {
