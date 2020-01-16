@@ -148,7 +148,7 @@ class Controller extends Environment {
   }
 
   async render(props) {
-    const { output, styleHash, template, tree, uri } = props
+    const { meta, output, styleHash, template, title, tree, uri } = props
 
     const Output = outputs[output]
 
@@ -162,8 +162,10 @@ class Controller extends Environment {
       getContent: this.fetch.bind(this),
       getResource: this.readResourceFile.bind(this),
       location: uri,
+      meta,
       output,
       outputStyles: `styles/outputs/${output}`,
+      title,
       template,
       tree
     }
