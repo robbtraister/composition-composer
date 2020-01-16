@@ -229,6 +229,7 @@ class Controller extends Environment {
 
     return {
       meta: {
+        charset: 'UTF-8',
         viewport: 'width=device-width'
       },
       output,
