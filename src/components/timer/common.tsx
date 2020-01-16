@@ -14,19 +14,18 @@ const debug = debugModule('composition:components:timer')
 
 const superRenderFn = Symbol('super-render-function')
 
-export function withTicTimer(tic) {
+export function withTicTimer(tic, handler = null) {
   function timedRender(renderFn, context) {
     const toc = tic()
     const result = renderFn()
-    debug('rendered component:', {
-      ...context,
-      ms: toc()
-    })
+    const payload = { ...context, ms: toc() }
+    debug('rendered component:', payload)
+    handler && handler(payload)
     return result
   }
 
   return function withTimer(Component) {
-    if (!(debug.enabled && Component instanceof Function)) {
+    if (!(Component instanceof Function) || !handler || !debug.enabled) {
       return Component
     }
 
