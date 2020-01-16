@@ -23,6 +23,7 @@ import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
+import resolve from '~/resolve'
 
 const debug = debugModule('composition:controller')
 
@@ -82,32 +83,30 @@ interface RenderOptions {
   quarantine?: boolean
 }
 
-async function getTreeFromDB(template) {
+async function getTemplateFromDB(template) {
   return this.db.getModel('templates').get(template)
 }
 
-async function getTreeFromFS(template) {
-  return JSON.parse(
-    await this.readResourceFile(path.join('templates', `${template}.json`))
-  )
+function getTemplateFromFS(template) {
+  return require(`~/templates/${template}.json`)
 }
 
 class Controller extends Environment {
-  getTree: Function
+  getTemplate: (string) => Promise<{ tree?: object }>
   db: Composition.DB
 
   constructor(options: Composition.Options = {}) {
     super(options)
 
     this.db = this.mongoUrl ? Mongo(this.mongoUrl) : null
-    this.getTree = this.db ? getTreeFromDB : getTreeFromFS
+    this.getTemplate = this.db ? getTemplateFromDB : getTemplateFromFS
   }
 
   async compileTemplate({ template, output, tree = null }) {
     const start = Date.now()
 
     try {
-      tree = tree || (await this.getTree(template))
+      tree = tree || (await this.getTemplate(template)).tree
       const components = getDescendants({ children: tree }).map(
         ({ type }) => type
       )
@@ -239,8 +238,8 @@ class Controller extends Environment {
   async resolve({ uri, output }: { uri: string; output: string | string[] }) {
     debug('resolving', { uri, output })
     const url = new URL(uri, 'http://a.com')
-    const template = url.pathname === '/' ? 'homepage' : 'article'
-    const tree = await this.getTree(template)
+    const { template: templateName, ...config } = resolve(url.pathname)
+    const template = await this.getTemplate(templateName)
 
     const outputKey =
       [].concat(output || []).find(output => outputMap[output]) || 'default'
@@ -252,11 +251,16 @@ class Controller extends Environment {
         charset: 'UTF-8',
         viewport: 'width=device-width'
       },
+      title: `Template: ${templateName}`,
+      template: templateName,
+      ...config,
+      ...template,
       output: selectedOutput,
-      styleHash: await this.getHash({ template, output: selectedOutput, tree }),
-      title: `Template: ${template}`,
-      template,
-      tree,
+      styleHash: await this.getHash({
+        template: templateName,
+        output: selectedOutput,
+        tree: template.tree
+      }),
       uri
     }
     debug('resolved', result)
