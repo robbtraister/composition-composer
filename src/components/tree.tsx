@@ -80,6 +80,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   debug('rendering tree:', {
     output,
     template: context.template,
+    tree,
     quarantine
   })
 
