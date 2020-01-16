@@ -32,6 +32,7 @@ declare namespace Composition {
 
   interface Resolution {
     title?: string
+    meta?: object
     template?: string
     tree?: TreeNode
     pageContent?: object
@@ -90,6 +91,11 @@ declare namespace Composition {
     context: any
   }
 
+  interface MetaStruct {
+    name: string
+    content: string
+  }
+
   interface ResourceParams {
     name: string
     encoding?: string
@@ -101,6 +107,10 @@ declare namespace Composition {
 
   interface StylesStruct {
     styles: any
+  }
+
+  interface TitleStruct {
+    title: string
   }
 
   interface Options {

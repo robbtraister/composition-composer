@@ -5,7 +5,7 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { App, Page, Styles, Title, useComponentContext } from '../../src'
+import { App, Meta, Page, Styles, Title, useComponentContext } from '../../src'
 import Environment from '../../src/utils/environment'
 
 const env = new Environment()
@@ -56,6 +56,7 @@ test('Page Component', () => {
   const html = renderToString(
     <Page
       getComponent={getComponent}
+      meta={{ viewport: 'width=device-width', charset: 'UTF-8' }}
       output="default"
       template="test"
       tree={tree}
@@ -63,6 +64,7 @@ test('Page Component', () => {
       quarantine>
       <html>
         <head>
+          <Meta />
           <Title />
           <Styles />
         </head>

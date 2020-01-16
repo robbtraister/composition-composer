@@ -228,6 +228,9 @@ class Controller extends Environment {
     const tree = await this.getTree(template)
 
     return {
+      meta: {
+        viewport: 'width=device-width'
+      },
       output,
       styleHash: await this.getHash({ template, output, tree }),
       title: `Template: ${template}`,

@@ -3,6 +3,7 @@
 export * from './app'
 export * from './page'
 export * from './content'
+export * from './meta'
 export * from './resource'
 export * from './styles'
 export * from './title'
