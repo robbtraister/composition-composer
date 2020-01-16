@@ -3,6 +3,7 @@
 import path from 'path'
 import { URL } from 'url'
 
+import debugModule from 'debug'
 import { decodeHTML } from 'entities'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
@@ -22,6 +23,17 @@ import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
+
+const debug = debugModule('composition:controller')
+
+const outputMap = {}
+Object.keys(outputs).forEach(output => {
+  outputMap[output] = output
+  const { contentType } = outputs[output]
+  if (contentType) {
+    outputMap[contentType] = output
+  }
+})
 
 export type ControllerType = Controller & Composition.Options
 
@@ -224,23 +236,31 @@ class Controller extends Environment {
     return wrapResult(result, context, Output)
   }
 
-  async resolve({ uri, output = 'default' }) {
+  async resolve({ uri, output }: { uri: string; output: string | string[] }) {
+    debug('resolving', { uri, output })
     const url = new URL(uri, 'http://a.com')
     const template = url.pathname === '/' ? 'homepage' : 'article'
     const tree = await this.getTree(template)
 
-    return {
+    const outputKey =
+      [].concat(output || []).find(output => outputMap[output]) || 'default'
+
+    const selectedOutput = outputMap[outputKey]
+
+    const result = {
       meta: {
         charset: 'UTF-8',
         viewport: 'width=device-width'
       },
-      output,
-      styleHash: await this.getHash({ template, output, tree }),
+      output: selectedOutput,
+      styleHash: await this.getHash({ template, output: selectedOutput, tree }),
       title: `Template: ${template}`,
       template,
       tree,
       uri
     }
+    debug('resolved', result)
+    return result
   }
 }
 
