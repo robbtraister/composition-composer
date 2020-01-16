@@ -5,7 +5,7 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { App, Page, Styles, useComponentContext } from '../../src'
+import { App, Page, Styles, Title, useComponentContext } from '../../src'
 import Environment from '../../src/utils/environment'
 
 const env = new Environment()
@@ -59,10 +59,11 @@ test('Page Component', () => {
       output="default"
       template="test"
       tree={tree}
+      title="test title"
       quarantine>
       <html>
         <head>
-          <title>test</title>
+          <Title />
           <Styles />
         </head>
         <body>

@@ -230,6 +230,7 @@ class Controller extends Environment {
     return {
       output,
       styleHash: await this.getHash({ template, output, tree }),
+      title: `Template: ${template}`,
       template,
       tree,
       uri

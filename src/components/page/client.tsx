@@ -34,6 +34,7 @@ const LocationWatcher = memo(function LocationWatcher(
 
     const awaitResolve = async () => {
       const page = await resolve(uri)
+      document.title = page.title
       doUpdate &&
         setContext({
           ...contextProps,

@@ -31,6 +31,7 @@ declare namespace Composition {
   }
 
   interface Resolution {
+    title?: string
     template?: string
     tree?: TreeNode
     pageContent?: object
