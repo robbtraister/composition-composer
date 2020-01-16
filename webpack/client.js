@@ -3,7 +3,7 @@
 const crypto = require('crypto')
 const path = require('path')
 
-const { DefinePlugin } = require('webpack')
+const { BannerPlugin, DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
@@ -17,6 +17,7 @@ const { isPreact, projectRoot } = environment
 const componentNames = Object.keys(components)
 
 const enginePath = path.resolve(__dirname, '../src/client')
+const componentMap = {}
 const entry = Object.assign(
   {
     engine: enginePath
@@ -25,9 +26,13 @@ const entry = Object.assign(
     ...componentNames.map(component =>
       Object.keys(components[component])
         .filter(output => components[component][output])
-        .map(output => ({
-          [`components/${component}/${output}`]: components[component][output]
-        }))
+        .map(output => {
+          const componentId = `components/${component}/${output}`
+          componentMap[componentId] = component
+          return {
+            [componentId]: components[component][output]
+          }
+        })
     )
   )
 )
@@ -139,7 +144,7 @@ module.exports = (_, argv) => {
                 .digest()
                 .toString('hex')
 
-              return `components/_shared/${hash}`
+              return `chunks/${hash}`
             }
           }
         }
@@ -170,6 +175,15 @@ module.exports = (_, argv) => {
       publicPath: '/dist/'
     },
     plugins: [
+      new BannerPlugin({
+        raw: true,
+        entryOnly: true,
+        test: /^components[\\/]/,
+        banner: ({ chunk }) =>
+          `;Composition.components[${JSON.stringify(
+            componentMap[chunk.name]
+          )}]=`
+      }),
       new DefinePlugin({
         'typeof process': JSON.stringify(undefined),
         'typeof window': JSON.stringify(typeof {})

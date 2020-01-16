@@ -29,15 +29,11 @@ export class Environment {
     const assetMap = {}
     components.forEach(component => {
       ;(assets[`components/${component}/${output}`] || []).forEach(asset => {
-        assetMap[asset] = false
+        assetMap[asset] = true
       })
-      const componentEntry = `components/${component}/${output}.js`
-      if (componentEntry in assetMap) {
-        assetMap[componentEntry] = component
-      }
     })
-
     const mappedAssets = Object.keys(assetMap)
+
     const css = (
       await Promise.all(
         mappedAssets
@@ -64,43 +60,37 @@ export class Environment {
           tree ? `Composition.tree=${JSON.stringify(tree)}` : null,
           `Composition.components=Composition.components||{}`
         ]
-          .filter(c => c)
-          .join(';\n;')
-          .concat(';')
+          .filter(source => source)
+          .map(source => `;${source};`)
+          .join('\n')
       },
-      ...[].concat(
-        ...(await Promise.all(
-          mappedAssets
-            .filter(asset => /\.js$/.test(asset))
-            // don't sort here; order matters
-            .map(async asset => {
-              const key = assetMap[asset]
-              const source = await this.readAsset(asset)
-              let sourceMap
-              try {
-                sourceMap = JSON.parse(await this.readAsset(`${asset}.map`))
-              } catch (_) {}
-              const result = {
-                asset,
-                source,
-                sourceMap
-              }
-              return key
-                ? [
-                    {
-                      asset: `${key}.js`,
-                      source: `;Composition.components[${JSON.stringify(key)}]=`
-                    },
-                    result
-                  ]
-                : result
-            })
-        ))
-      )
-    ].reduce((concat, entry) => {
-      concat.add(entry.asset, entry.source, entry.sourceMap)
-      return concat
-    }, new Concat(true, `${name}.js`, '\n'))
+      ...(await Promise.all(
+        mappedAssets
+          .filter(asset => /\.js$/.test(asset))
+          // don't sort here; order matters
+          .map(async asset => {
+            const source = await this.readAsset(asset)
+            let sourceMap
+            try {
+              sourceMap = JSON.parse(await this.readAsset(`${asset}.map`))
+            } catch (_) {}
+            return {
+              asset,
+              source,
+              sourceMap
+            }
+          })
+      ))
+    ].reduce(
+      (
+        concat,
+        entry: { asset: string; source: string; sourceMap?: string }
+      ) => {
+        concat.add(entry.asset, entry.source, entry.sourceMap)
+        return concat
+      },
+      new Concat(true, `${name}.js`, '\n')
+    )
 
     const result = {
       js: concat.content,
