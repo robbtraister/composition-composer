@@ -15,8 +15,8 @@ export const Title = props => {
   return render({
     // default implementation; can be overridden
     children: DefaultTitle,
-    ...props,
-    title
+    title,
+    ...props
   })
 }
 
