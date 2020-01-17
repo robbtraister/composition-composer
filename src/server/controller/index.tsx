@@ -83,10 +83,6 @@ const STYLED_COMPONENTS_PATTERN = new RegExp(
   'g'
 )
 
-interface RenderOptions {
-  quarantine?: boolean
-}
-
 async function getTemplateFromDB(template) {
   return this.db.getModel('templates').get(template)
 }
@@ -211,57 +207,44 @@ class Controller extends Environment {
       tree
     }
 
-    const renderAsync = async (renderOptions: RenderOptions = {}) => {
-      const renderSync = () => {
-        const sheet = new ServerStyleSheet()
-        try {
-          const routerContext: { url?: string } = {}
-          const html = ReactDOM.renderToStaticMarkup(
-            sheet.collectStyles(
-              <Page
-                {...renderOptions}
-                {...context}
-                routerContext={routerContext}>
-                <Output>
-                  <Tree />
-                </Output>
-              </Page>
-            )
+    const renderSync = () => {
+      const sheet = new ServerStyleSheet()
+      try {
+        const routerContext: { url?: string } = {}
+        const html = ReactDOM.renderToStaticMarkup(
+          sheet.collectStyles(
+            <Page {...context} routerContext={routerContext}>
+              <Output>
+                <Tree />
+              </Output>
+            </Page>
           )
-          if (routerContext && routerContext.url) {
-            throw new Redirect(routerContext.url)
-          }
-
-          return (
-            html
-              .replace(
-                STYLED_COMPONENTS_PATTERN,
-                sheet.getStyleTags().replace(/<\/?style[^>]*>/g, '')
-              )
-              // remove empty, orphaned style tag if styled-components is not used
-              .replace(/<style><\/style>/g, '')
-          )
-        } finally {
-          sheet.seal()
+        )
+        if (routerContext && routerContext.url) {
+          throw new Redirect(routerContext.url)
         }
-      }
 
-      let result = renderSync()
-      const promises = Object.values(cache)
-      if (promises.length > 0) {
-        await Promise.all(promises)
-        result = renderSync()
+        return (
+          html
+            .replace(
+              STYLED_COMPONENTS_PATTERN,
+              sheet.getStyleTags().replace(/<\/?style[^>]*>/g, '')
+            )
+            // remove empty, orphaned style tag if styled-components is not used
+            .replace(/<style><\/style>/g, '')
+        )
+      } finally {
+        sheet.seal()
       }
-      return result
     }
 
-    let result
-    try {
-      result = await renderAsync()
-    } catch (error) {
-      console.error(error)
-      result = renderAsync({ quarantine: true })
+    let result = renderSync()
+    const promises = Object.values(cache)
+    if (promises.length > 0) {
+      await Promise.all(promises)
+      result = renderSync()
     }
+
     return wrapResult(result, context, Output)
   }
 

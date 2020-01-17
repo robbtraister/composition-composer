@@ -1,36 +1,30 @@
 'use strict'
 
-import debugModule from 'debug'
 import React from 'react'
 
 import { RenderError } from '../error'
 
-const debug = debugModule('composition:components:quarantine')
+export const withQuarantine = Component => {
+  return class Quarantine extends React.PureComponent<{}, { error: any }> {
+    static displayName: string
 
-export class Quarantine extends React.PureComponent<
-  Composition.TreeNode,
-  { error: any }
-> {
-  static displayName: string
+    constructor(props) {
+      super(props)
+      this.state = { error: null }
+    }
 
-  constructor(props) {
-    super(props)
-    this.state = { error: null }
-  }
+    componentDidCatch(error) {
+      this.setState({ error })
+    }
 
-  componentDidCatch(error) {
-    const { type, id, props } = this.props
-    debug('caught component error', { type, id, props, error })
-    this.setState({ error })
-  }
-
-  render() {
-    return this.state.error ? (
-      <RenderError error={this.state.error} />
-    ) : (
-      this.props.children
-    )
+    render() {
+      return this.state.error ? (
+        <RenderError error={this.state.error} />
+      ) : (
+        <Component {...this.props} />
+      )
+    }
   }
 }
 
-export default Quarantine
+export default withQuarantine

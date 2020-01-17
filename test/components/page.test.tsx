@@ -60,8 +60,7 @@ test('Page Component', () => {
       output="default"
       template="test"
       tree={tree}
-      title="test title"
-      quarantine>
+      title="test title">
       <html>
         <head>
           <Meta />
@@ -84,8 +83,7 @@ test('Inline Styles', () => {
       getResource={env.readResourceFile.bind(env)}
       output="default"
       template="test"
-      tree={tree}
-      quarantine>
+      tree={tree}>
       <html>
         <head>
           <title>test</title>

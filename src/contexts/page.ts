@@ -9,7 +9,6 @@ const pageContext = createContext<Composition.PageProps>({})
 export function usePageContext() {
   const {
     cache,
-    quarantine,
     getComponent,
     getContent,
     getResource,

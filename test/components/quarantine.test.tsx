@@ -8,11 +8,18 @@ import { render } from '@testing-library/react'
 import { Page, useComponentContext } from '../../src'
 
 const x = 3
-function Fail() {
+
+function FailFunction() {
   if (x === 3) {
     throw new Error('component render failed')
   }
   return <React.Fragment />
+}
+
+class FailClass extends React.Component {
+  render() {
+    return FailFunction()
+  }
 }
 
 function Success({ children }: { children: React.ElementType }) {
@@ -25,33 +32,47 @@ function Success({ children }: { children: React.ElementType }) {
 }
 
 function getComponent(type: string): React.ComponentType {
-  return type === 'fail' ? Fail : Success
+  return (
+    {
+      'fail-class': FailClass,
+      'fail-function': FailFunction
+    }[type] || Success
+  )
 }
 
-const tree = {
-  type: 'div',
-  id: 'abc',
-  children: [
-    {
-      type: 'fail',
-      id: 'def',
-      children: [
-        {
-          type: 'div',
-          id: 'ghi'
-        }
-      ]
-    },
-    {
-      type: 'div',
-      id: 'xyz'
-    }
-  ]
+function getFailTree(type) {
+  return {
+    type: 'div',
+    id: 'abc',
+    children: [
+      {
+        type,
+        id: 'def',
+        children: [
+          {
+            type: 'div',
+            id: 'ghi'
+          }
+        ]
+      },
+      {
+        type: 'div',
+        id: 'xyz'
+      }
+    ]
+  }
 }
 
-test('Quarantine Component', () => {
+test('Quarantine Function Component', () => {
   const { asFragment } = render(
-    <Page getComponent={getComponent} tree={tree} quarantine />
+    <Page getComponent={getComponent} tree={getFailTree('fail-function')} />
+  )
+  expect(asFragment()).toMatchSnapshot()
+})
+
+test('Quarantine Class Component', () => {
+  const { asFragment } = render(
+    <Page getComponent={getComponent} tree={getFailTree('fail-class')} />
   )
   expect(asFragment()).toMatchSnapshot()
 })

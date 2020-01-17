@@ -1,23 +1,29 @@
 'use strict'
 
-import debugModule from 'debug'
 import React from 'react'
-import ReactDOM from 'react-dom/server'
 
 import { RenderError } from '../error'
 
-const debug = debugModule('composition:components:quarantine')
+export const withQuarantine = Component => {
+  const isClass = Component.prototype instanceof React.Component
 
-export function Quarantine(node: Composition.TreeNode) {
-  const { id, type, props, children } = node
-  try {
-    const element = <>{children}</>
-    ReactDOM.renderToString(element)
-    return element
-  } catch (error) {
-    debug('caught component error', { type, id, props, error })
-    return <RenderError error={error} />
-  }
+  return isClass
+    ? class QuarantineComponent extends Component {
+        render() {
+          try {
+            return super.render()
+          } catch (error) {
+            return <RenderError error={error} />
+          }
+        }
+      }
+    : passThroughProps => {
+        try {
+          return Component(passThroughProps)
+        } catch (error) {
+          return <RenderError error={error} />
+        }
+      }
 }
 
-export default Quarantine
+export default withQuarantine

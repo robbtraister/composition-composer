@@ -1,13 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Quarantine Component 1`] = `
+exports[`Quarantine Class Component 1`] = `
 <DocumentFragment>
   <div
     data-id="abc"
     data-type="div"
   >
     <div
-      data-error-component="fail"
+      data-error-component="fail-class"
+      data-error-id="def"
+      data-error-message="component render failed"
+      style="display: none;"
+    />
+    <div
+      data-id="xyz"
+      data-type="div"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Quarantine Function Component 1`] = `
+<DocumentFragment>
+  <div
+    data-id="abc"
+    data-type="div"
+  >
+    <div
+      data-error-component="fail-function"
       data-error-id="def"
       data-error-message="component render failed"
       style="display: none;"
