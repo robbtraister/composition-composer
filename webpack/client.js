@@ -116,7 +116,7 @@ module.exports = (_, argv) => {
         chunks: 'all',
         minSize: 0,
         cacheGroups: {
-          customCacheGroup: {
+          default: {
             enforce: true,
             name(mod, chunks, cacheGroupKey) {
               const chunkNames = [].concat(chunks).map(chunk => chunk.name)
@@ -168,7 +168,6 @@ module.exports = (_, argv) => {
     },
     output: {
       filename: '[name].js',
-      chunkFilename: '[name].js',
       // library: ['Composition', 'components', '[name]'],
       // libraryTarget: 'window',
       path: path.join(projectRoot, 'build', 'dist'),
@@ -188,10 +187,7 @@ module.exports = (_, argv) => {
         'typeof process': JSON.stringify(undefined),
         'typeof window': JSON.stringify(typeof {})
       }),
-      new MiniCssExtractPlugin({
-        filename: '[name].css',
-        chunkFilename: '[name].css'
-      }),
+      new MiniCssExtractPlugin(),
       new OnBuildPlugin(writeAssets)
     ],
     resolve: {

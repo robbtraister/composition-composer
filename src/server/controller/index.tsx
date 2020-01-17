@@ -87,8 +87,8 @@ async function getTemplateFromDB(template) {
   return this.db.getModel('templates').get(template)
 }
 
-function getTemplateFromFS(template) {
-  return require(`~/templates/${template}.json`)
+async function getTemplateFromFS(template) {
+  return import(`~/templates/${template}.json`)
 }
 
 async function resolveFromDB(uri) {

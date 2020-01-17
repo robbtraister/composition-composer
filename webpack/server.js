@@ -14,7 +14,7 @@ const OnBuildPlugin = require('./plugins/on-build-plugin')
 const { port, projectRoot } = environment
 
 const entry = {
-  server: [
+  index: [
     'source-map-support/register',
     `./${path.relative(
       projectRoot,
@@ -22,8 +22,6 @@ const entry = {
     )}`
   ]
 }
-
-const buildArtifact = path.resolve(projectRoot, 'build', Object.keys(entry)[0])
 
 const devMode = {
   // the following are set to enable proper server-side source-map error logging
@@ -51,11 +49,15 @@ const serverConfigs = {
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.join(projectRoot, 'build')
+    path: path.join(projectRoot, 'build', 'server')
   },
   target: 'node'
 }
 
+const buildArtifact = path.resolve(
+  serverConfigs.output.path,
+  Object.keys(entry)[0]
+)
 let hotApp
 
 module.exports = (_, argv) => {
@@ -88,7 +90,11 @@ module.exports = (_, argv) => {
           'typeof window': JSON.stringify(undefined)
         }),
         new OnBuildPlugin(async stats => {
-          delete require.cache[require.resolve(buildArtifact)]
+          Object.keys(require.cache)
+            .filter(mod => mod.startsWith(serverConfigs.output.path))
+            .forEach(mod => {
+              delete require.cache[mod]
+            })
           hotApp = undefined
 
           // clear compilation cache
@@ -96,7 +102,25 @@ module.exports = (_, argv) => {
             `rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`
           )
         })
-      ]
+      ],
+      optimization: {
+        ...serverConfigs.optimization,
+        namedChunks: true,
+        splitChunks: {
+          chunks: 'async',
+          cacheGroups: {
+            default: {
+              enforce: true,
+              name(mod, chunks, cacheGroupKey) {
+                return path.relative(
+                  path.join(projectRoot, 'src'),
+                  mod.resource
+                )
+              }
+            }
+          }
+        }
+      }
     },
     {
       ...serverConfigs,
@@ -109,7 +133,8 @@ module.exports = (_, argv) => {
       },
       output: {
         ...serverConfigs.output,
-        filename: 'junk/[name].js'
+        filename: 'junk/[name].js',
+        path: path.join(projectRoot, 'build')
       },
       plugins: [
         new MiniCssExtractPlugin({
