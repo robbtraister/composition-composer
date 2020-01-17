@@ -23,7 +23,8 @@ import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
-import resolve from '~/resolve'
+import resolverConfigs from '~/resolvers.json'
+import Resolver from './resolver'
 
 const debug = debugModule('composition:controller')
 
@@ -35,6 +36,9 @@ Object.keys(outputs).forEach(output => {
     outputMap[contentType] = output
   }
 })
+const resolvers = []
+  .concat(resolverConfigs || [])
+  .map(resolver => new Resolver(resolver))
 
 export type ControllerType = Controller & Composition.Options
 
@@ -91,15 +95,41 @@ function getTemplateFromFS(template) {
   return require(`~/templates/${template}.json`)
 }
 
+async function resolveFromDB(uri) {
+  const { resolvers } = await this.db
+    .getModel('resolvers')
+    .get('__ALL_RESOLVERS__')
+
+  let match
+  resolvers.find(resolver => {
+    match = new Resolver(resolver).match(uri)
+    return match
+  })
+  return match
+}
+
+async function resolveFromFS(uri) {
+  let match
+  resolvers.find(resolver => {
+    match = resolver.match(uri)
+    return match
+  })
+
+  return match
+}
+
 class Controller extends Environment {
-  getTemplate: (string) => Promise<{ tree?: object }>
   db: Composition.DB
+
+  getTemplate: (string) => Promise<{ tree?: object }>
+  resolveUri: (string) => Promise<{ template: string }>
 
   constructor(options: Composition.Options = {}) {
     super(options)
 
     this.db = this.mongoUrl ? Mongo(this.mongoUrl) : null
     this.getTemplate = this.db ? getTemplateFromDB : getTemplateFromFS
+    this.resolveUri = this.db ? resolveFromDB : resolveFromFS
   }
 
   async compileTemplate({ template, output, tree = null }) {
@@ -238,7 +268,9 @@ class Controller extends Environment {
   async resolve({ uri, output }: { uri: string; output: string | string[] }) {
     debug('resolving', { uri, output })
     const url = new URL(uri, 'http://a.com')
-    const { template: templateName, ...config } = resolve(url.pathname)
+    const { template: templateName, ...config } = await this.resolveUri(
+      url.pathname
+    )
     const template = await this.getTemplate(templateName)
 
     const outputKey =
