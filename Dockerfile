@@ -19,9 +19,10 @@ RUN \
 COPY . .
 RUN \
     npm run build && \
-    # npm run test && \
+    npm run test && \
     rm -rf ./bundle/{build,src}
 
+ENV PATH=${PATH}:/opt/composition/node_modules/.bin
 ENV PROJECT_ROOT=/opt/composition/bundle
 WORKDIR ${PROJECT_ROOT}
 
