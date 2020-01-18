@@ -13,12 +13,7 @@
       }
     ],
     "@babel/syntax-dynamic-import",
-    [
-      "@babel/transform-runtime",
-      {
-        "absoluteRuntime": true
-      }
-    ]
+    "@babel/transform-runtime"
   ],
   "presets": [
     "@babel/env",
