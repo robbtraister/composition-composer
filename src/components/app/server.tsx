@@ -68,7 +68,7 @@ export function App(props: ServerAppProps) {
             }}
           />
           <Script name="runtime" />
-          <Script name="engine" />
+          {/* <Script name="engine" /> */}
           <Script name={isCombinations ? `combinations/${output}` : appName} />
         </>
       )}

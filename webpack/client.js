@@ -37,19 +37,20 @@ const entry = Object.assign(
   )
 )
 
+const evergreenLibs = ['engine', 'runtime']
 async function writeAssets(stats) {
   const { compilation } = stats
   const entrypoints = [...compilation.entrypoints.keys()]
   const assets = Object.assign(
     {},
     ...entrypoints
-      .filter(entrypoint => !['engine', 'runtime'].includes(entrypoint))
+      .filter(entrypoint => !evergreenLibs.includes(entrypoint))
       .map(entrypoint => {
         const chunks = compilation.entrypoints.get(entrypoint).chunks
         return {
           [entrypoint]: [].concat(
             ...chunks
-              .filter(chunk => !['engine', 'runtime'].includes(chunk.name))
+              .filter(chunk => !evergreenLibs.includes(chunk.name))
               .map(chunk => chunk.files)
           )
         }
@@ -99,7 +100,7 @@ module.exports = (_, argv) => {
     ...sharedConfigs,
     ...require('./shared/rules')({ isProd, extractCss: true }),
     name: 'client',
-    devtool: isProd ? 'source-map' : 'eval-source-map',
+    devtool: isProd ? 'hidden-source-map' : 'eval-source-map',
     entry,
     mode: isProd ? 'production' : 'development',
     node: {
