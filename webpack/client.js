@@ -16,11 +16,11 @@ const { isPreact, projectRoot } = environment
 
 const componentNames = Object.keys(components)
 
-const enginePath = path.resolve(__dirname, '../src/client')
+const entrypointPath = path.resolve(__dirname, '../src/client')
 const componentMap = {}
 const entry = Object.assign(
   {
-    engine: enginePath
+    render: entrypointPath
   },
   ...[].concat(
     ...componentNames.map(component =>
@@ -37,7 +37,7 @@ const entry = Object.assign(
   )
 )
 
-const evergreenLibs = ['engine', 'runtime']
+const evergreenLibs = ['engine', 'render']
 async function writeAssets(stats) {
   const { compilation } = stats
   const entrypoints = [...compilation.entrypoints.keys()]
@@ -72,8 +72,8 @@ async function writeAssets(stats) {
   )
 }
 
-// if any of these libs are used in the bundle, output them into the shared/heavily-cached runtime asset
-const runtimeLibs = [
+// if any of these libs are used in the bundle, output them into the shared/heavily-cached engine asset
+const engineLibs = [
   'prop-types',
   'react',
   'react-dom',
@@ -82,10 +82,10 @@ const runtimeLibs = [
   'styled-components'
 ]
 
-function isRuntimeLib(mod) {
+function isEngineLib(mod) {
   let pkg = mod
   while (pkg) {
-    if (runtimeLibs.includes(pkg.rawRequest)) return true
+    if (engineLibs.includes(pkg.rawRequest)) return true
     pkg = pkg.issuer
   }
   return false
@@ -111,7 +111,7 @@ module.exports = (_, argv) => {
     },
     optimization: {
       runtimeChunk: {
-        name: 'runtime'
+        name: 'engine'
       },
       splitChunks: {
         chunks: 'all',
@@ -125,14 +125,14 @@ module.exports = (_, argv) => {
               if (
                 // engine is always loaded in the browser and will not change across templates,
                 // so take advantage of heavy caching
-                chunkNames.includes('engine') ||
-                // if any standard libs are used, add to heavily-cached runtime asset
-                isRuntimeLib(mod) ||
-                // put all libs in runtime during dev to speed up recompilation
+                chunkNames.includes('render') ||
+                // if any standard libs are used, add to heavily-cached engine asset
+                isEngineLib(mod) ||
+                // put all node_modules in engine during dev to speed up recompilation
                 (!isProd &&
                   /[\\/]node_modules[\\/]/.test(mod.resource || mod.request))
               ) {
-                return 'runtime'
+                return 'engine'
               } else if (chunkNames.length === 1) {
                 return chunkNames[0]
               }

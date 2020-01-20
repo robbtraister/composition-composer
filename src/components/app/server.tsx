@@ -67,8 +67,8 @@ export function App(props: ServerAppProps) {
               )}))document.write('<script type="text/javascript" src="/dist/polyfills.js" defer=""><\\/script>');`
             }}
           />
-          <Script name="runtime" />
-          {/* <Script name="engine" /> */}
+          {/* <Script name="runtime" /> */}
+          <Script name="engine" />
           <Script name={isCombinations ? `combinations/${output}` : appName} />
         </>
       )}

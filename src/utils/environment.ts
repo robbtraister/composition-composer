@@ -33,7 +33,7 @@ export class Environment {
       })
     })
     // include the engine entrypoint with the compiled script
-    const mappedAssets = Object.keys(assetMap).concat('engine.js')
+    const mappedAssets = Object.keys(assetMap).concat('render.js')
 
     const css = (
       await Promise.all(
