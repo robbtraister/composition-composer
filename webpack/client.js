@@ -106,8 +106,8 @@ module.exports = (_, argv) => {
     node: {
       __dirname: false,
       __filename: false,
-      global: false,
-      process: false
+      global: true,
+      process: true
     },
     optimization: {
       runtimeChunk: {
