@@ -11,6 +11,25 @@ const debug = debugModule('composition:controller:content')
 
 const contentCache = {}
 
+function fetchFromResolve(resolve) {
+  return query => {
+    const fetchPromise: Composition.CachedPromise = Promise.resolve(
+      resolve(query)
+    )
+      .then(url =>
+        request(url, {
+          json: true,
+          resolveWithFullResponse: true
+        })
+      )
+      .then(({ body, headers }) => {
+        fetchPromise.expires = +new Date(headers.expires)
+        return body
+      })
+    return fetchPromise
+  }
+}
+
 class ContentSource {
   name: string
   ttl: number
@@ -23,22 +42,7 @@ class ContentSource {
     if (fetch) {
       this.fetchDirect = fetch
     } else if (resolve) {
-      this.fetchDirect = query => {
-        const fetchPromise: Composition.CachedPromise = Promise.resolve(
-          resolve(query)
-        )
-          .then(url =>
-            request(url, {
-              json: true,
-              resolveWithFullResponse: true
-            })
-          )
-          .then(({ body, headers }) => {
-            fetchPromise.expires = headers.expires
-            return body
-          })
-        return fetchPromise
-      }
+      this.fetchDirect = fetchFromResolve(resolve)
     } else {
       throw new Error('`fetch` or `resolve` is required for content source')
     }
@@ -56,18 +60,26 @@ class ContentSource {
   /* async */ fetch(query) {
     const cacheKey = this.getCacheKey(query)
     if (cacheKey in contentCache) {
-      logger.info(`Content found in cache [${cacheKey}]`)
+      const cacheEntry = contentCache[cacheKey]
+      if (cacheEntry.expires < Date.now()) {
+        logger.info(`Content in cache is expired; fetching [${cacheKey}]`)
+      } else {
+        logger.info(`Content found in cache [${cacheKey}]`)
+        return cacheEntry
+      }
     } else {
       logger.info(`Content not found in cache; fetching [${cacheKey}]`)
-      const cacheEntry: Composition.CachedPromise = (contentCache[
-        cacheKey
-      ] = Promise.resolve(this.fetchDirect(query)).then(data => {
-        debug(`hydrated content [${cacheKey}]`, data)
-        cacheEntry.data = data
-        cacheEntry.expires = cacheEntry.expires || Date.now() + this.ttl
-        return data
-      }))
     }
+
+    const cacheEntry: Composition.CachedPromise = (contentCache[
+      cacheKey
+    ] = Promise.resolve(this.fetchDirect(query)).then(data => {
+      debug(`hydrated content [${cacheKey}]`, data)
+      cacheEntry.data = data
+      cacheEntry.expires = cacheEntry.expires || Date.now() + this.ttl
+      return data
+    }))
+
     return contentCache[cacheKey]
   }
 

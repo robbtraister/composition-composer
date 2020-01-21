@@ -21,7 +21,8 @@ function getContent({ source, query }) {
       )}&query=${encodeURIComponent(JSON.stringify(query))}`
     )
     .then(res => {
-      contentPromise.expires = Number(res.headers.get('expires'))
+      const expires = res.headers.get('expires')
+      contentPromise.expires = expires && +new Date(expires)
       return res.json()
     })
     .then(data => {

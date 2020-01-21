@@ -15,7 +15,8 @@ export default function router(controller: ControllerType) {
         query: JSON.parse(query)
       })
       const data = await contentPromise
-      contentPromise.expires && res.set('Expires', contentPromise.expires)
+      contentPromise.expires &&
+        res.set('Expires', new Date(contentPromise.expires).toUTCString())
       res.send(data)
     } catch (error) {
       next(error)
