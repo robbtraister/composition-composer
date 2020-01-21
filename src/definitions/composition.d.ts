@@ -10,8 +10,9 @@ declare namespace Composition {
     getModel: (string) => Model
   }
 
-  interface CachedPromise extends Promise<object> {
-    value?: object
+  interface CachedPromise extends Promise<any> {
+    data?: any
+    expires?: number
   }
 
   interface RenderProps<T> {

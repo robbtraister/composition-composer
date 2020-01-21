@@ -51,7 +51,7 @@ export function App(props: ServerAppProps) {
   const contentCache = Object.keys(cache)
     .filter(key => key.startsWith('{"content":'))
     .reduce((rollup, key) => {
-      rollup[key] = { value: (cache[key] || {}).value }
+      rollup[key] = JSON.parse(JSON.stringify(cache[key] || {}))
       return rollup
     }, {})
 

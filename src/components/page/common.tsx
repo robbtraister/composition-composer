@@ -18,8 +18,8 @@ export const CommonPage = memo(function CommonPage({
   value: Composition.PageProps
 }) {
   const context = {
-    cache: {},
     ...value,
+    cache: value.cache || {},
     elements: getDescendants({ children: value.tree })
   }
   debug('rendering with context', context)

@@ -157,11 +157,12 @@ class Controller extends Environment {
     return getContentSource(source).clear(query)
   }
 
-  async fetch({ source, query }: Composition.ContentParams) {
+  // don't mark as async, as that will force-wrap with a new Promise
+  /* async */ fetch({ source, query }: Composition.ContentParams) {
     return getContentSource(source).fetch(query)
   }
 
-  async update({ source, query }: Composition.ContentParams) {
+  /* async */ update({ source, query }: Composition.ContentParams) {
     return getContentSource(source).update(query)
   }
 

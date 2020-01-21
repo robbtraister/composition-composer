@@ -14,13 +14,21 @@ function getComponent(type) {
 }
 
 function getContent({ source, query }) {
-  return window
+  const contentPromise = window
     .fetch(
       `/api/content/fetch?source=${encodeURIComponent(
         source
       )}&query=${encodeURIComponent(JSON.stringify(query))}`
     )
-    .then(res => res.json())
+    .then(res => {
+      contentPromise.expires = Number(res.headers.get('expires'))
+      return res.json()
+    })
+    .then(data => {
+      contentPromise.data = data
+      return data
+    })
+  return contentPromise
 }
 
 const resolutions = {}

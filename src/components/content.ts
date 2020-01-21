@@ -15,22 +15,31 @@ export function useContent(params: Composition.ContentParams) {
   const { getContent } = useContext(componentContext)
 
   /**
-   * cacheEntry will always be some combination of the following (possibly both):
+   * cache entry will always be some combination of the following (possibly both):
    * 1. a Promise
-   * 2. an Object with `value` property
+   * 2. an Object with `data` (and possibly, `expires`) property
    */
 
-  const cacheEntry = (cache[key] =
-    cache[key] ||
-    Promise.resolve(getContent(params)).then(data => {
-      cacheEntry.value = data
-      return data
-    }))
+  const { data, expires } = cache[key] || {}
+  const [content, setContent] = useState(data)
 
-  const [content, setContent] = useState(cacheEntry.value)
+  if (!(key in cache) || expires < Date.now()) {
+    const contentPromise: Composition.CachedPromise = Promise.resolve(
+      getContent(params)
+    )
 
-  if (cacheEntry instanceof Promise) {
-    cacheEntry.then(setContent)
+    cache[key] = Object.assign(
+      contentPromise,
+      // preserve cached data until update is resolved
+      { data },
+      // preserve cached props provided by custom getContent implementation
+      contentPromise
+    )
+
+    contentPromise.then(data => {
+      setContent(data)
+      contentPromise.data = data
+    })
   }
 
   return content
@@ -43,7 +52,7 @@ export function Content(
   >
 ) {
   const { source, query, filter, ...passThroughProps } = props
-  const content = useContent({ source, query, filter }) || {}
+  const content = useContent({ source, query, filter })
 
   return render({ ...passThroughProps, content })
 }

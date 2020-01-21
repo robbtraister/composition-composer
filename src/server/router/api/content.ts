@@ -10,7 +10,13 @@ export default function router(controller: ControllerType) {
   contentRouter.use('/fetch', async (req, res, next) => {
     try {
       const { source, query } = req.query
-      res.send(await controller.fetch({ source, query: JSON.parse(query) }))
+      const contentPromise = controller.fetch({
+        source,
+        query: JSON.parse(query)
+      })
+      const data = await contentPromise
+      contentPromise.expires && res.set('Expires', contentPromise.expires)
+      res.send(data)
     } catch (error) {
       next(error)
     }
