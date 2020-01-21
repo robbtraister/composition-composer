@@ -9,7 +9,7 @@
       "request": "attach",
       "name": "Attach to Docker",
       "port": 9229,
-      "remoteRoot": "/opt/composition/bundle",
+      "remoteRoot": "/opt/composition/project",
       "sourceMapPathOverrides": {
         "webpack:///*": "${workspaceFolder}/*"
       }
@@ -20,7 +20,7 @@
       "name": "Attach to Server",
       "port": 9229,
       "sourceMapPathOverrides": {
-        "webpack:///*": "${workspaceFolder}/../composition-bundle/*"
+        "webpack:///*": "${workspaceFolder}/*"
       }
     },
     {

@@ -6,8 +6,8 @@
     "predev": "npm run generate",
     "dev": "node --inspect=0.0.0.0:9229 $(which webpack-dev-server) --config ../webpack",
     "pregenerate": "npm run clean && npm run manifest -- --quiet",
-    "generate": "node ../bundle/manifest/generate.js",
-    "manifest": "node ../bundle/manifest",
+    "generate": "node ../project/manifest/generate.js",
+    "manifest": "node ../project/manifest",
     "prod": "NODE_ENV=production npm run build && NODE_ENV=production node \"${PROJECT_ROOT:-$INIT_CWD}\"/build/server",
     "watch": "npm run build -- --watch"
   }

@@ -20,10 +20,10 @@ COPY . .
 RUN \
     npm run build && \
     npm run test && \
-    rm -rf ./bundle/{build,src}
+    rm -rf ./project/{build,src}
 
 ENV PATH=${PATH}:/opt/composition/node_modules/.bin
-ENV PROJECT_ROOT=/opt/composition/bundle
+ENV PROJECT_ROOT=/opt/composition/project
 WORKDIR ${PROJECT_ROOT}
 
 ENTRYPOINT ["npm", "--prefix=/opt/composition/bin", "run"]

@@ -9,7 +9,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 
 const environment = require('./environment')
-const { components, outputs } = require('../bundle/manifest')
+const { components, outputs } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { isPreact, projectRoot } = environment
@@ -72,7 +72,7 @@ async function writeAssets(stats) {
   )
 }
 
-// if any of these libs are used in the bundle, output them into the shared/heavily-cached engine asset
+// if any of these libs are used in the project, output them into the shared/heavily-cached engine asset
 const engineLibs = [
   'prop-types',
   'react',

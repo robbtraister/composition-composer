@@ -111,7 +111,7 @@
   "files": [
     "bin",
     "build",
-    "bundle",
+    "project/manifest",
     "src",
     "webpack",
     "aliases.js",
@@ -132,7 +132,7 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^~/(.*)": "<rootDir>/bundle/src/$1"
+      "^~/(.*)": "<rootDir>/project/src/$1"
     },
     "testPathIgnorePatterns": [
       "<rootDir>/build/",

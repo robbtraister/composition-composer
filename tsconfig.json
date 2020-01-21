@@ -5,7 +5,7 @@
     "jsx": "preserve",
     "noUnusedLocals": true,
     "paths": {
-      "~/*": ["./bundle/src/*"]
+      "~/*": ["./project/src/*"]
     },
     "resolveJsonModule": true
   },
