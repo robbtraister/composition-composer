@@ -25,9 +25,9 @@ function getContent({ source, query }) {
       contentPromise.expires = expires && +new Date(expires)
       return res.json()
     })
-    .then(data => {
-      contentPromise.data = data
-      return data
+    .then(value => {
+      contentPromise.value = value
+      return value
     })
   return contentPromise
 }

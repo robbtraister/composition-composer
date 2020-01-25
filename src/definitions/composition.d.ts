@@ -11,7 +11,7 @@ declare namespace Composition {
   }
 
   interface CachedPromise extends Promise<any> {
-    data?: any
+    value?: any
     expires?: number
   }
 

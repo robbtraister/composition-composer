@@ -73,11 +73,11 @@ class ContentSource {
 
     const cacheEntry: Composition.CachedPromise = (contentCache[
       cacheKey
-    ] = Promise.resolve(this.fetchDirect(query)).then(data => {
-      debug(`hydrated content [${cacheKey}]`, data)
-      cacheEntry.data = data
+    ] = Promise.resolve(this.fetchDirect(query)).then(value => {
+      debug(`hydrated content [${cacheKey}]`, value)
+      cacheEntry.value = value
       cacheEntry.expires = cacheEntry.expires || Date.now() + this.ttl
-      return data
+      return value
     }))
 
     return contentCache[cacheKey]

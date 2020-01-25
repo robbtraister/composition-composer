@@ -3,8 +3,9 @@
 import debugModule from 'debug'
 import React, { memo, useContext, useState } from 'react'
 
-import { withQuarantine } from './quarantine'
+import { Quarantine as QuarantineComponent } from './quarantine'
 import { withTimer } from './timer'
+import { isClient } from './utils'
 
 import componentContext from '../contexts/component'
 import pageContext from '../contexts/page'
@@ -25,10 +26,14 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   const getContent =
     treeProps.getContent || context.getContent || (() => Promise.resolve(null))
   const output = context.output
+  const isQuarantine =
+    isClient ||
+    ('quarantine' in treeProps ? treeProps.quarantine : context.quarantine)
+  const Quarantine = isQuarantine ? QuarantineComponent : React.Fragment
 
   function getCachedComponent(type) {
     if (!(type in componentCache)) {
-      componentCache[type] = withTimer(withQuarantine(getComponent(type)))
+      componentCache[type] = withTimer(getComponent(type))
     }
     return componentCache[type]
   }
@@ -50,14 +55,16 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     return (
       Component && (
         <componentContext.Provider value={componentContextValue}>
-          <Component {...props}>
-            {[]
-              .concat(children || [])
-              .filter(({ type }) => getCachedComponent(type))
-              .map((child, index) => (
-                <Node key={child.id || index} {...child} />
-              ))}
-          </Component>
+          <Quarantine>
+            <Component {...props}>
+              {[]
+                .concat(children || [])
+                .filter(({ type }) => getCachedComponent(type))
+                .map((child, index) => (
+                  <Node key={child.id || index} {...child} />
+                ))}
+            </Component>
+          </Quarantine>
         </componentContext.Provider>
       )
     )
