@@ -1,31 +1,33 @@
 'use strict'
 
-import React, { useContext } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { StaticRouter } from 'react-router'
 
 import { RenderError } from '../error'
+import { getDescendants } from '../utils'
 
-import componentContext from '../../contexts/component'
 import pageContext from '../../contexts/page'
 
-export const Quarantine = ({ children }) => {
-  const componentContextValue = useContext(componentContext)
-  const pageContextValue = useContext(pageContext)
-  try {
-    ReactDOM.renderToStaticMarkup(
-      <StaticRouter location={pageContextValue.location}>
-        <pageContext.Provider value={pageContextValue}>
-          <componentContext.Provider value={componentContextValue}>
-            {children}
-          </componentContext.Provider>
-        </pageContext.Provider>
-      </StaticRouter>
-    )
-    return children
-  } catch (error) {
-    return <RenderError error={error} />
-  }
+export const Quarantine = React.Fragment
+
+export const verify = function verify({ tree, context, Node }) {
+  const elements = context.elements || getDescendants({ children: tree })
+  const invertedElements = [...elements].reverse()
+  invertedElements.forEach(element => {
+    try {
+      ReactDOM.renderToStaticMarkup(
+        <StaticRouter location={context.location}>
+          <pageContext.Provider value={context}>
+            <Node {...element} />
+          </pageContext.Provider>
+        </StaticRouter>
+      )
+    } catch (error) {
+      const ComponentError = () => <RenderError error={error} />
+      element.component = ComponentError
+    }
+  })
 }
 
 export default Quarantine

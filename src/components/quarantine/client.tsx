@@ -25,4 +25,6 @@ export class Quarantine extends React.PureComponent<{}, { error: any }> {
   }
 }
 
+export const verify = () => {}
+
 export default Quarantine

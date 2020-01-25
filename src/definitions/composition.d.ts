@@ -29,6 +29,7 @@ declare namespace Composition {
     type: string
     props?: object
     children?: object
+    component?: React.ComponentType
   }
 
   interface Resolution {

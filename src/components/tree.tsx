@@ -3,9 +3,8 @@
 import debugModule from 'debug'
 import React, { memo, useContext, useState } from 'react'
 
-import { Quarantine as QuarantineComponent } from './quarantine'
+import { Quarantine, verify } from './quarantine'
 import { withTimer } from './timer'
-import { isClient } from './utils'
 
 import componentContext from '../contexts/component'
 import pageContext from '../contexts/page'
@@ -27,9 +26,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     treeProps.getContent || context.getContent || (() => Promise.resolve(null))
   const output = context.output
   const isQuarantine =
-    isClient ||
-    ('quarantine' in treeProps ? treeProps.quarantine : context.quarantine)
-  const Quarantine = isQuarantine ? QuarantineComponent : React.Fragment
+    'quarantine' in treeProps ? treeProps.quarantine : context.quarantine
 
   function getCachedComponent(type) {
     if (!(type in componentCache)) {
@@ -39,9 +36,9 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   }
 
   function Node(node: Composition.TreeNode) {
-    const { props = {}, children = [], type, id } = node
+    const { props = {}, children = [], type, id, component } = node
 
-    const Component = getCachedComponent(type) || null
+    const Component = component || getCachedComponent(type) || null
     debug('rendering component:', {
       output,
       type,
@@ -75,6 +72,10 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     template: context.template,
     tree
   })
+
+  if (isQuarantine) {
+    verify({ tree, context, Node })
+  }
 
   return <Node {...tree} />
 })

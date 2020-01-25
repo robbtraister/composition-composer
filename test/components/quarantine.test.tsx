@@ -9,10 +9,15 @@ import { render } from '@testing-library/react'
 
 import { Page, useComponentContext, usePageContext } from '../../src'
 
-const x = 3
-
 function FailFunction() {
-  if (x === 3) {
+  // random logic to waste time
+  let x = 0
+  for (let i = 0; i < 10000000; i++) {
+    x += i ** 2
+  }
+
+  // can't throw by default, so make math that is guaranteed to be truthy
+  if (0 * x === 0) {
     throw new Error('component render failed')
   }
   return <React.Fragment />
