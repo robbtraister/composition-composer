@@ -45,6 +45,8 @@ declare namespace Composition {
   type Resolver = (string) => Promise<Resolution>
 
   interface TreeProps extends Resolution {
+    quarantine?: boolean
+
     getComponent?: ComponentFetcher
     getContent?: ContentFetcher
   }

@@ -58,6 +58,7 @@ test('Page Component', () => {
       getComponent={getComponent}
       meta={{ viewport: 'width=device-width', charset: 'UTF-8' }}
       output="default"
+      quarantine
       template="test"
       tree={tree}
       title="test title">
@@ -82,6 +83,7 @@ test('Inline Styles', () => {
       getComponent={getComponent}
       getResource={env.readResourceFile.bind(env)}
       output="default"
+      quarantine
       template="test"
       tree={tree}>
       <html>
