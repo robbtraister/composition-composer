@@ -206,13 +206,16 @@ class Controller extends Environment {
       tree
     }
 
-    const renderSync = () => {
+    const renderSync = quarantine => {
       const sheet = new ServerStyleSheet()
       try {
         const routerContext: { url?: string } = {}
         const html = ReactDOM.renderToStaticMarkup(
           sheet.collectStyles(
-            <Page {...context} routerContext={routerContext}>
+            <Page
+              {...context}
+              quarantine={quarantine}
+              routerContext={routerContext}>
               <Output>
                 <Tree />
               </Output>
@@ -237,11 +240,21 @@ class Controller extends Environment {
       }
     }
 
-    let result = renderSync()
-    const promises = Object.values(cache)
-    if (promises.length > 0) {
-      await Promise.all(promises)
-      result = renderSync()
+    const renderAsync = async (quarantine = false) => {
+      let result = renderSync(quarantine)
+      const promises = Object.values(cache)
+      if (promises.length > 0) {
+        await Promise.all(promises)
+        result = renderSync(quarantine)
+      }
+      return result
+    }
+
+    let result
+    try {
+      result = await renderAsync()
+    } catch (error) {
+      result = await renderAsync(true)
     }
 
     return wrapResult(result, context, Output)

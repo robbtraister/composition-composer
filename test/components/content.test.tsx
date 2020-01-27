@@ -62,6 +62,7 @@ const tree = {
 
 async function testContentComponent(componentType) {
   const cache = {}
+
   const result = render(
     <Page
       getComponent={getComponent}
@@ -72,6 +73,7 @@ async function testContentComponent(componentType) {
   )
 
   await act(() => Promise.all(Object.values(cache)))
+
   return result
 }
 

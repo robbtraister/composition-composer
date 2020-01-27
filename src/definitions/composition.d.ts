@@ -11,7 +11,7 @@ declare namespace Composition {
   }
 
   interface CachedPromise extends Promise<any> {
-    data?: any
+    value?: any
     expires?: number
   }
 
@@ -29,6 +29,7 @@ declare namespace Composition {
     type: string
     props?: object
     children?: object
+    Component?: React.ComponentType
   }
 
   interface Resolution {
@@ -45,8 +46,9 @@ declare namespace Composition {
   type Resolver = (string) => Promise<Resolution>
 
   interface TreeProps extends Resolution {
+    quarantine?: boolean
+
     getComponent?: ComponentFetcher
-    getContent?: ContentFetcher
   }
 
   interface CommonPageProps extends TreeProps {
@@ -58,6 +60,7 @@ declare namespace Composition {
     output?: string
     outputStyles?: string
 
+    getContent?: ContentFetcher
     getResource?: ResourceFetcher
   }
 
