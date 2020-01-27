@@ -29,7 +29,7 @@ declare namespace Composition {
     type: string
     props?: object
     children?: object
-    component?: React.ComponentType
+    Component?: React.ComponentType
   }
 
   interface Resolution {
@@ -49,7 +49,6 @@ declare namespace Composition {
     quarantine?: boolean
 
     getComponent?: ComponentFetcher
-    getContent?: ContentFetcher
   }
 
   interface CommonPageProps extends TreeProps {
@@ -61,6 +60,7 @@ declare namespace Composition {
     output?: string
     outputStyles?: string
 
+    getContent?: ContentFetcher
     getResource?: ResourceFetcher
   }
 

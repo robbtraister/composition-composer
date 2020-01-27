@@ -3,10 +3,11 @@
 import debugModule from 'debug'
 import React, { memo, useContext, useState } from 'react'
 
-import { Quarantine, verify } from './quarantine'
+import { Node } from './node'
+import { verifyNode } from './quarantine'
 import { withTimer } from './timer'
+import { getDescendants } from './utils'
 
-import componentContext from '../contexts/component'
 import pageContext from '../contexts/page'
 
 const debug = debugModule('composition:components:tree')
@@ -22,8 +23,6 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     throw new Error('Use of `tree` requires `getComponent` function')
   }
 
-  const getContent =
-    treeProps.getContent || context.getContent || (() => Promise.resolve(null))
   const output = context.output
   const isQuarantine =
     'quarantine' in treeProps ? treeProps.quarantine : context.quarantine
@@ -35,47 +34,20 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     return componentCache[type]
   }
 
-  function Node(node: Composition.TreeNode) {
-    const { props = {}, children = [], type, id, component } = node
-
-    const Component = component || getCachedComponent(type) || null
-    debug('rendering component:', {
-      output,
-      type,
-      id,
-      Component,
-      props
-    })
-
-    const componentContextValue = { ...node, getContent }
-
-    return (
-      Component && (
-        <componentContext.Provider value={componentContextValue}>
-          <Quarantine>
-            <Component {...props}>
-              {[]
-                .concat(children || [])
-                .filter(({ type }) => getCachedComponent(type))
-                .map((child, index) => (
-                  <Node key={child.id || index} {...child} />
-                ))}
-            </Component>
-          </Quarantine>
-        </componentContext.Provider>
-      )
-    )
-  }
-
   debug('rendering tree:', {
     output,
     template: context.template,
     tree
   })
 
-  if (isQuarantine) {
-    verify({ tree, context, Node })
-  }
+  const elements = context.elements || getDescendants({ children: tree })
+  const invertedElements = [...elements].reverse()
+  invertedElements.forEach(element => {
+    const Component = getCachedComponent(element.type) || null
+    element.Component = isQuarantine
+      ? verifyNode({ Component, element, context })
+      : Component
+  })
 
   return <Node {...tree} />
 })
