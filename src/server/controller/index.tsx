@@ -19,7 +19,6 @@ import { getDescendants } from '../../components/utils'
 
 import Environment from '../../utils/environment'
 import logger from '../../utils/logger'
-import { fileExists } from '../../utils/promises'
 
 import components from '~/../build/generated/components'
 import outputs from '~/../build/generated/outputs'
@@ -167,22 +166,21 @@ class Controller extends Environment {
   }
 
   async getHash({ template, output, tree = null }) {
-    if (
-      !(await fileExists(
-        this.getAssetFile(
+    const getStyleHash = async () => {
+      const { styleHash } = JSON.parse(
+        await this.readAssetFile(
           path.join('templates', template, `${output}.css.json`)
         )
-      ))
-    ) {
-      await this.compileTemplate({ template, output, tree })
+      )
+      return styleHash
     }
 
-    const { styleHash } = JSON.parse(
-      await this.readAssetFile(
-        path.join('templates', template, `${output}.css.json`)
-      )
-    )
-    return styleHash
+    try {
+      return await getStyleHash()
+    } catch (_) {
+      await this.compileTemplate({ template, output, tree })
+      return getStyleHash()
+    }
   }
 
   async render(props) {

@@ -1,7 +1,8 @@
 'use strict'
 
-const childProcess = require('child_process')
 const path = require('path')
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 
 const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -98,9 +99,7 @@ module.exports = (_, argv) => {
           hotApp = undefined
 
           // clear compilation cache
-          childProcess.exec(
-            `rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`
-          )
+          exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
         })
       ],
       optimization: {
@@ -142,7 +141,7 @@ module.exports = (_, argv) => {
         }),
         new OnBuildPlugin(async stats => {
           // remove extraneous assets
-          childProcess.exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
+          exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
         })
       ]
     }

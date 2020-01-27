@@ -2,6 +2,8 @@
 
 const crypto = require('crypto')
 const path = require('path')
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 
 const { BannerPlugin, DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -189,7 +191,13 @@ module.exports = (_, argv) => {
         'typeof window': JSON.stringify(typeof {})
       }),
       new MiniCssExtractPlugin(),
-      new OnBuildPlugin(writeAssets)
+      new OnBuildPlugin(async stats => {
+        // clear template style cache; await so we don't clear the combinations created by writeAssets
+        await exec(
+          `rm -rf ${path.join(projectRoot, 'build/dist/styles/templates/*')}`
+        )
+        writeAssets(stats)
+      })
     ],
     resolve: {
       ...sharedConfigs.resolve,
