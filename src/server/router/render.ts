@@ -5,7 +5,7 @@ import { Router } from 'express'
 import { ControllerType } from '../controller'
 
 const qRE = /^([^;]+)(?:;\s*q=([01]\.?\d*))?/
-function parseOutput(value = '') {
+function parseFormat(value = '') {
   return value
     .split(/,/g)
     .map(entry => {
@@ -23,12 +23,12 @@ export default function router(controller: ControllerType) {
   router.get('*', async (req, res, next) => {
     try {
       const uri = req.originalUrl
-      const output = [
-        ...parseOutput(req.query.output),
-        ...parseOutput(req.get('Accept'))
+      const format = [
+        ...parseFormat(req.query.format),
+        ...parseFormat(req.get('Accept'))
       ]
       const { body, contentType } = await controller.render(
-        await controller.resolve({ uri, output })
+        await controller.resolve({ uri, format })
       )
       res.set('Content-Type', contentType).send(body)
     } catch (error) {

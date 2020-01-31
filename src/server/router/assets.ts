@@ -26,12 +26,12 @@ export default function router(controller: ControllerType) {
   )
 
   assetRouter.all(
-    '/dist/templates/:template/:output.(css|js)',
+    '/dist/templates/:template/:format.(css|js)',
     async (req, res, next) => {
       const template = req.params.template
-      const output = req.params.output
+      const format = req.params.format
       const ext = req.params[0]
-      await controller.compileTemplate({ template, output })
+      await controller.compileTemplate({ template, format })
       try {
         fs.createReadStream(
           path.join(
@@ -40,7 +40,7 @@ export default function router(controller: ControllerType) {
             'dist',
             'templates',
             template,
-            `${output}.${ext}`
+            `${format}.${ext}`
           )
         ).pipe(res)
       } catch (e) {

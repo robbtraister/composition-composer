@@ -56,8 +56,8 @@ test('Page Component', () => {
   const html = renderToString(
     <Page
       getComponent={getComponent}
+      format="default"
       meta={{ viewport: 'width=device-width', charset: 'UTF-8' }}
-      output="default"
       quarantine
       template="test"
       tree={tree}
@@ -82,7 +82,7 @@ test('Inline Styles', () => {
     <Page
       getComponent={getComponent}
       getResource={env.readResourceFile.bind(env)}
-      output="default"
+      format="default"
       quarantine
       template="test"
       tree={tree}>

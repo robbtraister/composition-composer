@@ -23,7 +23,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
     throw new Error('Use of `tree` requires `getComponent` function')
   }
 
-  const output = context.output
+  const format = context.format
   const isQuarantine =
     'quarantine' in treeProps ? treeProps.quarantine : context.quarantine
 
@@ -35,7 +35,7 @@ export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   }
 
   debug('rendering tree:', {
-    output,
+    format,
     template: context.template,
     tree
   })

@@ -56,9 +56,9 @@ declare namespace Composition {
     appStyles?: string
     cache?: object
     elements?: TreeNode[]
+    format?: string
+    formatStyles?: string
     location?: string
-    output?: string
-    outputStyles?: string
 
     getContent?: ContentFetcher
     getResource?: ResourceFetcher

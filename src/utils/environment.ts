@@ -21,14 +21,14 @@ export class Environment {
     this.writeAsset = this.writeAssetFile
   }
 
-  async compile({ components, name, output, template, tree = null }) {
+  async compile({ components, name, format, template, tree = null }) {
     const { assets } = JSON.parse(
       await this.readResourceFile(path.join('build', 'assets.json'))
     )
 
     const assetMap = {}
     components.forEach(component => {
-      ;(assets[`components/${component}/${output}`] || []).forEach(asset => {
+      ;(assets[`components/${component}/${format}`] || []).forEach(asset => {
         assetMap[asset] = true
       })
     })
@@ -55,7 +55,7 @@ export class Environment {
         asset: `${name}.js`,
         source: [
           `window.Composition=window.Composition||{}`,
-          `Composition.output=${JSON.stringify(output)}`,
+          `Composition.format=${JSON.stringify(format)}`,
           `Composition.styleHash=${JSON.stringify(styleHash)}`,
           template ? `Composition.template=${JSON.stringify(template)}` : null,
           tree ? `Composition.tree=${JSON.stringify(tree)}` : null,
@@ -100,7 +100,7 @@ export class Environment {
       styleHash
     }
 
-    await this.writeCompilation({ name, output }, result)
+    await this.writeCompilation({ name, format }, result)
 
     return result
   }
@@ -130,12 +130,12 @@ export class Environment {
     return writeFile(this.getResourceFile(name), content)
   }
 
-  async writeCompilation({ name, output }, { css, js, jsMap, styleHash }) {
+  async writeCompilation({ name, format }, { css, js, jsMap, styleHash }) {
     return Promise.all([
-      this.writeAsset(path.join(name, `${output}.js`), js),
-      jsMap && this.writeAsset(path.join(name, `/${output}.js.map`), jsMap),
+      this.writeAsset(path.join(name, `${format}.js`), js),
+      jsMap && this.writeAsset(path.join(name, `/${format}.js.map`), jsMap),
       this.writeAsset(
-        path.join(name, `${output}.css.json`),
+        path.join(name, `${format}.css.json`),
         JSON.stringify({ styleHash })
       ),
       styleHash &&

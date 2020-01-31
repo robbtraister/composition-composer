@@ -39,7 +39,7 @@ async function resolve(uri) {
       .fetch(
         `/api/resolve?uri=${encodeURIComponent(
           uri
-        )}&output=${encodeURIComponent(Composition.output)}`
+        )}&format=${encodeURIComponent(Composition.format)}`
       )
       .then(res => res.json())
   }
@@ -71,7 +71,7 @@ function render() {
           window.location.search +
           window.location.hash
         }
-        output={Composition.output}
+        format={Composition.format}
         resolve={resolve}
         single-page={Composition.singlePage}
         template={Composition.template}

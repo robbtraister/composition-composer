@@ -7,14 +7,14 @@ const path = require('path')
 const { projectRoot } = require('../../env')
 const { unpack } = require('../../build/utils/unpack')
 
-const { components, 'content-sources': contentSources, outputs } = require('.')
+const { components, 'content-sources': contentSources, formats } = require('.')
 
 function writeCollection(name, collection) {
-  const outputFile = path.join(projectRoot, 'build', 'generated', `${name}.js`)
+  const formatFile = path.join(projectRoot, 'build', 'generated', `${name}.js`)
 
-  childProcess.execSync(`mkdir -p '${path.dirname(outputFile)}'`)
+  childProcess.execSync(`mkdir -p '${path.dirname(formatFile)}'`)
   fs.writeFileSync(
-    outputFile,
+    formatFile,
     `'use strict'
 
 ${unpack}
@@ -42,5 +42,5 @@ export default {
 if (module === require.main) {
   writeCollection('components', components)
   writeCollection('content-sources', contentSources)
-  writeCollection('outputs', outputs)
+  writeCollection('formats', formats)
 }

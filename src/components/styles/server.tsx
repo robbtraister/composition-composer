@@ -17,15 +17,15 @@ interface StylesProps extends Composition.RenderProps<{}> {
 }
 
 export const useStyles = () => {
-  const { appStyles = 'app', outputStyles = 'site' } = usePageContext()
-  const outputStylesContent = useResource({
-    name: path.join('build', 'dist', `${outputStyles}.css`)
+  const { appStyles = 'app', formatStyles = 'site' } = usePageContext()
+  const formatStylesContent = useResource({
+    name: path.join('build', 'dist', `${formatStyles}.css`)
   })
   const appStylesContent = useResource({
     name: path.join('build', 'dist', `${appStyles}.css`)
   })
 
-  return `${outputStylesContent || ''}${appStylesContent ||
+  return `${formatStylesContent || ''}${appStylesContent ||
     ''}<${StyledComponents}></${StyledComponents}>`
 }
 
@@ -48,14 +48,14 @@ const InlineStyles = ({ amp, ...props }) => {
 const StyleLink = props => <link {...props} rel="stylesheet" type="text/css" />
 
 const LinkStyles = props => {
-  const { appStyles = 'app', outputStyles = 'site' } = usePageContext()
+  const { appStyles = 'app', formatStyles = 'site' } = usePageContext()
 
   return (
     <>
       <StyleLink
-        id="composition-output-styles"
+        id="composition-format-styles"
         {...props}
-        href={`/dist/${outputStyles}.css`}
+        href={`/dist/${formatStyles}.css`}
       />
       <StyleLink
         id="composition-app-styles"

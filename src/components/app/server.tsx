@@ -30,7 +30,7 @@ interface ServerAppProps {
 }
 
 export function App(props: ServerAppProps) {
-  const { appName = 'app', cache, output, template, tree } = useContext(
+  const { appName = 'app', cache, format, template, tree } = useContext(
     pageContext
   )
   const {
@@ -69,7 +69,7 @@ export function App(props: ServerAppProps) {
           />
           {/* <Script name="runtime" /> */}
           <Script name="engine" />
-          <Script name={isCombinations ? `combinations/${output}` : appName} />
+          <Script name={isCombinations ? `combinations/${format}` : appName} />
         </>
       )}
       <div id={id}>

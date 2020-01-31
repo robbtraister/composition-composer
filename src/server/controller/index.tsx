@@ -21,18 +21,18 @@ import Environment from '../../utils/environment'
 import logger from '../../utils/logger'
 
 import components from '~/../build/generated/components'
-import outputs from '~/../build/generated/outputs'
+import formats from '~/../build/generated/formats'
 import resolverConfigs from '~/resolvers.json'
 import Resolver from './resolver'
 
 const debug = debugModule('composition:controller')
 
-const outputMap = {}
-Object.keys(outputs).forEach(output => {
-  outputMap[output] = output
-  const { contentType } = outputs[output]
+const formatMap = {}
+Object.keys(formats).forEach(format => {
+  formatMap[format] = format
+  const { contentType } = formats[format]
   if (contentType) {
-    outputMap[contentType] = output
+    formatMap[contentType] = format
   }
 })
 const resolvers = []
@@ -41,8 +41,8 @@ const resolvers = []
 
 export type ControllerType = Controller & Composition.Options
 
-function getComponent(output, type) {
-  return components[type][output]
+function getComponent(format, type) {
+  return components[type][format]
 }
 
 function getContentType(body) {
@@ -55,11 +55,11 @@ function getContentType(body) {
     : 'application/json'
 }
 
-function wrapResult(result, context, Output) {
-  const body = Output.transform ? Output.transform(result, context) : result
+function wrapResult(result, context, Format) {
+  const body = Format.transform ? Format.transform(result, context) : result
 
-  const contentType = Output.contentType
-    ? `${Output.contentType}`.toLowerCase()
+  const contentType = Format.contentType
+    ? `${Format.contentType}`.toLowerCase()
     : getContentType(body)
 
   return {
@@ -127,7 +127,7 @@ class Controller extends Environment {
     this.resolveUri = this.db ? resolveFromDB : resolveFromFS
   }
 
-  async compileTemplate({ template, output, tree = null }) {
+  async compileTemplate({ template, format, tree = null }) {
     const start = Date.now()
 
     try {
@@ -139,7 +139,7 @@ class Controller extends Environment {
       const result = await this.compile({
         components,
         name: `templates/${template}`,
-        output,
+        format,
         template,
         tree
       })
@@ -165,11 +165,11 @@ class Controller extends Environment {
     return getContentSource(source).update(query)
   }
 
-  async getHash({ template, output, tree = null }) {
+  async getHash({ template, format, tree = null }) {
     const getStyleHash = async () => {
       const { styleHash } = JSON.parse(
         await this.readAssetFile(
-          path.join('templates', template, `${output}.css.json`)
+          path.join('templates', template, `${format}.css.json`)
         )
       )
       return styleHash
@@ -178,29 +178,29 @@ class Controller extends Environment {
     try {
       return await getStyleHash()
     } catch (_) {
-      await this.compileTemplate({ template, output, tree })
+      await this.compileTemplate({ template, format, tree })
       return getStyleHash()
     }
   }
 
   async render(props) {
-    const { meta, output, styleHash, template, title, tree, uri } = props
+    const { meta, format, styleHash, template, title, tree, uri } = props
 
-    const Output = outputs[output]
+    const Format = formats[format]
 
     const cache = {}
 
     const context = {
-      appName: `templates/${template}/${output}`,
+      appName: `templates/${template}/${format}`,
       appStyles: `styles/templates/${styleHash}`,
       cache,
-      getComponent: getComponent.bind(null, output),
+      getComponent: getComponent.bind(null, format),
       getContent: this.fetch.bind(this),
       getResource: this.readResourceFile.bind(this),
+      format,
+      formatStyles: `styles/formats/${format}`,
       location: uri,
       meta,
-      output,
-      outputStyles: `styles/outputs/${output}`,
       title,
       template,
       tree
@@ -216,9 +216,9 @@ class Controller extends Environment {
               {...context}
               quarantine={quarantine}
               routerContext={routerContext}>
-              <Output>
+              <Format>
                 <Tree />
-              </Output>
+              </Format>
             </Page>
           )
         )
@@ -257,21 +257,21 @@ class Controller extends Environment {
       result = await renderAsync(true)
     }
 
-    return wrapResult(result, context, Output)
+    return wrapResult(result, context, Format)
   }
 
-  async resolve({ uri, output }: { uri: string; output: string | string[] }) {
-    debug('resolving', { uri, output })
+  async resolve({ uri, format }: { uri: string; format: string | string[] }) {
+    debug('resolving', { uri, format })
     const url = new URL(uri, 'http://a.com')
     const { template: templateName, ...config } = await this.resolveUri(
       url.pathname
     )
     const template = await this.getTemplate(templateName)
 
-    const outputKey =
-      [].concat(output || []).find(output => outputMap[output]) || 'default'
+    const formatKey =
+      [].concat(format || []).find(format => formatMap[format]) || 'default'
 
-    const selectedOutput = outputMap[outputKey]
+    const selectedFormat = formatMap[formatKey]
 
     const result = {
       meta: {
@@ -282,10 +282,10 @@ class Controller extends Environment {
       template: templateName,
       ...config,
       ...template,
-      output: selectedOutput,
+      format: selectedFormat,
       styleHash: await this.getHash({
         template: templateName,
-        output: selectedOutput,
+        format: selectedFormat,
         tree: template.tree
       }),
       uri

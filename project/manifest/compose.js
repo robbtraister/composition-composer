@@ -43,15 +43,15 @@ function manifest({ projectRoot }) {
     )
   }
 
-  function getComponentFile(componentName, outputNames) {
+  function getComponentFile(componentName, formatNames) {
     return []
       .concat(
-        ...outputNames.map(output =>
+        ...formatNames.map(format =>
           glob.sync(
             `${path.join(
               srcRoot,
               'components'
-            )}/${componentName}/${output}.${fileExtensionGlob}`
+            )}/${componentName}/${format}.${fileExtensionGlob}`
           )
         ),
         glob.sync(
@@ -64,21 +64,21 @@ function manifest({ projectRoot }) {
       .find(c => c)
   }
 
-  function getComponentNames(outputNames) {
+  function getComponentNames(formatNames) {
     const componentNames = Object.keys(
       getEntries(path.join(srcRoot, 'components'))
     )
 
     return componentNames.filter(componentName => {
       const { dir, name } = path.parse(componentName)
-      return !(outputNames.includes(name) && componentNames.includes(dir))
+      return !(formatNames.includes(name) && componentNames.includes(dir))
     })
   }
 
   function getFallbacks(srcFile) {
-    const Output = require(srcFile.replace('~', srcRoot))
+    const Format = require(srcFile.replace('~', srcRoot))
 
-    const { fallbacks = true } = Output
+    const { fallbacks = true } = Format
 
     if (!fallbacks) {
       return []
@@ -91,22 +91,22 @@ function manifest({ projectRoot }) {
     return fallbacks
   }
 
-  function getComponents(outputs) {
-    const outputNames = Object.keys(outputs)
+  function getComponents(formats) {
+    const formatNames = Object.keys(formats)
 
-    const componentNames = getComponentNames(outputNames)
+    const componentNames = getComponentNames(formatNames)
     return Object.assign(
       {},
       ...componentNames.map(componentName => {
         return {
           [componentName]: Object.assign(
             {},
-            ...outputNames.map(outputName => {
+            ...formatNames.map(formatName => {
               return {
-                [outputName]: getProjectRelativeFile(
+                [formatName]: getProjectRelativeFile(
                   getComponentFile(
                     componentName,
-                    [outputName].concat(getFallbacks(outputs[outputName]))
+                    [formatName].concat(getFallbacks(formats[formatName]))
                   )
                 )
               }
@@ -117,11 +117,11 @@ function manifest({ projectRoot }) {
     )
   }
 
-  const outputs = getEntries(path.join(srcRoot, 'outputs'))
+  const formats = getEntries(path.join(srcRoot, 'formats'))
   return {
-    components: getComponents(outputs),
+    components: getComponents(formats),
     'content-sources': getEntries(path.join(srcRoot, 'content-sources')),
-    outputs
+    formats
   }
 }
 

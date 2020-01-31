@@ -12,10 +12,10 @@ const debug = debugModule('composition:components:node')
 
 export const Node = memo(function Node(node: Composition.TreeNode) {
   const { props = {}, children = [], type, id, Component } = node
-  const { getContent, output } = useContext(pageContext)
+  const { getContent, format } = useContext(pageContext)
 
   debug('rendering component:', {
-    output,
+    format,
     type,
     id,
     Component,

@@ -42,11 +42,11 @@ export function withTicTimer(tic, handler = null) {
             render() {
               return (
                 <PageContext>
-                  {({ output }) => (
+                  {({ format }) => (
                     <ComponentContext>
                       {({ type, id }) =>
                         timedRender(this[superRenderFn], {
-                          output,
+                          format,
                           type,
                           id
                         })
@@ -58,10 +58,10 @@ export function withTicTimer(tic, handler = null) {
             }
           }
         : props => {
-            const { output } = usePageContext()
+            const { format } = usePageContext()
             const { type, id } = useComponentContext()
             return timedRender(Component.bind(null, props), {
-              output,
+              format,
               type,
               id
             })

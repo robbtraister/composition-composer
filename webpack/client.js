@@ -11,7 +11,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 
 const environment = require('./environment')
-const { components, outputs } = require('../project/manifest')
+const { components, formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { isPreact, projectRoot } = environment
@@ -27,12 +27,12 @@ const entry = Object.assign(
   ...[].concat(
     ...componentNames.map(component =>
       Object.keys(components[component])
-        .filter(output => components[component][output])
-        .map(output => {
-          const componentId = `components/${component}/${output}`
+        .filter(format => components[component][format])
+        .map(format => {
+          const componentId = `components/${component}/${format}`
           componentMap[componentId] = component
           return {
-            [componentId]: components[component][output]
+            [componentId]: components[component][format]
           }
         })
     )
@@ -65,11 +65,11 @@ async function writeAssets(stats) {
     JSON.stringify({ assets }, null, 2)
   )
 
-  Object.keys(outputs).map(output =>
+  Object.keys(formats).map(format =>
     environment.compile({
       components: componentNames,
       name: 'combinations',
-      output
+      format
     })
   )
 }
