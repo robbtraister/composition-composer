@@ -27,12 +27,18 @@ import Resolver from './resolver'
 
 const debug = debugModule('composition:controller')
 
+const DEFAULT_FORMAT = 'html'
+
 const formatMap = {}
+// set `index` as the default for `text/html`; can be overridden below
+if (DEFAULT_FORMAT in formats && !formats[DEFAULT_FORMAT].contentType) {
+  formatMap['text/html'] = DEFAULT_FORMAT
+}
 Object.keys(formats).forEach(format => {
   formatMap[format] = format
   const { contentType } = formats[format]
   if (contentType) {
-    formatMap[contentType] = format
+    formatMap[contentType.toLowerCase()] = format
   }
 })
 const resolvers = []
@@ -269,7 +275,8 @@ class Controller extends Environment {
     const template = await this.getTemplate(templateName)
 
     const formatKey =
-      [].concat(format || []).find(format => formatMap[format]) || 'default'
+      [].concat(format || []).find(format => formatMap[format]) ||
+      DEFAULT_FORMAT
 
     const selectedFormat = formatMap[formatKey]
 

@@ -10,7 +10,12 @@ function parseFormat(value = '') {
     .split(/,/g)
     .map(entry => {
       const match = qRE.exec(entry)
-      return match && { value: match[1].trim(), q: Number(match[2]) || 1 }
+      return (
+        match && {
+          value: match[1].trim().toLowerCase(),
+          q: Number(match[2]) || 1
+        }
+      )
     })
     .filter(m => m)
     .sort((a, b) => b.q - a.q)
