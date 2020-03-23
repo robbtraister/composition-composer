@@ -31,7 +31,7 @@ function loadStaticElements() {
 // use interactive instead of DOMContentLoaded to ensure this triggers before render
 if (document.readyState === 'loading') {
   document.addEventListener('readystatechange', event => {
-    if (event.target.readyState === 'interactive') {
+    if (document.readyState === 'interactive') {
       loadStaticElements()
     }
   })

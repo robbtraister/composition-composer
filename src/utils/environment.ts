@@ -45,10 +45,7 @@ export class Environment {
       )
     ).join('\n')
 
-    const styleHash = crypto
-      .createHash('md5')
-      .update(css)
-      .digest('hex')
+    const styleHash = crypto.createHash('md5').update(css).digest('hex')
 
     const concat = [
       {

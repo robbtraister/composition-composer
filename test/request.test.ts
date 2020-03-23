@@ -18,9 +18,7 @@ import app from '../src/server/app'
 // })
 
 test('favicon', () => {
-  return request(app())
-    .get('/favicon.ico')
-    .expect(404)
+  return request(app()).get('/favicon.ico').expect(404)
 })
 
 test('favicon', () => {

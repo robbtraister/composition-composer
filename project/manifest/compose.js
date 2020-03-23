@@ -28,10 +28,7 @@ function manifest({ projectRoot }) {
         .filter(sourceFile => !/\/_/.test(sourceFile))
         .map(sourceFile => {
           const { dir, name } = path.parse(
-            path
-              .relative(base, sourceFile)
-              .split(path.sep)
-              .join(path.sep)
+            path.relative(base, sourceFile).split(path.sep).join(path.sep)
           )
 
           return {

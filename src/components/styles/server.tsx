@@ -25,8 +25,9 @@ export const useStyles = () => {
     name: path.join('build', 'dist', `${appStyles}.css`)
   })
 
-  return `${formatStylesContent || ''}${appStylesContent ||
-    ''}<${StyledComponents}></${StyledComponents}>`
+  return `${formatStylesContent || ''}${
+    appStylesContent || ''
+  }<${StyledComponents}></${StyledComponents}>`
 }
 
 const StyleTag = ({ styles, ...props }: Composition.StylesStruct) => (
