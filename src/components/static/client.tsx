@@ -44,6 +44,7 @@ export class Static extends React.PureComponent<{
   htmlOnly?: boolean
 }> {
   exitRef: React.RefObject<HTMLDivElement>
+  insertedElements: Node[]
 
   constructor(props) {
     super(props)
@@ -59,16 +60,25 @@ export class Static extends React.PureComponent<{
     this.update()
   }
 
+  componentWillUnmount() {
+    this.insertedElements.forEach(insertedElement => {
+      if (insertedElement && insertedElement.parentElement) {
+        insertedElement.parentElement.removeChild(insertedElement)
+      }
+    })
+  }
+
   update() {
     if (this.exitRef && this.exitRef.current) {
       const staticElements = staticElementMap[this.props.id]
       if (staticElements && staticElements.length) {
         const parent = this.exitRef.current.parentElement
-        staticElements.forEach(staticElement => {
+        this.insertedElements = staticElements.map(staticElement => {
           const insertElement = this.props.htmlOnly
             ? staticElement.cloneNode(true)
             : staticElement
           parent.insertBefore(insertElement, this.exitRef.current)
+          return insertElement
         })
       }
     }

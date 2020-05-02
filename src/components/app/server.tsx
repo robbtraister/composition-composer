@@ -84,7 +84,7 @@ export function App(props: ServerAppProps) {
               `Composition.cache=${JSON.stringify(contentCache)}`,
               `Composition.id=${JSON.stringify(id)}`,
               `Composition.method=${JSON.stringify(
-                isCombinations ? 'hydrate' : 'render'
+                hydrateOnly ? 'hydrate' : 'render'
               )}`,
               `Composition.singlePage=${JSON.stringify(singlePage)}`,
               isCombinations
