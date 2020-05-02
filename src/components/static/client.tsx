@@ -61,11 +61,13 @@ export class Static extends React.PureComponent<{
   }
 
   componentWillUnmount() {
-    this.insertedElements.forEach(insertedElement => {
-      if (insertedElement && insertedElement.parentElement) {
-        insertedElement.parentElement.removeChild(insertedElement)
-      }
-    })
+    if (this.insertedElements) {
+      this.insertedElements.forEach(insertedElement => {
+        if (insertedElement && insertedElement.parentElement) {
+          insertedElement.parentElement.removeChild(insertedElement)
+        }
+      })
+    }
   }
 
   update() {
