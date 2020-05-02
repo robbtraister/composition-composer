@@ -4,7 +4,7 @@ import React from 'react'
 
 import { render } from '../render'
 
-import { usePageContext } from '../../contexts/page'
+import { useRootContext } from '../../contexts/root'
 
 interface MetaProps extends Composition.RenderProps<{}> {
   name?: string
@@ -20,7 +20,7 @@ const DefaultMeta = ({ name, content }: Composition.MetaStruct) =>
   )
 
 export const useMeta = (name: string): string | Map<string, string> => {
-  const { meta = {} } = usePageContext()
+  const { meta = {} } = useRootContext()
   return name ? meta[name] : meta
 }
 

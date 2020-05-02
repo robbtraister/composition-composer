@@ -6,16 +6,16 @@ import React, { memo } from 'react'
 import { Tree } from '../tree'
 import { getDescendants } from '../utils'
 
-import pageContext from '../../contexts/page'
+import rootContext from '../../contexts/root'
 
 const debug = debugModule('composition:components:context')
 
-export const CommonPage = memo(function CommonPage({
+export const CommonRoot = memo(function CommonRoot({
   children,
   value
 }: {
   children?: React.ReactNode
-  value: Composition.PageProps
+  value: Composition.RootProps
 }) {
   const context = {
     ...value,
@@ -24,8 +24,8 @@ export const CommonPage = memo(function CommonPage({
   }
   debug('rendering with context', context)
   return (
-    <pageContext.Provider value={context}>
+    <rootContext.Provider value={context}>
       {children || <Tree />}
-    </pageContext.Provider>
+    </rootContext.Provider>
   )
 })

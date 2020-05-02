@@ -4,24 +4,24 @@ import { createContext, useContext } from 'react'
 
 import { render } from '../components/render'
 
-const pageContext = createContext<Composition.PageProps>({})
+const rootContext = createContext<Composition.RootProps>({})
 
-export function usePageContext() {
+export function useRootContext() {
   const {
     cache,
     getComponent,
     getContent,
     getResource,
     ...consumableContext
-  } = useContext(pageContext)
+  } = useContext(rootContext)
   return consumableContext
 }
 
-export function PageContext(
-  props: Composition.RenderableProps<{}, Composition.PageProps>
+export function RootContext(
+  props: Composition.RenderableProps<{}, Composition.RootProps>
 ) {
-  const context = usePageContext()
+  const context = useRootContext()
   return render({ ...props, ...context })
 }
 
-export default pageContext
+export default rootContext

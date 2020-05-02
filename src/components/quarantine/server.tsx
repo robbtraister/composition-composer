@@ -7,7 +7,7 @@ import { StaticRouter } from 'react-router'
 import { RenderError } from '../error'
 import { Node } from '../node'
 
-import pageContext from '../../contexts/page'
+import rootContext from '../../contexts/root'
 
 export const Quarantine = React.Fragment
 
@@ -15,9 +15,9 @@ export const verifyNode = function verifyNode({ Component, element, context }) {
   try {
     ReactDOM.renderToStaticMarkup(
       <StaticRouter location={context.location}>
-        <pageContext.Provider value={context}>
+        <rootContext.Provider value={context}>
           <Node {...element} Component={Component} />
-        </pageContext.Provider>
+        </rootContext.Provider>
       </StaticRouter>
     )
     return Component

@@ -3,10 +3,10 @@
 import React, { memo, useEffect, useState } from 'react'
 import { BrowserRouter, useLocation } from 'react-router-dom'
 
-import { CommonPage } from './common'
+import { CommonRoot } from './common'
 
 const LocationWatcher = memo(function LocationWatcher(
-  props: Composition.ClientPageProps
+  props: Composition.ClientRootProps
 ) {
   const {
     pageContent,
@@ -18,7 +18,7 @@ const LocationWatcher = memo(function LocationWatcher(
   } = props
 
   const [isInitialized, setInitialized] = useState<boolean>(false)
-  const [context, setContext] = useState<Composition.PageProps>({
+  const [context, setContext] = useState<Composition.RootProps>({
     pageContent,
     template,
     tree,
@@ -52,10 +52,10 @@ const LocationWatcher = memo(function LocationWatcher(
     }
   }, [resolve, uri])
 
-  return <CommonPage value={context} />
+  return <CommonRoot value={context} />
 })
 
-export const Page = memo(function Page(props: Composition.ClientPageProps) {
+export const Root = memo(function Root(props: Composition.ClientRootProps) {
   return (
     <BrowserRouter>
       <LocationWatcher {...props} />
@@ -63,4 +63,4 @@ export const Page = memo(function Page(props: Composition.ClientPageProps) {
   )
 })
 
-export default Page
+export default Root

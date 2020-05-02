@@ -5,13 +5,13 @@ import { useContext, useState } from 'react'
 import { render } from './render'
 
 import componentContext from '../contexts/component'
-import pageContext from '../contexts/page'
+import rootContext from '../contexts/root'
 
 export function useContent(params: Composition.ContentParams) {
   const { source, query } = params
   const key = JSON.stringify({ content: { source, query } })
 
-  const { cache = {} } = useContext(pageContext)
+  const { cache = {} } = useContext(rootContext)
   const { getContent } = useContext(componentContext)
 
   /**

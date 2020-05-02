@@ -1,7 +1,7 @@
 'use strict'
 
 export * from './app'
-export * from './page'
+export * from './root'
 export * from './content'
 export * from './meta'
 export * from './resource'

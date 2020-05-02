@@ -7,7 +7,7 @@ import assert from 'assert'
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import { Page, useComponentContext, usePageContext } from '../../src'
+import { Root, useComponentContext, useRootContext } from '../../src'
 
 function FailFunction() {
   // random logic to waste time
@@ -36,7 +36,7 @@ class FailClass extends React.Component {
 
 function Success({ children }: { children: React.ElementType }) {
   const { id, type } = useComponentContext()
-  const { location } = usePageContext()
+  const { location } = useRootContext()
 
   assert.equal(type, 'div')
   assert.equal(location, '/test')
@@ -88,7 +88,7 @@ function getFailTree(type) {
 
 test('Quarantine Function Component', () => {
   const { asFragment } = render(
-    <Page
+    <Root
       getComponent={getComponent}
       location="/test"
       tree={getFailTree('fail-function')}
@@ -100,7 +100,7 @@ test('Quarantine Function Component', () => {
 
 test('Quarantine Class Component', () => {
   const { asFragment } = render(
-    <Page
+    <Root
       getComponent={getComponent}
       location="/test"
       tree={getFailTree('fail-class')}

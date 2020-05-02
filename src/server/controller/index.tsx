@@ -14,7 +14,7 @@ import { Mongo } from './mongo'
 
 import { Redirect } from '../errors'
 
-import { Page, StyledComponents, Tree } from '../../components'
+import { Root, StyledComponents, Tree } from '../../components'
 import { getDescendants } from '../../components/utils'
 
 import Environment from '../../utils/environment'
@@ -218,14 +218,14 @@ class Controller extends Environment {
         const routerContext: { url?: string } = {}
         const html = ReactDOM.renderToStaticMarkup(
           sheet.collectStyles(
-            <Page
+            <Root
               {...context}
               quarantine={quarantine}
               routerContext={routerContext}>
               <Format>
                 <Tree />
               </Format>
-            </Page>
+            </Root>
           )
         )
         if (routerContext && routerContext.url) {

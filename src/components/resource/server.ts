@@ -4,13 +4,13 @@ import { useContext } from 'react'
 
 import render from '../render'
 
-import pageContext from '../../contexts/page'
+import rootContext from '../../contexts/root'
 
 export function useResource({
   name,
   encoding = 'utf8'
 }: Composition.ResourceParams) {
-  const { cache = {}, getResource } = useContext(pageContext)
+  const { cache = {}, getResource } = useContext(rootContext)
 
   const key = JSON.stringify({ resource: name })
   if (!(key in cache)) {

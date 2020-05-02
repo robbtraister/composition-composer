@@ -8,13 +8,13 @@ import { verifyNode } from './quarantine'
 import { withTimer } from './timer'
 import { getDescendants } from './utils'
 
-import pageContext from '../contexts/page'
+import rootContext from '../contexts/root'
 
 const debug = debugModule('composition:components:tree')
 
 export const Tree = memo(function Tree(treeProps: Composition.TreeProps) {
   const [componentCache] = useState({})
-  const context = useContext(pageContext)
+  const context = useContext(rootContext)
 
   const getComponent = treeProps.getComponent || context.getComponent
   const tree = treeProps.tree || context.tree

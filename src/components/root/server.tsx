@@ -3,15 +3,15 @@
 import React from 'react'
 import { StaticRouter } from 'react-router'
 
-import { CommonPage } from './common'
+import { CommonRoot } from './common'
 
-export function Page(props: Composition.ServerPageProps) {
+export function Root(props: Composition.ServerRootProps) {
   const { children, routerContext = {}, ...contextValue } = props
   return (
     <StaticRouter location={props.location} context={routerContext}>
-      <CommonPage value={contextValue}>{children}</CommonPage>
+      <CommonRoot value={contextValue}>{children}</CommonRoot>
     </StaticRouter>
   )
 }
 
-export default Page
+export default Root

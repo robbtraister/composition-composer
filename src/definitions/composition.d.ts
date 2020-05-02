@@ -51,7 +51,7 @@ declare namespace Composition {
     getComponent?: ComponentFetcher
   }
 
-  interface CommonPageProps extends TreeProps {
+  interface CommonRootProps extends TreeProps {
     appName?: string
     appStyles?: string
     cache?: object
@@ -64,18 +64,18 @@ declare namespace Composition {
     getResource?: ResourceFetcher
   }
 
-  interface ClientPageProps extends CommonPageProps {
+  interface ClientRootProps extends CommonRootProps {
     forceRefresh?: boolean
     resolve?: Resolver
     'single-page'?: boolean
   }
 
-  interface ServerPageProps extends CommonPageProps {
+  interface ServerRootProps extends CommonRootProps {
     children?: React.ReactNode
     routerContext?: { url?: string }
   }
 
-  type PageProps = ClientPageProps | ServerPageProps
+  type RootProps = ClientRootProps | ServerRootProps
 
   interface ContentParams {
     source: string

@@ -6,13 +6,13 @@ import React, { memo, useContext } from 'react'
 import { Quarantine } from './quarantine'
 
 import componentContext from '../contexts/component'
-import pageContext from '../contexts/page'
+import rootContext from '../contexts/root'
 
 const debug = debugModule('composition:components:node')
 
 export const Node = memo(function Node(node: Composition.TreeNode) {
   const { props = {}, children = [], type, id, Component } = node
-  const { getContent, format } = useContext(pageContext)
+  const { getContent, format } = useContext(rootContext)
 
   debug('rendering component:', {
     format,

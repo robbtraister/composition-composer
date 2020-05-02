@@ -3,7 +3,7 @@
 import React, { useContext } from 'react'
 
 import { Tree } from '../tree'
-import pageContext from '../../contexts/page'
+import rootContext from '../../contexts/root'
 
 const polyfills = {
   assign: '(window.Object&&window.Object.assign)',
@@ -31,7 +31,7 @@ interface ServerAppProps {
 
 export function App(props: ServerAppProps) {
   const { appName = 'app', cache, format, template, tree } = useContext(
-    pageContext
+    rootContext
   )
   const {
     'hydrate-only': hydrateOnly = false,
