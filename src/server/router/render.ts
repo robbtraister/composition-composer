@@ -29,7 +29,7 @@ export default function router(controller: ControllerType) {
     try {
       const uri = req.originalUrl
       const format = [
-        ...parseFormat(req.query.format),
+        ...parseFormat(req.query.format as string | undefined),
         ...parseFormat(req.get('Accept'))
       ]
       const { body, contentType } = await controller.render(

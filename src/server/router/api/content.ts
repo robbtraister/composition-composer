@@ -9,7 +9,7 @@ export default function router(controller: ControllerType) {
 
   contentRouter.use('/fetch', async (req, res, next) => {
     try {
-      const { source, query } = req.query
+      const { source, query } = req.query as { query?: string; source?: string }
       const contentPromise = controller.fetch({
         source,
         query: JSON.parse(query)

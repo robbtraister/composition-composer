@@ -17,8 +17,7 @@ export default function router(controller: ControllerType) {
   })
 
   apiRouter.use('/resolve', async (req, res, next) => {
-    const format = req.query.format
-    const uri = req.query.uri
+    const { format, uri } = req.query as { format?: string; uri?: string }
     res.send(await controller.resolve({ uri, format }))
   })
 
