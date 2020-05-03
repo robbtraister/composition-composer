@@ -4,7 +4,6 @@ const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 
-const PropTypes = require('prop-types')
 const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -13,66 +12,11 @@ const aliases = require('../aliases')
 const environment = require('./environment')
 const { formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
+const WriteConfigsPlugin = require('./plugins/write-configs-plugin')
 
 const { port, projectRoot } = environment
 
 const serverBuildDir = path.join(projectRoot, 'build', 'server')
-
-function compareJson(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b)
-}
-
-function getPropTypeConfig(propDef) {
-  let result
-  Object.entries(PropTypes).find(([typeName, Type]) => {
-    if (propDef === Type) {
-      result = { type: typeName }
-      return true
-    } else if (Type.isRequired && propDef === Type.isRequired) {
-      result = { type: typeName, required: true }
-      return true
-    }
-  })
-  return result
-}
-
-async function writeComponentConfigs() {
-  const resource = path.join(serverBuildDir, 'compilations', 'components')
-  const components = require(resource).default
-
-  const configs = {}
-  Object.entries(components).forEach(([componentName, Component]) => {
-    const componentConfigs = {}
-
-    Object.entries(Component).forEach(([formatName, ComponentImpl]) => {
-      if (ComponentImpl.propTypes) {
-        Object.entries(ComponentImpl.propTypes).forEach(
-          ([propName, propDef]) => {
-            const propTypeConfig = getPropTypeConfig(propDef)
-            if (propTypeConfig) {
-              if (propName in componentConfigs) {
-                if (!compareJson(propTypeConfig, componentConfigs[propName])) {
-                  throw new Error(
-                    `config conflict: ${componentName}.${propName}`
-                  )
-                }
-              }
-              componentConfigs[propName] = propTypeConfig
-            }
-          }
-        )
-      }
-    })
-
-    configs[componentName] = componentConfigs
-  })
-
-  // await here to ensure assets are available before compiling
-  await environment.writeAssetFile(
-    path.join('components', 'configs.json'),
-    JSON.stringify({ configs }, null, 2)
-  )
-}
 
 const entry = {
   index: [
@@ -163,22 +107,21 @@ module.exports = (_, argv) => {
         }),
         // invalidate dev server
         new OnBuildPlugin(async stats => {
-          await Promise.all([
-            // clear compilation cache
-            exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`),
-            // write config files
-            writeComponentConfigs()
-          ])
-
-          exec(`rm -rf ${path.join(projectRoot, 'build/server/compilations')}`)
-
+          // clear compilation cache
+          await exec(
+            `rm -rf '${path.join(projectRoot, 'build/dist/templates')}'/*`
+          )
           Object.keys(require.cache)
             .filter(mod => mod.startsWith(serverConfigs.output.path))
             .forEach(mod => {
               delete require.cache[mod]
             })
           hotApp = undefined
-        })
+        }),
+        new WriteConfigsPlugin(
+          path.join(serverConfigs.output.path, 'compilations'),
+          path.join(projectRoot, 'build', 'dist')
+        )
       ],
       optimization: {
         ...serverConfigs.optimization,
@@ -220,7 +163,7 @@ module.exports = (_, argv) => {
         }),
         new OnBuildPlugin(async stats => {
           // remove extraneous assets
-          exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
+          exec(`rm -rf '${path.join(projectRoot, 'build/junk')}'`)
         })
       ]
     }

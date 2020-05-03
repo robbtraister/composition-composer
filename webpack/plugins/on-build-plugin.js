@@ -6,7 +6,7 @@ class OnBuildPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.done.tap('OnBuildPlugin', this.fn)
+    compiler.hooks.done.tap(this.constructor.name, this.fn)
   }
 }
 

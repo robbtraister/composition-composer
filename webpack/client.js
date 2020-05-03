@@ -194,7 +194,7 @@ module.exports = (_, argv) => {
       new OnBuildPlugin(async stats => {
         // clear template style cache; await so we don't clear the combinations created by writeAssets
         // await exec(
-        //   `rm -rf ${path.join(projectRoot, 'build/dist/styles/templates/*')}`
+        //   `rm -rf '${path.join(projectRoot, 'build', 'dist', 'styles', 'templates')}'/*`
         // )
         writeAssets(stats)
       })
