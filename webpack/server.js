@@ -4,6 +4,7 @@ const path = require('path')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 
+const PropTypes = require('prop-types')
 const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -14,6 +15,64 @@ const { formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 
 const { port, projectRoot } = environment
+
+const serverBuildDir = path.join(projectRoot, 'build', 'server')
+
+function compareJson(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+function getPropTypeConfig(propDef) {
+  let result
+  Object.entries(PropTypes).find(([typeName, Type]) => {
+    if (propDef === Type) {
+      result = { type: typeName }
+      return true
+    } else if (Type.isRequired && propDef === Type.isRequired) {
+      result = { type: typeName, required: true }
+      return true
+    }
+  })
+  return result
+}
+
+async function writeComponentConfigs() {
+  const resource = path.join(serverBuildDir, 'compilations', 'components')
+  const components = require(resource).default
+
+  const configs = {}
+  Object.entries(components).forEach(([componentName, Component]) => {
+    const componentConfigs = {}
+
+    Object.entries(Component).forEach(([formatName, ComponentImpl]) => {
+      if (ComponentImpl.propTypes) {
+        Object.entries(ComponentImpl.propTypes).forEach(
+          ([propName, propDef]) => {
+            const propTypeConfig = getPropTypeConfig(propDef)
+            if (propTypeConfig) {
+              if (propName in componentConfigs) {
+                if (!compareJson(propTypeConfig, componentConfigs[propName])) {
+                  throw new Error(
+                    `config conflict: ${componentName}.${propName}`
+                  )
+                }
+              }
+              componentConfigs[propName] = propTypeConfig
+            }
+          }
+        )
+      }
+    })
+
+    configs[componentName] = componentConfigs
+  })
+
+  // await here to ensure assets are available before compiling
+  await environment.writeAssetFile(
+    path.join('components', 'configs.json'),
+    JSON.stringify({ configs }, null, 2)
+  )
+}
 
 const entry = {
   index: [
@@ -55,7 +114,7 @@ const serverConfigs = {
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.join(projectRoot, 'build', 'server')
+    path: serverBuildDir
   },
   target: 'node'
 }
@@ -88,23 +147,37 @@ module.exports = (_, argv) => {
         publicPath: '/dist/',
         writeToDisk: true
       },
-      entry,
+      entry: {
+        ...entry,
+        'compilations/components': `./${path.join(
+          'build',
+          'generated',
+          'components'
+        )}`
+      },
       externals: isProd ? {} : externals,
       plugins: [
         new DefinePlugin({
           'typeof process': JSON.stringify(typeof {}),
           'typeof window': JSON.stringify(undefined)
         }),
+        // invalidate dev server
         new OnBuildPlugin(async stats => {
+          await Promise.all([
+            // clear compilation cache
+            exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`),
+            // write config files
+            writeComponentConfigs()
+          ])
+
+          exec(`rm -rf ${path.join(projectRoot, 'build/server/compilations')}`)
+
           Object.keys(require.cache)
             .filter(mod => mod.startsWith(serverConfigs.output.path))
             .forEach(mod => {
               delete require.cache[mod]
             })
           hotApp = undefined
-
-          // clear compilation cache
-          exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
         })
       ],
       optimization: {
@@ -126,6 +199,7 @@ module.exports = (_, argv) => {
         }
       }
     },
+    // compile format-specific CSS for SSR
     {
       ...serverConfigs,
       ...require('./shared/rules')({ isProd, extractCss: true }),
