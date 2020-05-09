@@ -10,6 +10,7 @@ const program = require('commander')
 const glob = promisify(require('glob'))
 
 const npm = require('./npm')
+const spawn = require('./spawn')
 
 const { scripts } = require('./package.json')
 
@@ -22,14 +23,30 @@ async function copyFile(src, dest, flags) {
   await fs.promises.copyFile(src, dest, flags)
 }
 
-program.version(require('../package.json').version)
+const package = require('../package.json')
+program.version(package.version)
 
 program.command('init').action(async () => {
   const templateRoot = path.join(__dirname, 'templates')
 
   logger.info('initializing')
+  await spawn('npm', ['init', '-y'], {
+    cwd: projectRoot,
+    stdio: 'inherit'
+  })
+
+  logger.info('installing composer')
+  await spawn(
+    'npm',
+    ['install', '--save-dev', `${package.name}@${package.version}`],
+    {
+      cwd: projectRoot,
+      stdio: 'inherit'
+    }
+  )
+
+  logger.info('copying config files')
   try {
-    logger.info('copying config files')
     await Promise.all(
       (
         await glob('**/*', {
