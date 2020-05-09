@@ -8,6 +8,7 @@ const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
+const aliases = require('../aliases')
 const environment = require('./environment')
 const { formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
@@ -36,11 +37,15 @@ const devMode = {
   }
 }
 
-const externals = (_, request, callback) => {
-  ;/^(\.|~|@composition\/)/.test(request)
-    ? callback()
-    : callback(null, `commonjs ${require.resolve(request)}`)
-}
+const externalPattern = /^(?!\.|~|@composition[\\/])/
+const externals = [
+  ...Object.entries(aliases)
+    .filter(([key]) => externalPattern.test(key))
+    .map(([key, value]) => {
+      return { [key]: value }
+    }),
+  externalPattern
+]
 
 const serverConfigs = {
   ...require('./shared'),
