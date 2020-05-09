@@ -14,8 +14,6 @@ const spawn = require('./spawn')
 
 const { scripts } = require('./package.json')
 
-const { projectRoot } = require('../env')
-
 const { logger } = require('../build/utils/logger')
 
 async function copyFile(src, dest, flags) {
@@ -23,10 +21,11 @@ async function copyFile(src, dest, flags) {
   await fs.promises.copyFile(src, dest, flags)
 }
 
-const package = require('../package.json')
-program.version(package.version)
+const pkg = require('../package.json')
+program.version(pkg.version)
 
 program.command('init').action(async () => {
+  const projectRoot = process.env.PWD || path.resolve('.')
   const templateRoot = path.join(__dirname, 'templates')
 
   logger.info('initializing')
@@ -36,14 +35,10 @@ program.command('init').action(async () => {
   })
 
   logger.info('installing composer')
-  await spawn(
-    'npm',
-    ['install', '--save-dev', `${package.name}@${package.version}`],
-    {
-      cwd: projectRoot,
-      stdio: 'inherit'
-    }
-  )
+  await spawn('npm', ['install', '--save-dev', `${pkg.name}@${pkg.version}`], {
+    cwd: projectRoot,
+    stdio: 'inherit'
+  })
 
   logger.info('copying config files')
   try {

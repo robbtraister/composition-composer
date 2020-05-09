@@ -18,7 +18,9 @@ function prefix(dir = '.') {
       if (nextDir !== dir) {
         return _prefix(nextDir)
       }
-      throw new Error('no npm prefix')
+
+      return process.env.PWD || path.resolve(dir)
+      // throw new Error('no npm prefix')
     }
   }
 
@@ -31,9 +33,10 @@ const projectRoot = prefix(
 
 require('dotenv').config({ path: path.join(projectRoot, '.env') })
 
-const { config = {} } = JSON.parse(
-  fs.readFileSync(path.join(projectRoot, 'package.json'))
-)
+let config = {}
+try {
+  config = require(path.join(projectRoot, 'package.json')).config || {}
+} catch (_) {}
 
 const isProd = /^prod/i.test(process.env.NODE_ENV)
 
