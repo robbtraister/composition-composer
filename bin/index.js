@@ -29,15 +29,6 @@ program.command('init').action(async () => {
 
   logger.info('initializing')
   try {
-    logger.info('creating directories')
-    await Promise.all(
-      ['components', 'content-sources', 'definitions', 'formats'].map(dir =>
-        fs.promises.mkdir(path.join(projectRoot, 'src', dir), {
-          recursive: true
-        })
-      )
-    )
-
     logger.info('copying config files')
     await Promise.all(
       (
