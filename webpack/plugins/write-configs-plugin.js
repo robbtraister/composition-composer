@@ -14,9 +14,17 @@ function compareJson(a, b) {
 
 function getPropTypeConfig(propDef) {
   let result
+  if (propDef.type) {
+    return {
+      type: propDef.type,
+      // if `isRequired` method exists on propDef, then it wasn't called
+      required: !('isRequired' in propDef)
+    }
+  }
+
   Object.entries(PropTypes).find(([typeName, Type]) => {
     if (propDef === Type) {
-      result = { type: typeName }
+      result = { type: typeName, required: false }
       return true
     } else if (Type.isRequired && propDef === Type.isRequired) {
       result = { type: typeName, required: true }

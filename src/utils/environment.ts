@@ -59,7 +59,7 @@ export class Environment {
           `Composition.components=Composition.components||{}`
         ]
           .filter(source => source)
-          .map(source => `;${source};`)
+          .map(source => `${source};`)
           .join('\n')
       },
       ...(await Promise.all(

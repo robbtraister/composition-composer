@@ -13,6 +13,7 @@ const environment = require('./environment')
 const { formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
 const WriteConfigsPlugin = require('./plugins/write-configs-plugin')
+const shared = require('./shared')
 
 const { port, projectRoot } = environment
 
@@ -51,7 +52,7 @@ const externals = [
 ]
 
 const serverConfigs = {
-  ...require('./shared'),
+  ...shared,
   ...devMode,
   name: 'server',
   externals,
