@@ -35,7 +35,10 @@ require('dotenv').config({ path: path.join(projectRoot, '.env') })
 
 let config = {}
 try {
-  config = require(path.join(projectRoot, 'package.json')).config || {}
+  config =
+    // use readFile + JSON.parse to avoid webpack warning
+    JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json')))
+      .config || {}
 } catch (_) {}
 
 const isProd = /^prod/i.test(process.env.NODE_ENV)
