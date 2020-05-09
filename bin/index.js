@@ -25,7 +25,8 @@ const pkg = require('../package.json')
 program.version(pkg.version)
 
 program.command('init').action(async () => {
-  const projectRoot = process.env.PWD || path.resolve('.')
+  const projectRoot =
+    process.env.INIT_CWD || process.env.PWD || path.resolve('.')
   const templateRoot = path.join(__dirname, 'templates')
 
   logger.info('initializing')

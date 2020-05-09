@@ -19,7 +19,7 @@ function prefix(dir = '.') {
         return _prefix(nextDir)
       }
 
-      return process.env.PWD || path.resolve(dir)
+      return path.resolve(dir)
       // throw new Error('no npm prefix')
     }
   }
