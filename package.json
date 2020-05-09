@@ -1,6 +1,6 @@
 {
   "name": "@composition/composer",
-  "version": "0.0.1-init.0",
+  "version": "0.0.1-beta.22",
   "description": "",
   "main": "./src/index.ts",
   "exports": {
