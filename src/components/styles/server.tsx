@@ -11,7 +11,7 @@ import { useRootContext } from '../../contexts/root'
 
 export const StyledComponents = 'composition:styled-components'
 
-interface StylesProps extends Composition.RenderProps<{}> {
+export interface StylesProps extends Composition.RenderProps<{}> {
   amp?: boolean
   inline?: boolean
 }

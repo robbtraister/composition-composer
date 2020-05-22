@@ -6,7 +6,7 @@ import { render } from '../render'
 
 import { useRootContext } from '../../contexts/root'
 
-interface MetaProps extends Composition.RenderProps<{}> {
+export interface MetaProps extends Composition.RenderProps<{}> {
   name?: string
 }
 
