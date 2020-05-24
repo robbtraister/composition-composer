@@ -12,7 +12,7 @@ const { projectRoot } = require('../../env')
 babelRegister({
   ...babelConfigs,
   root: path.resolve(__dirname, '..', '..'),
-  ignore: [/[\\/]node_modules[\\/](?!@composition[\\/])/],
+  ignore: [/[\\/]node_modules[\\/]/],
   only: [
     path.resolve(__dirname, '..', '..', 'src'),
     path.join(projectRoot, 'src')

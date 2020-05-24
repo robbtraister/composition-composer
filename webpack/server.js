@@ -37,7 +37,7 @@ const devMode = {
   }
 }
 
-const externalPattern = /^(?!\.|~|@composition[\\/])/
+const externalPattern = /^(?!\.|~)/
 const externals = [
   ...Object.entries(aliases)
     .filter(([key]) => externalPattern.test(key))

@@ -5,7 +5,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { Root } from '../components'
+import { Root } from '@composition/components'
 
 import unpack from '../utils/unpack'
 
