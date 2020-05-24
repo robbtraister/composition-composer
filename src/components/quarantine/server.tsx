@@ -1,29 +1,30 @@
 'use strict'
 
 import React from 'react'
+import ReactDOM from 'react-dom/server'
+import { StaticRouter } from 'react-router'
 
 import { RenderError } from '../error'
+import { Node } from '../node'
 
-export const withQuarantine = Component => {
-  const isClass = Component.prototype instanceof React.Component
+import rootContext from '../../contexts/root'
 
-  return isClass
-    ? class QuarantineComponent extends Component {
-        render() {
-          try {
-            return super.render()
-          } catch (error) {
-            return <RenderError error={error} />
-          }
-        }
-      }
-    : passThroughProps => {
-        try {
-          return Component(passThroughProps)
-        } catch (error) {
-          return <RenderError error={error} />
-        }
-      }
+export const Quarantine = React.Fragment
+
+export const verifyNode = function verifyNode({ Component, element, context }) {
+  try {
+    ReactDOM.renderToStaticMarkup(
+      <StaticRouter location={context.location}>
+        <rootContext.Provider value={context}>
+          <Node {...element} Component={Component} />
+        </rootContext.Provider>
+      </StaticRouter>
+    )
+    return Component
+  } catch (error) {
+    const ComponentError = () => <RenderError error={error} />
+    return ComponentError
+  }
 }
 
-export default withQuarantine
+export default Quarantine

@@ -1,8 +1,0 @@
-.dockerignore
-.gitignore
-Dockerfile
-
-/.git/
-/.vscode/
-/build/
-/node_modules/

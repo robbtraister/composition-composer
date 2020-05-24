@@ -5,9 +5,9 @@ import React from 'react'
 
 import {
   ComponentContext,
-  PageContext,
+  RootContext,
   useComponentContext,
-  usePageContext
+  useRootContext
 } from '../../contexts'
 
 const debug = debugModule('composition:components:timer')
@@ -41,27 +41,27 @@ export function withTicTimer(tic, handler = null) {
 
             render() {
               return (
-                <PageContext>
-                  {({ output }) => (
+                <RootContext>
+                  {({ format }) => (
                     <ComponentContext>
                       {({ type, id }) =>
                         timedRender(this[superRenderFn], {
-                          output,
+                          format,
                           type,
                           id
                         })
                       }
                     </ComponentContext>
                   )}
-                </PageContext>
+                </RootContext>
               )
             }
           }
         : props => {
-            const { output } = usePageContext()
+            const { format } = useRootContext()
             const { type, id } = useComponentContext()
             return timedRender(Component.bind(null, props), {
-              output,
+              format,
               type,
               id
             })

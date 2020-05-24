@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import { ComponentContext, Page, useComponentContext } from '../../src'
+import { ComponentContext, Root, useComponentContext } from '../../src'
 
 function Display({ id }) {
   return <div>{id}</div>
@@ -52,7 +52,7 @@ const tree = {
 
 function testContextComponent(componentType) {
   return render(
-    <Page getComponent={getComponent} tree={{ ...tree, type: componentType }} />
+    <Root getComponent={getComponent} tree={{ ...tree, type: componentType }} />
   )
 }
 

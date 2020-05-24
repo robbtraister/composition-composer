@@ -10,7 +10,7 @@ const tic = () => {
   }
 }
 
-const recordMetrics = ({ output, type, id, ms }) => {}
+const recordMetrics = ({ format, type, id, ms }) => {}
 
 export const withTimer = withTicTimer(tic, recordMetrics)
 

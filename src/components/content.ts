@@ -5,13 +5,13 @@ import { useContext, useState } from 'react'
 import { render } from './render'
 
 import componentContext from '../contexts/component'
-import pageContext from '../contexts/page'
+import rootContext from '../contexts/root'
 
 export function useContent(params: Composition.ContentParams) {
   const { source, query } = params
   const key = JSON.stringify({ content: { source, query } })
 
-  const { cache = {} } = useContext(pageContext)
+  const { cache = {} } = useContext(rootContext)
   const { getContent } = useContext(componentContext)
 
   /**
@@ -20,8 +20,8 @@ export function useContent(params: Composition.ContentParams) {
    * 2. an Object with `data` (and possibly, `expires`) property
    */
 
-  const { data, expires } = cache[key] || {}
-  const [content, setContent] = useState(data)
+  const { value, expires } = cache[key] || {}
+  const [content, setContent] = useState(value)
 
   if (!(key in cache) || expires < Date.now()) {
     const contentPromise: Composition.CachedPromise = Promise.resolve(
@@ -29,17 +29,16 @@ export function useContent(params: Composition.ContentParams) {
     )
 
     cache[key] = Object.assign(
-      contentPromise,
+      contentPromise.then(value => {
+        cache[key].value = value
+        setContent(value)
+        return value
+      }),
       // preserve cached data until update is resolved
-      { data },
+      { value },
       // preserve cached props provided by custom getContent implementation
       contentPromise
     )
-
-    contentPromise.then(data => {
-      setContent(data)
-      contentPromise.data = data
-    })
   }
 
   return content

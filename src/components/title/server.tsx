@@ -4,14 +4,14 @@ import React from 'react'
 
 import { render } from '../render'
 
-import { usePageContext } from '../../contexts/page'
+import { useRootContext } from '../../contexts/root'
 
 const DefaultTitle = ({ title }: Composition.TitleStruct) => (
   <title>{title}</title>
 )
 
 export const Title = props => {
-  const { title } = usePageContext()
+  const { title } = useRootContext()
   return render({
     // default implementation; can be overridden
     children: DefaultTitle,

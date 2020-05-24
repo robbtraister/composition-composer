@@ -13,9 +13,14 @@ exports[`Quarantine Class Component 1`] = `
       style="display: none;"
     />
     <div
-      data-id="xyz"
+      data-id="tuv"
       data-type="div"
-    />
+    >
+      <div
+        data-id="xyz"
+        data-type="div"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -33,9 +38,14 @@ exports[`Quarantine Function Component 1`] = `
       style="display: none;"
     />
     <div
-      data-id="xyz"
+      data-id="tuv"
       data-type="div"
-    />
+    >
+      <div
+        data-id="xyz"
+        data-type="div"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;

@@ -1,12 +1,17 @@
 'use strict'
 
-import { withQuarantine as withClientQuarantine } from './client'
-import { withQuarantine as withServerQuarantine } from './server'
+import {
+  Quarantine as ClientQuarantine,
+  verifyNode as clientVerify
+} from './client'
+import {
+  Quarantine as ServerQuarantine,
+  verifyNode as serverVerify
+} from './server'
 
 import { isClient } from '../utils'
 
-export const withQuarantine = isClient
-  ? withClientQuarantine
-  : withServerQuarantine
+export const Quarantine = isClient ? ClientQuarantine : ServerQuarantine
+export const verifyNode = isClient ? clientVerify : serverVerify
 
-export default withQuarantine
+export default Quarantine

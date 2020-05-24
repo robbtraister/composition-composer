@@ -1,8 +1,0 @@
-**/.DS_Store
-
-**/.env
-
-coverage/
-node_modules/
-
-/build/

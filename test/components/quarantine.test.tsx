@@ -2,15 +2,22 @@
 
 /* global expect, test */
 
+import assert from 'assert'
+
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import { Page, useComponentContext } from '../../src'
-
-const x = 3
+import { Root, useComponentContext, useRootContext } from '../../src'
 
 function FailFunction() {
-  if (x === 3) {
+  // random logic to waste time
+  let x = 0
+  for (let i = 0; i < 10000000; i++) {
+    x += i ** 2
+  }
+
+  // can't throw by default, so make math that is guaranteed to be truthy
+  if (0 * x === 0) {
     throw new Error('component render failed')
   }
   return <React.Fragment />
@@ -18,12 +25,22 @@ function FailFunction() {
 
 class FailClass extends React.Component {
   render() {
-    return FailFunction()
+    return (
+      <>
+        text
+        <FailFunction />
+      </>
+    )
   }
 }
 
 function Success({ children }: { children: React.ElementType }) {
   const { id, type } = useComponentContext()
+  const { location } = useRootContext()
+
+  assert.equal(type, 'div')
+  assert.equal(location, '/test')
+
   return (
     <div data-type={type} data-id={id}>
       {children}
@@ -57,7 +74,13 @@ function getFailTree(type) {
       },
       {
         type: 'div',
-        id: 'xyz'
+        id: 'tuv',
+        children: [
+          {
+            type: 'div',
+            id: 'xyz'
+          }
+        ]
       }
     ]
   }
@@ -65,14 +88,24 @@ function getFailTree(type) {
 
 test('Quarantine Function Component', () => {
   const { asFragment } = render(
-    <Page getComponent={getComponent} tree={getFailTree('fail-function')} />
+    <Root
+      getComponent={getComponent}
+      location="/test"
+      tree={getFailTree('fail-function')}
+      quarantine
+    />
   )
   expect(asFragment()).toMatchSnapshot()
 })
 
 test('Quarantine Class Component', () => {
   const { asFragment } = render(
-    <Page getComponent={getComponent} tree={getFailTree('fail-class')} />
+    <Root
+      getComponent={getComponent}
+      location="/test"
+      tree={getFailTree('fail-class')}
+      quarantine
+    />
   )
   expect(asFragment()).toMatchSnapshot()
 })

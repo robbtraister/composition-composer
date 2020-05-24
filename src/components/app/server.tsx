@@ -3,7 +3,7 @@
 import React, { useContext } from 'react'
 
 import { Tree } from '../tree'
-import pageContext from '../../contexts/page'
+import rootContext from '../../contexts/root'
 
 const polyfills = {
   assign: '(window.Object&&window.Object.assign)',
@@ -30,8 +30,8 @@ interface ServerAppProps {
 }
 
 export function App(props: ServerAppProps) {
-  const { appName = 'app', cache, output, template, tree } = useContext(
-    pageContext
+  const { appName = 'app', cache, format, template, tree } = useContext(
+    rootContext
   )
   const {
     'hydrate-only': hydrateOnly = false,
@@ -69,7 +69,7 @@ export function App(props: ServerAppProps) {
           />
           {/* <Script name="runtime" /> */}
           <Script name="engine" />
-          <Script name={isCombinations ? `combinations/${output}` : appName} />
+          <Script name={isCombinations ? `combinations/${format}` : appName} />
         </>
       )}
       <div id={id}>
@@ -84,7 +84,7 @@ export function App(props: ServerAppProps) {
               `Composition.cache=${JSON.stringify(contentCache)}`,
               `Composition.id=${JSON.stringify(id)}`,
               `Composition.method=${JSON.stringify(
-                isCombinations ? 'hydrate' : 'render'
+                hydrateOnly ? 'hydrate' : 'render'
               )}`,
               `Composition.singlePage=${JSON.stringify(singlePage)}`,
               isCombinations

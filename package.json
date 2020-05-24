@@ -1,30 +1,29 @@
 {
-  "name": "@composition/composer",
+  "name": "@composition/components",
   "version": "0.0.1-beta.16",
   "description": "",
-  "main": "./src/index.ts",
+  "main": "./dist",
   "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts",
-    "./contexts": "./src/contexts/index.ts"
+    ".": "./dist",
+    "./components": "./dist/components",
+    "./contexts": "./dist/contexts"
   },
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "babel ./src/utils --out-dir ./build/utils --extensions=.js,.jsx,.ts,.tsx --ignore=\"**/*.d.ts\" --source-maps",
-    "clean": "rm -rf ./build/*",
-    "lint:css": "prettier **/*.{css,sass,scss}",
+    "build": "tsc",
+    "postbuild": "cd src && for p in $(find . -name package.json); do cp $p ../dist/$p; done",
+    "clean": "rm -rf ./dist/*",
     "lint:ts": "eslint --ext .cjs,.cjsx,.js,.jsx,.mjs,.mjsx,.ts,.tsx .",
-    "lint": "npm run lint:ts -- --fix && npm run lint:css -- --write",
+    "lint": "npm run lint:ts -- --fix",
     "prepare": "npm run build",
-    "test": "npm audit && tsc --noEmit && npm run lint:ts && jest --coverage",
+    "pretest": "tsc --noEmit && npm run lint:ts",
+    "test": "jest --coverage",
     "watch": "npm run build -- --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
@@ -32,58 +31,20 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-react": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
-    "@babel/register": "^7.8.3",
     "@babel/runtime": "^7.8.3",
-    "babel-loader": "^8.0.6",
-    "babel-plugin-transform-require-ignore": "^0.1.1",
-    "commander": "^4.1.0",
-    "compression": "^1.7.4",
-    "concat-with-sourcemaps": "^1.1.0",
-    "cookie-parser": "^1.4.4",
-    "css-loader": "^3.4.2",
     "debug": "^4.1.1",
-    "dotenv": "^8.2.0",
-    "entities": "^2.0.0",
-    "express": "^4.17.1",
-    "file-loader": "^5.0.2",
-    "glob": "^7.1.6",
-    "json-loader": "^0.5.7",
-    "mini-css-extract-plugin": "^0.9.0",
-    "mock-require": "^3.0.3",
-    "mongodb": "^3.5.0",
-    "morgan": "^1.9.1",
-    "optimize-css-assets-webpack-plugin": "^5.0.3",
-    "preact": "^10.2.1",
-    "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-router-dom": "^5.1.2",
-    "react-svg-loader": "^3.0.3",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8",
-    "sass": "^1.24.4",
-    "sass-loader": "^8.0.2",
-    "source-map-support": "^0.5.16",
-    "speed-measure-webpack-plugin": "^1.3.1",
-    "styled-components": "^5.0.0",
-    "svgo-loader": "^2.2.1",
-    "terser-webpack-plugin": "^2.3.2",
-    "url-loader": "^3.0.0",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1",
-    "winston": "^3.2.1",
-    "yaml-loader": "^0.5.0"
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
     "@testing-library/react": "^9.4.0",
-    "@types/express": "^4.17.2",
     "@types/jest": "^24.9.0",
-    "@types/mongodb": "^3.3.14",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@types/react-router-dom": "^5.1.3",
-    "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.16.0",
     "@typescript-eslint/parser": "^2.16.0",
     "eslint": "^6.8.0",
@@ -97,26 +58,16 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^4.0.10",
-    "identity-obj-proxy": "^3.0.0",
     "jest": "^24.9.0",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
     "prettier-config-standard": "^1.0.1",
-    "supertest": "^4.0.2",
+    "prop-types": "^15.7.2",
     "typescript": "^3.7.4"
   },
-  "bin": {
-    "compose": "./bin/index.js"
-  },
   "files": [
-    "bin",
-    "build",
-    "project/manifest",
-    "src",
-    "webpack",
-    "aliases.js",
-    "babel.config.json",
-    "env.js"
+    "dist",
+    "src"
   ],
   "husky": {
     "hooks": {
@@ -126,20 +77,14 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
-      "!src/server/*.ts",
-      "!src/server/router/auth/**/*",
       "!**/*.d.ts"
     ],
-    "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^~/(.*)": "<rootDir>/project/src/$1"
-    },
     "testPathIgnorePatterns": [
-      "<rootDir>/build/",
+      "<rootDir>/dist/",
       "/node_modules/"
     ],
     "watchPathIgnorePatterns": [
-      "<rootDir>/build/",
+      "<rootDir>/dist/",
       "/node_modules/"
     ]
   },
