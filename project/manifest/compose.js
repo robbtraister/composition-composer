@@ -17,11 +17,10 @@ function manifest({ projectRoot }) {
   }
 
   function getEntries(base) {
-    const files = [].concat(glob.sync(`${base}/**/*.${fileExtensionGlob}`))
-
     return Object.assign(
       {},
-      ...files
+      ...[]
+        .concat(glob.sync(`${base}/**/*.${fileExtensionGlob}`))
         // ignore test files
         .filter(sourceFile => !/\.(spec|test)\.[^/.]+?$/.test(sourceFile))
         // ignore underscore-prefixed segments
@@ -36,29 +35,40 @@ function manifest({ projectRoot }) {
               .join(dir, name)
               .replace(/[\\/]index$/, '')]: getProjectRelativeFile(sourceFile)
           }
-        })
+        }),
+      ...[].concat(glob.sync(`${base}/**/package.json`)).map(packageFile => {
+        const { dir } = path.parse(path.relative(base, packageFile))
+
+        return {
+          [dir]: getProjectRelativeFile(dir)
+        }
+      })
     )
   }
 
-  function getComponentFile(componentName, formatNames) {
-    return []
-      .concat(
-        ...formatNames.map(format =>
-          glob.sync(
-            `${path.join(
-              srcRoot,
-              'components'
-            )}/${componentName}/${format}.${fileExtensionGlob}`
-          )
-        ),
-        glob.sync(
-          `${path.join(
-            srcRoot,
-            'components'
-          )}/${componentName}.${fileExtensionGlob}`
+  function getComponentFile(componentName, format, fallbacks = []) {
+    const componentRoot = path.join(srcRoot, 'components')
+    const componentPath = path.join(componentRoot, componentName)
+
+    const definedFallbacks =
+      fallbacks === true ? [] : [].concat(fallbacks || [])
+
+    const options = [].concat(
+      ...glob.sync(path.join(componentPath, `${format}/`)),
+      ...glob.sync(path.join(componentPath, `${format}.${fileExtensionGlob}`)),
+      ...definedFallbacks.map(fallback => [
+        ...glob.sync(path.join(componentPath, `${fallback}/`)),
+        ...glob.sync(
+          path.join(componentPath, `${fallback}.${fileExtensionGlob}`)
         )
+      ]),
+      ...(fallbacks === true ? glob.sync(`${componentPath}/`) : []),
+      ...glob.sync(
+        path.join(componentRoot, `${componentName}.${fileExtensionGlob}`)
       )
-      .find(c => c)
+    )
+
+    return options.find(c => c)
   }
 
   function getComponentNames(formatNames) {
@@ -77,19 +87,19 @@ function manifest({ projectRoot }) {
 
     const { fallbacks = true } = Format
 
-    if (!fallbacks) {
-      return []
-    }
-
-    if (fallbacks === true) {
-      return ['index']
-    }
-
     return fallbacks
   }
 
   function getComponents(formats) {
     const formatNames = Object.keys(formats)
+    const fallbacks = Object.assign(
+      {},
+      ...formatNames.map(formatName => {
+        return {
+          [formatName]: getFallbacks(formats[formatName])
+        }
+      })
+    )
 
     const componentNames = getComponentNames(formatNames)
     return Object.assign(
@@ -103,7 +113,8 @@ function manifest({ projectRoot }) {
                 [formatName]: getProjectRelativeFile(
                   getComponentFile(
                     componentName,
-                    [formatName].concat(getFallbacks(formats[formatName]))
+                    formatName,
+                    fallbacks[formatName]
                   )
                 )
               }
