@@ -1,5 +1,7 @@
 'use strict'
 
+import path from 'path'
+
 import { Router } from 'express'
 
 import { ControllerType } from '../controller'
@@ -30,6 +32,7 @@ export default function router(controller: ControllerType) {
       const uri = req.originalUrl
       const format = [
         ...parseFormat(req.query.format as string | undefined),
+        ...parseFormat(path.extname(uri).replace(/^\./, '')),
         ...parseFormat(req.get('Accept'))
       ]
       const { body, contentType } = await controller.render(
