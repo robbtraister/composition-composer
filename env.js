@@ -48,6 +48,8 @@ module.exports = {
 
   isProd,
 
+  isSourceMaps: !DISABLED_PATTERN.test(process.env.SOURCE_MAPS),
+
   logLevel: (process.env.LOG_LEVEL || 'info').toLowerCase(),
 
   mongoUrl: process.env.MONGO_URL,

@@ -47,7 +47,7 @@ export class Environment {
 
     const styleHash = crypto.createHash('md5').update(css).digest('hex')
 
-    const concat = [
+    const sources = [
       {
         asset: `${name}.js`,
         source: [
@@ -67,11 +67,13 @@ export class Environment {
           .filter(asset => /\.js$/.test(asset))
           // don't sort here; order matters
           .map(async asset => {
-            const source = await this.readAsset(asset)
-            let sourceMap
-            try {
-              sourceMap = JSON.parse(await this.readAsset(`${asset}.map`))
-            } catch (_) {}
+            const [source, sourceMap] = await Promise.all([
+              this.readAsset(asset),
+              env.isSourceMaps &&
+                this.readAsset(`${asset}.map`)
+                  .then(json => JSON.parse(json))
+                  .catch(_ => undefined)
+            ])
             return {
               asset,
               source,
@@ -79,16 +81,23 @@ export class Environment {
             }
           })
       ))
-    ].reduce(
-      (
-        concat,
-        entry: { asset: string; source: string; sourceMap?: string }
-      ) => {
-        concat.add(entry.asset, entry.source, entry.sourceMap)
-        return concat
-      },
-      new Concat(true, `${name}.js`, '\n')
-    )
+    ]
+
+    const concat = env.isSourceMaps
+      ? sources.reduce(
+          (
+            concat,
+            entry: { asset: string; source: string; sourceMap?: string }
+          ) => {
+            concat.add(entry.asset, entry.source, entry.sourceMap)
+            return concat
+          },
+          new Concat(true, `${name}.js`, '\n')
+        )
+      : {
+          content: sources.map(({ source }) => source).join('\n'),
+          sourceMap: undefined
+        }
 
     const result = {
       js: concat.content,
