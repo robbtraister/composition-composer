@@ -1,6 +1,7 @@
 'use strict'
 
-import PropTypes from 'prop-types'
+// include the trailing /index to prevent a circular dependency
+import PropTypes from 'prop-types/index'
 
 const oneOf = PropTypes.oneOf
 
