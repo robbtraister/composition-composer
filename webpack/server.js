@@ -12,8 +12,12 @@ const aliases = require('../aliases')
 const environment = require('./environment')
 const { formats } = require('../project/manifest')
 const OnBuildPlugin = require('./plugins/on-build-plugin')
+const WriteConfigsPlugin = require('./plugins/write-configs-plugin')
+const shared = require('./shared')
 
 const { port, projectRoot } = environment
+
+const serverBuildDir = path.join(projectRoot, 'build', 'server')
 
 const entry = {
   index: [
@@ -48,14 +52,14 @@ const externals = [
 ]
 
 const serverConfigs = {
-  ...require('./shared'),
+  ...shared,
   ...devMode,
   name: 'server',
   externals,
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.join(projectRoot, 'build', 'server')
+    path: serverBuildDir
   },
   target: 'node'
 }
@@ -88,24 +92,37 @@ module.exports = (_, argv) => {
         publicPath: '/dist/',
         writeToDisk: true
       },
-      entry,
+      entry: {
+        ...entry,
+        'compilations/components': `./${path.join(
+          'build',
+          'generated',
+          'components'
+        )}`
+      },
       externals: isProd ? {} : externals,
       plugins: [
         new DefinePlugin({
           'typeof process': JSON.stringify(typeof {}),
           'typeof window': JSON.stringify(undefined)
         }),
+        // invalidate dev server
         new OnBuildPlugin(async stats => {
+          // clear compilation cache
+          await exec(
+            `rm -rf '${path.join(projectRoot, 'build/dist/templates')}'/*`
+          )
           Object.keys(require.cache)
             .filter(mod => mod.startsWith(serverConfigs.output.path))
             .forEach(mod => {
               delete require.cache[mod]
             })
           hotApp = undefined
-
-          // clear compilation cache
-          exec(`rm -rf ${path.join(projectRoot, 'build/dist/templates/*')}`)
-        })
+        }),
+        new WriteConfigsPlugin(
+          path.join(serverConfigs.output.path, 'compilations'),
+          path.join(projectRoot, 'build', 'dist')
+        )
       ],
       optimization: {
         ...serverConfigs.optimization,
@@ -126,6 +143,7 @@ module.exports = (_, argv) => {
         }
       }
     },
+    // compile format-specific CSS for SSR
     {
       ...serverConfigs,
       ...require('./shared/rules')({ isProd, extractCss: true }),
@@ -146,7 +164,7 @@ module.exports = (_, argv) => {
         }),
         new OnBuildPlugin(async stats => {
           // remove extraneous assets
-          exec(`rm -rf ${path.join(projectRoot, 'build/junk')}`)
+          exec(`rm -rf '${path.join(projectRoot, 'build/junk')}'`)
         })
       ]
     }
