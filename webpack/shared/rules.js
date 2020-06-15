@@ -55,7 +55,7 @@ module.exports = ({ isProd, extractCss }) => ({
       },
       {
         test: /\.m?[jt]sx?$/,
-        exclude: /[\\/]node_modules[\\/](?!@composition[\\/])/,
+        exclude: /[\\/]node_modules[\\/]/,
         use: {
           loader: require.resolve('babel-loader'),
           options: require('../../babel.config.json')

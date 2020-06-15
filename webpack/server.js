@@ -7,6 +7,7 @@ const exec = util.promisify(require('child_process').exec)
 const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const mockRequire = require('mock-require')
 
 const aliases = require('../aliases')
 const environment = require('./environment')
@@ -41,7 +42,7 @@ const devMode = {
   }
 }
 
-const externalPattern = /^(?!\.|~|@composition[\\/])/
+const externalPattern = /^(?!\.|~)/
 const externals = [
   ...Object.entries(aliases)
     .filter(([key]) => externalPattern.test(key))
@@ -79,6 +80,12 @@ module.exports = (_, argv) => {
       ...require('./shared/rules')({ isProd, extractCss: false }),
       devServer: {
         before: app => {
+          // external dependencies are not built into artifact in dev mode
+          // this ensures we reference the correct react lib
+          Object.entries(aliases).forEach(([key, value]) =>
+            mockRequire(key, require(value))
+          )
+
           app.use((req, res, next) => {
             // re-require if recompiled so to get the latest code
             hotApp = hotApp || require(buildArtifact).app()

@@ -14,8 +14,12 @@ import { Mongo } from './mongo'
 
 import { Redirect } from '../errors'
 
-import { Root, StyledComponents, Tree } from '../../components'
-import { getDescendants } from '../../components/utils'
+import {
+  Root,
+  StyledComponents,
+  Tree,
+  getDescendants
+} from '@composition/components'
 
 import Environment from '../../utils/environment'
 import logger from '../../utils/logger'
