@@ -3,16 +3,15 @@
 const path = require('path')
 
 const babelRegister = require('@babel/register')
-const mockRequire = require('mock-require')
 
-const aliases = require('../../aliases')
+const { mock } = require('../../aliases')
 const babelConfigs = require('../../babel.config.json')
 const { projectRoot } = require('../../env')
 
 babelRegister({
   ...babelConfigs,
   root: path.resolve(__dirname, '..', '..'),
-  ignore: [/[\\/]node_modules[\\/]/],
+  ignore: [/[\\/]node_modules[\\/](?!@composition[\\/]composer[\\/])/],
   only: [
     path.resolve(__dirname, '..', '..', 'src'),
     path.join(projectRoot, 'src')
@@ -47,6 +46,4 @@ babelRegister({
   ]
 })
 
-Object.entries(aliases).forEach(([key, value]) =>
-  mockRequire(key, require(value))
-)
+mock()

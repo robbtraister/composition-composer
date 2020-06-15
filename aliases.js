@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = Object.assign(
+const aliases = Object.assign(
   [
     'prop-types/checkPropTypes',
     // access original prop-types with trailing /index if necessary
@@ -33,3 +33,16 @@ module.exports = Object.assign(
     )
   }
 )
+
+function mock() {
+  const mockRequire = require('mock-require')
+
+  Object.entries(aliases).forEach(([key, value]) =>
+    mockRequire(key, require(value))
+  )
+}
+
+module.exports = {
+  aliases,
+  mock
+}

@@ -8,7 +8,7 @@ module.exports = {
   resolve: {
     alias: {
       '~': path.join(projectRoot, 'src'),
-      ...require('../../aliases')
+      ...require('../../aliases').aliases
     },
     extensions: [
       '.tsx',
