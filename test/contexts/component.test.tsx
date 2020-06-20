@@ -6,7 +6,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import { ComponentContext, Root, useComponentContext } from '../../src'
+import {
+  ComponentContext,
+  Root,
+  useComponentContext
+} from '@composition/components'
 
 function Display({ id }) {
   return <div>{id}</div>

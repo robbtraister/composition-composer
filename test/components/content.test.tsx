@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { act, render } from '@testing-library/react'
 
-import { Content, Root, useContent } from '../../src/components'
+import { Content, Root, useContent } from '@composition/components'
 
 function Display({ content }) {
   return <div>{content && content.data}</div>

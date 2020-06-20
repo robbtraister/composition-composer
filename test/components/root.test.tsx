@@ -5,7 +5,15 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 
-import { App, Meta, Root, Styles, Title, useComponentContext } from '../../src'
+import {
+  App,
+  Meta,
+  Root,
+  Styles,
+  Title,
+  useComponentContext
+} from '@composition/components'
+
 import Environment from '../../src/utils/environment'
 
 const env = new Environment()

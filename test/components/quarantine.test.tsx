@@ -7,7 +7,11 @@ import assert from 'assert'
 import React from 'react'
 import { render } from '@testing-library/react'
 
-import { Root, useComponentContext, useRootContext } from '../../src'
+import {
+  Root,
+  useComponentContext,
+  useRootContext
+} from '@composition/components'
 
 function FailFunction() {
   // random logic to waste time
