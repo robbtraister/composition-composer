@@ -7,9 +7,10 @@ import morgan from 'morgan'
 import Controller, { ControllerType } from './controller'
 import router from './router'
 
+import { Options } from '../utils/environment'
 import logger from '../utils/logger'
 
-export default function app(options: Composition.Options = {}) {
+export default function app(options: Options = {}) {
   const app = express()
 
   const controller: ControllerType = new Controller(options)

@@ -2,6 +2,8 @@
 
 import debugModule from 'debug'
 
+import { CachedPromise, ContentParams } from '@composition/components'
+
 import contentSources from '~/../build/generated/content-sources'
 import request from 'request-promise-native'
 
@@ -13,9 +15,7 @@ const contentCache = {}
 
 function fetchFromResolve(resolve) {
   return query => {
-    const fetchPromise: Composition.CachedPromise = Promise.resolve(
-      resolve(query)
-    )
+    const fetchPromise: CachedPromise = Promise.resolve(resolve(query))
       .then(url =>
         request(url, {
           json: true,
@@ -71,9 +71,9 @@ class ContentSource {
       logger.info(`Content not found in cache; fetching [${cacheKey}]`)
     }
 
-    const cacheEntry: Composition.CachedPromise = (contentCache[
-      cacheKey
-    ] = Promise.resolve(this.fetchDirect(query)).then(value => {
+    const cacheEntry: CachedPromise = (contentCache[cacheKey] = Promise.resolve(
+      this.fetchDirect(query)
+    ).then(value => {
       debug(`hydrated content [${cacheKey}]`, value)
       cacheEntry.value = value
       cacheEntry.expires = cacheEntry.expires || Date.now() + this.ttl
@@ -98,14 +98,14 @@ export function getContentSource(source) {
   return contentSourceCache[source]
 }
 
-export async function clear({ source, query }: Composition.ContentParams) {
+export async function clear({ source, query }: ContentParams) {
   return getContentSource(source).clear(query)
 }
 
-export async function fetch({ source, query }: Composition.ContentParams) {
+export async function fetch({ source, query }: ContentParams) {
   return getContentSource(source).fetch(query)
 }
 
-export async function update({ source, query }: Composition.ContentParams) {
+export async function update({ source, query }: ContentParams) {
   return getContentSource(source).update(query)
 }

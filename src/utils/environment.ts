@@ -9,13 +9,23 @@ import { readFile, writeFile } from './promises'
 
 import env from '../../env'
 
+export interface Options {
+  isProd?: boolean
+  isPreact?: boolean
+  logLevel?: string
+  mongoUrl?: string
+  port?: number
+  projectRoot?: string
+  workerCount?: number
+}
+
 export class Environment {
   mongoUrl?: string
   projectRoot: string
   readAsset: Function
   writeAsset: Function
 
-  constructor(options: Composition.Options = {}) {
+  constructor(options: Options = {}) {
     Object.assign(this, env, options)
     this.readAsset = this.readAssetFile
     this.writeAsset = this.writeAssetFile

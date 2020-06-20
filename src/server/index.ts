@@ -4,13 +4,14 @@ import cluster from 'cluster'
 
 import app from './app'
 
+import { Options } from '../utils/environment'
 import logger from '../utils/logger'
 
 import * as env from '../../env'
 
 export { app }
 
-export function server(options: Composition.Options = {}) {
+export function server(options: Options = {}) {
   process.on('disconnect', () => {
     logger.info(`Worker[${process.pid}] disconnected`)
   })
@@ -38,7 +39,7 @@ async function createWorker() {
   })
 }
 
-export async function master(options: Composition.Options = {}) {
+export async function master(options: Options = {}) {
   const workerCount = Number(options.workerCount) || env.workerCount
 
   const result = await Promise.all(
@@ -49,7 +50,7 @@ export async function master(options: Composition.Options = {}) {
   return result
 }
 
-export function main(options: Composition.Options = {}) {
+export function main(options: Options = {}) {
   ;(cluster.isMaster ? master : server)(options)
 }
 

@@ -7,6 +7,17 @@ import { MongoClient } from 'mongodb'
 
 const debug = debugModule('composition:mongo')
 
+export interface Model {
+  findAll: (query: object) => object[]
+  findOne: (query: object) => object
+  get: (id: any) => object
+  put: (document: object) => void
+}
+
+export interface DB {
+  getModel: (string) => Model
+}
+
 async function getNewConnection(mongoUrl) {
   return new Promise<MongoClient>((resolve, reject) => {
     MongoClient.connect(
@@ -17,7 +28,7 @@ async function getNewConnection(mongoUrl) {
   })
 }
 
-export function Mongo(mongoUrl): Composition.DB {
+export function Mongo(mongoUrl): DB {
   const dbName = new URL(mongoUrl).pathname.replace(/^\/+/, '')
 
   let dbPromise
@@ -56,7 +67,7 @@ export function Mongo(mongoUrl): Composition.DB {
 
   const models = {}
   return {
-    getModel(modelName): Composition.Model {
+    getModel(modelName): Model {
       models[modelName] = models[modelName] || {
         name: modelName,
 

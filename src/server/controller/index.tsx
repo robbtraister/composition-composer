@@ -10,18 +10,19 @@ import ReactDOM from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
 
 import { getContentSource } from './content'
-import { Mongo } from './mongo'
+import { DB, Mongo } from './mongo'
 
 import { Redirect } from '../errors'
 
 import {
+  ContentParams,
   Root,
   StyledComponents,
   Tree,
   getDescendants
 } from '@composition/components'
 
-import Environment from '../../utils/environment'
+import { Environment, Options } from '../../utils/environment'
 import logger from '../../utils/logger'
 
 import components from '~/../build/generated/components'
@@ -49,7 +50,7 @@ const resolvers = []
   .concat(resolverConfigs || [])
   .map(resolver => new Resolver(resolver))
 
-export type ControllerType = Controller & Composition.Options
+export type ControllerType = Controller & Options
 
 function getComponent(format, type) {
   return components[type][format]
@@ -124,12 +125,12 @@ async function resolveFromFS(uri) {
 }
 
 class Controller extends Environment {
-  db: Composition.DB
+  db: DB
 
   getTemplate: (string) => Promise<{ tree?: object }>
   resolveUri: (string) => Promise<{ template: string }>
 
-  constructor(options: Composition.Options = {}) {
+  constructor(options: Options = {}) {
     super(options)
 
     this.db = this.mongoUrl ? Mongo(this.mongoUrl) : null
@@ -162,16 +163,16 @@ class Controller extends Environment {
     }
   }
 
-  async clear({ source, query }: Composition.ContentParams) {
+  async clear({ source, query }: ContentParams) {
     return getContentSource(source).clear(query)
   }
 
   // don't mark as async, as that will force-wrap with a new Promise
-  /* async */ fetch({ source, query }: Composition.ContentParams) {
+  /* async */ fetch({ source, query }: ContentParams) {
     return getContentSource(source).fetch(query)
   }
 
-  /* async */ update({ source, query }: Composition.ContentParams) {
+  /* async */ update({ source, query }: ContentParams) {
     return getContentSource(source).update(query)
   }
 
