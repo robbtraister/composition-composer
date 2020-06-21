@@ -28,7 +28,7 @@
     "@babel/preset-typescript": "^7.9.0",
     "@babel/register": "^7.9.0",
     "@babel/runtime": "^7.9.6",
-    "@composition/components": "0.1.0-beta.6",
+    "@composition/components": "0.1.0-beta.7",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-require-ignore": "^0.1.1",
     "commander": "^5.1.0",
